@@ -60,108 +60,124 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="min-h-screen bg-stone-50 flex items-center justify-center px-4 py-16">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-12">
-          <p className="text-xs tracking-[0.3em] uppercase text-stone-400 mb-3">La Sirène</p>
-          <h1 className="text-2xl font-light tracking-wide text-stone-900">Create your account</h1>
-          <p className="mt-3 text-sm text-stone-500 font-light">
-            Trusted care for your most cherished garments.
-          </p>
+    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16" style={{ backgroundColor: '#1c2b1e' }}>
+      <div className="w-full max-w-sm">
+
+        {/* Wordmark */}
+        <div className="text-center mb-10">
+          <h1 className="font-serif text-3xl font-light tracking-[0.15em]" style={{ color: '#f5f0e8' }}>
+            La Sirène
+          </h1>
+          <div className="mx-auto mt-5 mb-0 h-px w-16" style={{ backgroundColor: '#c4b89a' }} />
         </div>
 
-        <div className="bg-white border border-stone-200 px-10 py-10">
-          {notice && (
-            <div className="mb-6 px-4 py-3 bg-stone-100 border border-stone-200 text-stone-700 text-sm font-light">
-              {notice}
-            </div>
-          )}
+        {/* Notices */}
+        {notice && (
+          <div className="mb-8 text-sm font-light text-center leading-relaxed" style={{ color: '#c4b89a' }}>
+            {notice}
+          </div>
+        )}
+        {error && (
+          <div className="mb-8 text-sm font-light text-center" style={{ color: '#e8a090' }}>
+            {error}
+          </div>
+        )}
 
-          {error && (
-            <div className="mb-6 px-4 py-3 bg-red-50 border border-red-100 text-red-700 text-sm font-light">
-              {error}
-            </div>
-          )}
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div>
+            <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+              Full Name
+            </label>
+            <input
+              type="text"
+              name="fullName"
+              value={form.fullName}
+              onChange={handleChange}
+              required
+              autoComplete="name"
+              placeholder="Marie Dupont"
+              className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#f5f0e8]/20 transition-colors"
+              style={{
+                color: '#f5f0e8',
+                borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
+              }}
+            />
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-xs tracking-widest uppercase text-stone-500 mb-2">
-                Full Name
-              </label>
-              <input
-                type="text"
-                name="fullName"
-                value={form.fullName}
-                onChange={handleChange}
-                required
-                autoComplete="name"
-                className="w-full border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-900 placeholder-stone-300 outline-none focus:border-stone-400 focus:bg-white transition-colors"
-                placeholder="Marie Dupont"
-              />
-            </div>
+          <div>
+            <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              autoComplete="email"
+              placeholder="marie@example.com"
+              className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#f5f0e8]/20 transition-colors"
+              style={{
+                color: '#f5f0e8',
+                borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
+              }}
+            />
+          </div>
 
-            <div>
-              <label className="block text-xs tracking-widest uppercase text-stone-500 mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                required
-                autoComplete="email"
-                className="w-full border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-900 placeholder-stone-300 outline-none focus:border-stone-400 focus:bg-white transition-colors"
-                placeholder="marie@example.com"
-              />
-            </div>
+          <div>
+            <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              autoComplete="tel"
+              placeholder="+33 6 00 00 00 00"
+              className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#f5f0e8]/20 transition-colors"
+              style={{
+                color: '#f5f0e8',
+                borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
+              }}
+            />
+          </div>
 
-            <div>
-              <label className="block text-xs tracking-widest uppercase text-stone-500 mb-2">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-                autoComplete="tel"
-                className="w-full border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-900 placeholder-stone-300 outline-none focus:border-stone-400 focus:bg-white transition-colors"
-                placeholder="+33 6 00 00 00 00"
-              />
-            </div>
+          <div>
+            <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              autoComplete="new-password"
+              minLength={8}
+              placeholder="Minimum 8 characters"
+              className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#f5f0e8]/20 transition-colors"
+              style={{
+                color: '#f5f0e8',
+                borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
+              }}
+            />
+          </div>
 
-            <div>
-              <label className="block text-xs tracking-widest uppercase text-stone-500 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                required
-                autoComplete="new-password"
-                minLength={8}
-                className="w-full border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-900 placeholder-stone-300 outline-none focus:border-stone-400 focus:bg-white transition-colors"
-                placeholder="Minimum 8 characters"
-              />
-            </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full text-[10px] tracking-[0.3em] uppercase py-4 mt-4 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+          >
+            {loading ? 'Creating account…' : 'Create Account'}
+          </button>
+        </form>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-stone-900 text-white text-xs tracking-widest uppercase py-4 hover:bg-stone-800 active:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
-            >
-              {loading ? 'Creating account…' : 'Create account'}
-            </button>
-          </form>
-        </div>
-
-        <p className="text-center text-sm text-stone-400 font-light mt-8">
+        <p className="text-center text-xs font-light mt-10" style={{ color: 'rgba(245, 240, 232, 0.45)' }}>
           Already have an account?{' '}
-          <Link href="/login" className="text-stone-700 underline underline-offset-4 hover:text-stone-900 transition-colors">
-            Sign in
+          <Link href="/login" className="transition-opacity hover:opacity-100" style={{ color: '#c4b89a' }}>
+            Sign In
           </Link>
         </p>
       </div>

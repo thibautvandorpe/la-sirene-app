@@ -35,78 +35,88 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-stone-50 flex items-center justify-center px-4 py-16">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-12">
-          <p className="text-xs tracking-[0.3em] uppercase text-stone-400 mb-3">La Sirène</p>
-          <h1 className="text-2xl font-light tracking-wide text-stone-900">Welcome back</h1>
-          <p className="mt-3 text-sm text-stone-500 font-light">
-            Sign in to manage your garment care.
-          </p>
+    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16" style={{ backgroundColor: '#1c2b1e' }}>
+      <div className="w-full max-w-sm">
+
+        {/* Wordmark */}
+        <div className="text-center mb-10">
+          <h1 className="font-serif text-3xl font-light tracking-[0.15em]" style={{ color: '#f5f0e8' }}>
+            La Sirène
+          </h1>
+          <div className="mx-auto mt-5 mb-0 h-px w-16" style={{ backgroundColor: '#c4b89a' }} />
         </div>
 
-        <div className="bg-white border border-stone-200 px-10 py-10">
-          {error && (
-            <div className="mb-6 px-4 py-3 bg-red-50 border border-red-100 text-red-700 text-sm font-light">
-              {error}
-            </div>
-          )}
+        {/* Error */}
+        {error && (
+          <div className="mb-8 text-sm font-light text-center" style={{ color: '#e8a090' }}>
+            {error}
+          </div>
+        )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-xs tracking-widest uppercase text-stone-500 mb-2">
-                Email
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div>
+            <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              autoComplete="email"
+              placeholder="marie@example.com"
+              className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#f5f0e8]/20 transition-colors"
+              style={{
+                color: '#f5f0e8',
+                borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
+              }}
+            />
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-[10px] tracking-[0.3em] uppercase" style={{ color: '#c4b89a' }}>
+                Password
               </label>
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                required
-                autoComplete="email"
-                className="w-full border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-900 placeholder-stone-300 outline-none focus:border-stone-400 focus:bg-white transition-colors"
-                placeholder="marie@example.com"
-              />
+              <Link
+                href="/forgot-password"
+                className="text-[10px] tracking-wide transition-opacity hover:opacity-100"
+                style={{ color: 'rgba(196, 184, 154, 0.55)' }}
+              >
+                Forgot password?
+              </Link>
             </div>
+            <input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              autoComplete="current-password"
+              placeholder="Your password"
+              className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#f5f0e8]/20 transition-colors"
+              style={{
+                color: '#f5f0e8',
+                borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
+              }}
+            />
+          </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs tracking-widest uppercase text-stone-500">
-                  Password
-                </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-              <input
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                required
-                autoComplete="current-password"
-                className="w-full border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-900 placeholder-stone-300 outline-none focus:border-stone-400 focus:bg-white transition-colors"
-                placeholder="Your password"
-              />
-            </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full text-[10px] tracking-[0.3em] uppercase py-4 mt-4 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+          >
+            {loading ? 'Signing in…' : 'Sign In'}
+          </button>
+        </form>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-stone-900 text-white text-xs tracking-widest uppercase py-4 hover:bg-stone-800 active:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
-            >
-              {loading ? 'Signing in…' : 'Sign in'}
-            </button>
-          </form>
-        </div>
-
-        <p className="text-center text-sm text-stone-400 font-light mt-8">
+        <p className="text-center text-xs font-light mt-10" style={{ color: 'rgba(245, 240, 232, 0.45)' }}>
           New to La Sirène?{' '}
-          <Link href="/signup" className="text-stone-700 underline underline-offset-4 hover:text-stone-900 transition-colors">
-            Create an account
+          <Link href="/signup" className="transition-opacity hover:opacity-100" style={{ color: '#c4b89a' }}>
+            Create Account
           </Link>
         </p>
       </div>
