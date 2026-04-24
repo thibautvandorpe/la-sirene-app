@@ -23,7 +23,9 @@ function getTomorrow() {
 function slotToISO(date: string, slot: string): string {
   const start = slot.split('–')[0].trim()
   const [timePart, period] = start.split(' ')
-  let [hours, minutes] = timePart.split(':').map(Number)
+  const timeParts = timePart.split(':').map(Number)
+  let hours = timeParts[0]
+  const minutes = timeParts[1]
   if (period === 'PM' && hours !== 12) hours += 12
   if (period === 'AM' && hours === 12) hours = 0
   return `${date}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00.000Z`
