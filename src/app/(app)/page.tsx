@@ -1,6 +1,9 @@
+import AppHeader from '@/components/AppHeader'
+
 export default function HomePage() {
   return (
     <div className="flex flex-col">
+      <AppHeader />
       {/* Hero */}
       <section className="min-h-screen flex flex-col items-center justify-center px-8 text-center">
         <p className="text-[10px] tracking-[0.4em] uppercase text-[#c4b89a] mb-10">

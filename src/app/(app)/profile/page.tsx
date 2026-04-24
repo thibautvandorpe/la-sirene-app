@@ -1,36 +1,45 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import AppHeader from '@/components/AppHeader'
 
 export default function ProfilePage() {
-  const router = useRouter()
-  const [checking, setChecking] = useState(true)
+  const [loggedIn, setLoggedIn] = useState(false)
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        router.replace('/login')
-      } else {
-        setChecking(false)
-      }
-    })
-  }, [router])
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        setLoggedIn(!!session)
+        setLoaded(true)
+      })
+      .catch(() => setLoaded(true))
+  }, [])
 
-  if (checking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-[10px] tracking-widest uppercase text-[#f5f0e8]/30">Loading…</p>
-      </div>
-    )
-  }
+  if (!loaded) return null
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6">
-      <p className="text-[10px] tracking-[0.35em] uppercase text-[#c4b89a] mb-4">La Sirène</p>
-      <h1 className="text-3xl font-light tracking-wide text-[#f5f0e8]">Welcome</h1>
-      <div className="mt-6 w-10 border-t border-[#c4b89a]/40" />
+    <div className="min-h-screen flex flex-col">
+      <AppHeader />
+      {loggedIn ? (
+        <div className="px-6 pt-4">
+          <p className="text-[10px] tracking-[0.35em] uppercase text-[#c4b89a]">Profile</p>
+        </div>
+      ) : (
+        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+          <p className="text-sm font-light tracking-wide text-[#f5f0e8]">
+            Please sign in to access your profile
+          </p>
+          <Link
+            href="/login"
+            className="mt-5 px-6 py-2 text-[10px] tracking-widest uppercase text-[#c4b89a] border border-[#c4b89a]/30 rounded-sm"
+          >
+            Sign In
+          </Link>
+        </div>
+      )}
     </div>
   )
 }
