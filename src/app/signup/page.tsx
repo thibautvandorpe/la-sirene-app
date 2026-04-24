@@ -27,6 +27,7 @@ export default function SignupPage() {
       password: form.password,
       options: {
         emailRedirectTo: window.location.origin + '/auth/callback',
+        data: { full_name: form.fullName, phone: form.phone },
       },
     })
 
@@ -36,23 +37,8 @@ export default function SignupPage() {
       return
     }
 
-    if (data.user) {
-      const { error: insertError } = await supabase.from('clients').insert({
-        id: data.user.id,
-        full_name: form.fullName,
-        phone: form.phone,
-        email: form.email,
-      })
-
-      if (insertError) {
-        setError(insertError.message)
-        setLoading(false)
-        return
-      }
-    }
-
     if (data.session) {
-      router.push('/dashboard')
+      router.push('/')
     } else {
       setNotice('Please check your email to confirm your account before signing in.')
       setLoading(false)

@@ -2,12 +2,19 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 export default function AppHeader() {
+  const router = useRouter()
   const [fullName, setFullName] = useState<string | null>(null)
   const [loggedIn, setLoggedIn] = useState(false)
   const [loaded, setLoaded] = useState(false)
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/')
+  }
 
   useEffect(() => {
     supabase.auth.getSession()
@@ -53,16 +60,23 @@ export default function AppHeader() {
         </div>
       )}
 
-      {!loggedIn && (
-        <div className="pb-4">
+      <div className="pb-4">
+        {loggedIn ? (
+          <button
+            onClick={handleSignOut}
+            className="text-[10px] tracking-wide uppercase text-[#c4b89a] underline underline-offset-2 decoration-[#c4b89a]/40"
+          >
+            Sign Out
+          </button>
+        ) : (
           <Link
             href="/login"
             className="text-[10px] tracking-wide uppercase text-[#c4b89a] underline underline-offset-2 decoration-[#c4b89a]/40"
           >
             Sign In
           </Link>
-        </div>
-      )}
+        )}
+      </div>
     </header>
   )
 }
