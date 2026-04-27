@@ -435,7 +435,7 @@ function BookPageInner() {
                 </p>
                 {item.instructions && (
                   <p className="text-[11px] font-light italic mt-0.5" style={{ color: 'rgba(245, 240, 232, 0.35)' }}>
-                    "{item.instructions}"
+                    {'"'}{item.instructions}{'"'}
                   </p>
                 )}
               </div>

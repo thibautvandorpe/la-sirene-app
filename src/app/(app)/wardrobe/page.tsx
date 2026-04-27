@@ -591,7 +591,7 @@ export default function WardrobePage() {
                             )}
                             {garment.notes && (
                               <p className="text-[11px] font-light italic mt-0.5 leading-relaxed" style={{ color: 'rgba(245,240,232,0.3)' }}>
-                                "{garment.notes}"
+                                {'"'}{garment.notes}{'"'}
                               </p>
                             )}
                             {garment.created_at && (
