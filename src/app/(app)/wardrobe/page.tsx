@@ -52,6 +52,10 @@ export default function WardrobePage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editColor, setEditColor] = useState('')
   const [editNotes, setEditNotes] = useState('')
+  const [editRemovedUrls, setEditRemovedUrls] = useState<string[]>([])
+  const [editNewPhotos, setEditNewPhotos] = useState<File[]>([])
+  const [editNewPreviews, setEditNewPreviews] = useState<string[]>([])
+  const editFileInputRef = useRef<HTMLInputElement>(null)
   const [saving, setSaving] = useState(false)
 
   // Delete confirmation state
@@ -149,27 +153,7 @@ export default function WardrobePage() {
         .single()
       if (error) throw error
 
-      // 2. Upload photos and insert into garment_photos
-      const savedPhotos: { url: string }[] = []
-      for (const file of addPhotos) {
-        const path = `${clientId}/${data.id}/${Date.now()}-${file.name}`
-        const { error: uploadError } = await supabase.storage
-          .from('garment-photos')
-          .upload(path, file)
-        if (!uploadError) {
-          const { data: { publicUrl } } = supabase.storage
-            .from('garment-photos')
-            .getPublicUrl(path)
-          await supabase.from('garment_photos').insert({
-            garment_id: data.id,
-            url: publicUrl,
-            label: null,
-          })
-          savedPhotos.push({ url: publicUrl })
-        }
-      }
-
-      // 3. Add to local state
+      // 2. Update UI immediately using blob preview URLs
       const newGarment: Garment = {
         id: data.id,
         brand: data.brand,
@@ -177,7 +161,7 @@ export default function WardrobePage() {
         notes: data.notes,
         created_at: data.created_at,
         services: { category: addCategory, sub_category: addSubCategory },
-        garment_photos: savedPhotos,
+        garment_photos: addPreviews.map(url => ({ url })),
       }
 
       setGroups(prev => {
@@ -195,10 +179,36 @@ export default function WardrobePage() {
 
       setExpandedCategory(addCategory)
       setShowAddForm(false)
+
+      // Capture snapshot before resetAddForm clears state
+      const snapshot = { photos: addPhotos, garmentId: data.id, cid: clientId }
       resetAddForm()
+      setAddSaving(false)
+
+      // 3. Fire-and-forget photo uploads
+      if (snapshot.photos.length > 0) {
+        Promise.all(
+          snapshot.photos.map(async file => {
+            const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+            const path = `${snapshot.cid}/${snapshot.garmentId}/${Date.now()}-${safeName}`
+            const { error: uploadError } = await supabase.storage
+              .from('garment-photos')
+              .upload(path, file)
+            if (!uploadError) {
+              const { data: { publicUrl } } = supabase.storage
+                .from('garment-photos')
+                .getPublicUrl(path)
+              await supabase.from('garment_photos').insert({
+                garment_id: snapshot.garmentId,
+                url: publicUrl,
+                label: null,
+              })
+            }
+          })
+        ).catch(() => {})
+      }
     } catch {
       // keep form open so user can retry
-    } finally {
       setAddSaving(false)
     }
   }
@@ -209,17 +219,31 @@ export default function WardrobePage() {
     setEditingId(garment.id)
     setEditColor(garment.color ?? '')
     setEditNotes(garment.notes ?? '')
+    setEditRemovedUrls([])
+    setEditNewPhotos([])
+    setEditNewPreviews([])
+    if (editFileInputRef.current) editFileInputRef.current.value = ''
   }
 
   function handleCancelEdit() {
     setEditingId(null)
     setEditColor('')
     setEditNotes('')
+    setEditRemovedUrls([])
+    setEditNewPhotos([])
+    setEditNewPreviews([])
+  }
+
+  function handleEditPhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? [])
+    setEditNewPhotos(files)
+    setEditNewPreviews(files.map(f => URL.createObjectURL(f)))
   }
 
   async function handleSaveEdit(garmentId: string) {
     setSaving(true)
     try {
+      // 1. Update garment fields
       const { error } = await supabase
         .from('garments')
         .update({
@@ -229,18 +253,73 @@ export default function WardrobePage() {
         .eq('id', garmentId)
       if (error) throw error
 
+      // 2. Delete removed photo rows (blocking)
+      if (editRemovedUrls.length > 0) {
+        await supabase.from('garment_photos').delete().in('url', editRemovedUrls)
+      }
+
+      // 3. Update local state immediately
+      const snapshotRemoved = editRemovedUrls
+      const snapshotNewPhotos = editNewPhotos
+      const snapshotNewPreviews = editNewPreviews
+      const snapshotClientId = clientId
+
       setGroups(prev => prev.map(group => ({
         ...group,
-        items: group.items.map(item =>
-          item.id === garmentId
-            ? { ...item, color: editColor.trim() || null, notes: editNotes.trim() || null }
-            : item
-        ),
+        items: group.items.map(item => {
+          if (item.id !== garmentId) return item
+          const remainingPhotos = item.garment_photos.filter(p => !snapshotRemoved.includes(p.url))
+          const newBlobPhotos = snapshotNewPreviews.map(url => ({ url }))
+          return {
+            ...item,
+            color: editColor.trim() || null,
+            notes: editNotes.trim() || null,
+            garment_photos: [...remainingPhotos, ...newBlobPhotos],
+          }
+        }),
       })))
       setEditingId(null)
+      setEditRemovedUrls([])
+      setEditNewPhotos([])
+      setEditNewPreviews([])
+      setSaving(false)
+
+      // 4. Fire-and-forget: delete files from storage
+      if (snapshotRemoved.length > 0) {
+        Promise.all(
+          snapshotRemoved.map(async url => {
+            const parts = url.split('/garment-photos/')
+            if (parts.length < 2) return // URL format unrecognized — skip silently
+            const path = parts[1]
+            await supabase.storage.from('garment-photos').remove([path])
+          })
+        ).catch(() => {})
+      }
+
+      // 5. Fire-and-forget: upload new photos
+      if (snapshotNewPhotos.length > 0 && snapshotClientId) {
+        Promise.all(
+          snapshotNewPhotos.map(async file => {
+            const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+            const path = `${snapshotClientId}/${garmentId}/${Date.now()}-${safeName}`
+            const { error: uploadError } = await supabase.storage
+              .from('garment-photos')
+              .upload(path, file)
+            if (!uploadError) {
+              const { data: { publicUrl } } = supabase.storage
+                .from('garment-photos')
+                .getPublicUrl(path)
+              await supabase.from('garment_photos').insert({
+                garment_id: garmentId,
+                url: publicUrl,
+                label: null,
+              })
+            }
+          })
+        ).catch(() => {})
+      }
     } catch {
       // keep form open so user can retry
-    } finally {
       setSaving(false)
     }
   }
@@ -707,6 +786,67 @@ export default function WardrobePage() {
                               rows={3}
                               className="w-full bg-transparent outline-none text-sm font-light resize-none pb-2 placeholder:text-[rgba(245,240,232,0.25)]"
                               style={{ color: '#f5f0e8', borderBottom: '1px solid rgba(196,184,154,0.4)' }}
+                            />
+                          </div>
+
+                          {/* Photos */}
+                          <div>
+                            <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+                              Photos
+                            </label>
+
+                            {/* Existing photos */}
+                            {garment.garment_photos.filter(p => !editRemovedUrls.includes(p.url)).length > 0 && (
+                              <div className="flex flex-wrap gap-2 mb-3">
+                                {garment.garment_photos
+                                  .filter(p => !editRemovedUrls.includes(p.url))
+                                  .map((photo, i) => (
+                                    <div key={i} className="relative">
+                                      <img
+                                        src={photo.url}
+                                        alt=""
+                                        className="w-16 h-16 object-cover"
+                                        style={{ border: '1px solid rgba(196,184,154,0.2)' }}
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => setEditRemovedUrls(prev => [...prev, photo.url])}
+                                        className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center text-[10px] font-medium rounded-full"
+                                        style={{ backgroundColor: 'rgba(220,80,60,0.85)', color: '#fff' }}
+                                        aria-label="Remove photo"
+                                      >
+                                        ×
+                                      </button>
+                                    </div>
+                                  ))}
+                              </div>
+                            )}
+
+                            {/* New photo previews */}
+                            {editNewPreviews.length > 0 && (
+                              <div className="flex flex-wrap gap-2 mb-3">
+                                {editNewPreviews.map((src, i) => (
+                                  <div key={i} className="relative">
+                                    <img
+                                      src={src}
+                                      alt=""
+                                      className="w-16 h-16 object-cover opacity-70"
+                                      style={{ border: '1px solid rgba(196,184,154,0.35)' }}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Add photos input */}
+                            <input
+                              ref={editFileInputRef}
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              onChange={handleEditPhotoChange}
+                              className="text-xs font-light w-full"
+                              style={{ color: 'rgba(245,240,232,0.5)' }}
                             />
                           </div>
 

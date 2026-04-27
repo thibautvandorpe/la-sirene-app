@@ -68,7 +68,8 @@ type OrderItem = {
   color: string
   instructions: string
   price: number
-  photoPreviews: string[]
+  photoPreviews: string[]  // blob URLs for newly added photos (current session only)
+  photoUrls: string[]      // persisted DB photo URLs
 }
 
 function BookPageInner() {
@@ -94,6 +95,8 @@ function BookPageInner() {
   // Step 2 — inline form visibility
   const [showForm, setShowForm] = useState(false)
   const [formIsEdit, setFormIsEdit] = useState(false)
+  const [editingItem, setEditingItem] = useState<OrderItem | null>(null)
+  const [editRemovedPhotoUrls, setEditRemovedPhotoUrls] = useState<string[]>([])
   // Step 2 — wardrobe selector
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([])
   const [selectedWardrobeId, setSelectedWardrobeId] = useState<string | null>(null)
@@ -116,7 +119,7 @@ function BookPageInner() {
       if (urlApptId) {
         const { data: draft } = await supabase
           .from('appointments')
-          .select('id, scheduled_at, appointment_items(id, garment_id, estimated_price, special_instructions, garments(brand, color), services(category, sub_category))')
+          .select('id, scheduled_at, appointment_items(id, garment_id, estimated_price, special_instructions, garments(brand, color), services(category, sub_category), appointment_item_photos(url))')
           .eq('id', urlApptId)
           .maybeSingle()
 
@@ -130,6 +133,9 @@ function BookPageInner() {
           setItems(((d.appointment_items ?? []) as any[]).map((ai: any) => {
             const g   = ai.garments ?? {}
             const svc = ai.services ?? {}
+            const photos = Array.isArray(ai.appointment_item_photos)
+              ? (ai.appointment_item_photos as { url: string }[]).map(p => p.url)
+              : []
             return {
               id: crypto.randomUUID(),
               appointmentItemId: ai.id as string,
@@ -141,6 +147,7 @@ function BookPageInner() {
               instructions: (ai.special_instructions ?? '') as string,
               price:        (ai.estimated_price ?? 0) as number,
               photoPreviews: [],
+              photoUrls: photos,
             }
           }))
           setStep(2)
@@ -185,7 +192,18 @@ function BookPageInner() {
     setFormPreviews([])
     setSelectedWardrobeId(null)
     setFormIsEdit(false)
+    setEditingItem(null)
+    setEditRemovedPhotoUrls([])
     if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  function handleCancelForm() {
+    if (formIsEdit && editingItem) {
+      // Restore the item back to the list — item was never deleted from DB
+      setItems(prev => [...prev, editingItem])
+    }
+    setShowForm(false)
+    resetForm()
   }
 
   function handleSelectWardrobeItem(item: WardrobeItem) {
@@ -254,6 +272,89 @@ function BookPageInner() {
 
     setSaving(true)
     try {
+      // ── EDIT MODE: update existing rows ──────────────────────────
+      if (formIsEdit && editingItem) {
+        // Update the appointment_item
+        const { error: aiErr } = await supabase
+          .from('appointment_items')
+          .update({
+            service_id: service.id,
+            special_instructions: formInstructions || null,
+            estimated_price: service.price,
+          })
+          .eq('id', editingItem.appointmentItemId)
+        if (aiErr) throw aiErr
+
+        // Update the garment (brand / color may have changed)
+        const { error: garmentErr } = await supabase
+          .from('garments')
+          .update({ brand: formBrand || null, color: formColor || null })
+          .eq('id', editingItem.garmentId)
+        if (garmentErr) throw garmentErr
+
+        // Delete removed photo DB rows (blocking)
+        if (editRemovedPhotoUrls.length > 0) {
+          await supabase.from('appointment_item_photos').delete().in('url', editRemovedPhotoUrls)
+        }
+
+        // Update local state immediately
+        const snapshotRemoved = editRemovedPhotoUrls
+        const remainingUrls = editingItem.photoUrls.filter(u => !snapshotRemoved.includes(u))
+        const updatedItem: OrderItem = {
+          ...editingItem,
+          category: formCategory,
+          subCategory: formSubCategory,
+          brand: formBrand,
+          color: formColor,
+          instructions: formInstructions,
+          price: service.price,
+          photoUrls: remainingUrls,
+          photoPreviews: formPreviews,
+        }
+        setItems(prev => [...prev, updatedItem])
+        setShowForm(false)
+        resetForm()
+        setSaving(false)
+
+        // Fire-and-forget: delete files from storage
+        if (snapshotRemoved.length > 0) {
+          Promise.all(
+            snapshotRemoved.map(async url => {
+              const parts = url.split('/appointment-photos/')
+              if (parts.length < 2) return
+              const path = parts[1]
+              await supabase.storage.from('appointment-photos').remove([path])
+            })
+          ).catch(() => {})
+        }
+
+        // Fire-and-forget: upload any new photos added during edit
+        if (formPhotos.length > 0) {
+          const snapshot = { photos: formPhotos, clientId, appointmentItemId: editingItem.appointmentItemId }
+          Promise.all(
+            snapshot.photos.map(async file => {
+              const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+              const path = `${snapshot.clientId}/${snapshot.appointmentItemId}/${Date.now()}-${safeName}`
+              const { error: uploadError } = await supabase.storage
+                .from('appointment-photos')
+                .upload(path, file)
+              if (!uploadError) {
+                const { data: { publicUrl } } = supabase.storage
+                  .from('appointment-photos')
+                  .getPublicUrl(path)
+                await supabase.from('appointment_item_photos').insert({
+                  appointment_item_id: snapshot.appointmentItemId,
+                  url: publicUrl,
+                  label: null,
+                })
+              }
+            })
+          ).catch(() => {})
+        }
+        return
+      }
+
+      // ── ADD MODE: insert new rows ─────────────────────────────────
       let garmentId: string
 
       if (selectedWardrobeId) {
@@ -289,24 +390,7 @@ function BookPageInner() {
         .single()
       if (aiErr) throw aiErr
 
-      // Upload photos to appointment-photos bucket
-      for (const file of formPhotos) {
-        const path = `${clientId}/${ai.id}/${Date.now()}-${file.name}`
-        const { error: uploadError } = await supabase.storage
-          .from('appointment-photos')
-          .upload(path, file)
-        if (!uploadError) {
-          const { data: { publicUrl } } = supabase.storage
-            .from('appointment-photos')
-            .getPublicUrl(path)
-          await supabase.from('appointment_item_photos').insert({
-            appointment_item_id: ai.id,
-            url: publicUrl,
-            label: null,
-          })
-        }
-      }
-
+      // Update UI immediately — don't wait for photo uploads
       setItems(prev => [
         ...prev,
         {
@@ -320,13 +404,38 @@ function BookPageInner() {
           instructions: formInstructions,
           price: service.price,
           photoPreviews: formPreviews,
+          photoUrls: [],
         },
       ])
       setShowForm(false)
       resetForm()
+      setSaving(false)
+
+      // Fire-and-forget: upload photos in the background
+      if (formPhotos.length > 0) {
+        const snapshot = { photos: formPhotos, clientId, appointmentItemId: ai.id }
+        Promise.all(
+          snapshot.photos.map(async file => {
+            const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+            const path = `${snapshot.clientId}/${snapshot.appointmentItemId}/${Date.now()}-${safeName}`
+            const { error: uploadError } = await supabase.storage
+              .from('appointment-photos')
+              .upload(path, file)
+            if (!uploadError) {
+              const { data: { publicUrl } } = supabase.storage
+                .from('appointment-photos')
+                .getPublicUrl(path)
+              await supabase.from('appointment_item_photos').insert({
+                appointment_item_id: snapshot.appointmentItemId,
+                url: publicUrl,
+                label: null,
+              })
+            }
+          })
+        ).catch(() => {})
+      }
     } catch {
       // no-op — keep form open so user can retry
-    } finally {
       setSaving(false)
     }
   }
@@ -336,9 +445,10 @@ function BookPageInner() {
     await supabase.from('appointment_items').delete().eq('id', item.appointmentItemId)
   }
 
-  async function handleEditItem(item: OrderItem) {
+  function handleEditItem(item: OrderItem) {
+    // Hide from list locally — do NOT delete from DB yet
     setItems(prev => prev.filter(i => i.id !== item.id))
-    await supabase.from('appointment_items').delete().eq('id', item.appointmentItemId)
+    setEditingItem(item)
     setFormCategory(item.category)
     setFormSubCategory(item.subCategory)
     setFormBrand(item.brand)
@@ -349,6 +459,14 @@ function BookPageInner() {
     setFormIsEdit(true)
     if (fileInputRef.current) fileInputRef.current.value = ''
     setShowForm(true)
+  }
+
+  async function handleDeleteEditingItem() {
+    if (!editingItem) return
+    // Item is already removed from local list — just delete from DB
+    setShowForm(false)
+    resetForm()
+    await supabase.from('appointment_items').delete().eq('id', editingItem.appointmentItemId)
   }
 
   async function handleConfirmBooking() {
@@ -781,6 +899,49 @@ function BookPageInner() {
                   (optional)
                 </span>
               </label>
+
+              {/* Existing DB photos — only shown in edit mode */}
+              {formIsEdit && editingItem && editingItem.photoUrls.filter(u => !editRemovedPhotoUrls.includes(u)).length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {editingItem.photoUrls
+                    .filter(u => !editRemovedPhotoUrls.includes(u))
+                    .map((url, i) => (
+                      <div key={i} className="relative">
+                        <img
+                          src={url}
+                          alt=""
+                          className="w-14 h-14 object-cover rounded-sm"
+                          style={{ border: '1px solid rgba(196, 184, 154, 0.2)' }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setEditRemovedPhotoUrls(prev => [...prev, url])}
+                          className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center text-[10px] font-medium rounded-full"
+                          style={{ backgroundColor: 'rgba(220,80,60,0.85)', color: '#fff' }}
+                          aria-label="Remove photo"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                </div>
+              )}
+
+              {/* New photo previews (blob URLs) */}
+              {formPreviews.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {formPreviews.map((src, i) => (
+                    <img
+                      key={i}
+                      src={src}
+                      alt=""
+                      className="w-14 h-14 object-cover rounded-sm opacity-70"
+                      style={{ border: '1px solid rgba(196, 184, 154, 0.35)' }}
+                    />
+                  ))}
+                </div>
+              )}
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -790,19 +951,6 @@ function BookPageInner() {
                 className="text-xs font-light w-full"
                 style={{ color: 'rgba(245, 240, 232, 0.5)' }}
               />
-              {formPreviews.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {formPreviews.map((src, i) => (
-                    <img
-                      key={i}
-                      src={src}
-                      alt=""
-                      className="w-14 h-14 object-cover rounded-sm"
-                      style={{ border: '1px solid rgba(196, 184, 154, 0.2)' }}
-                    />
-                  ))}
-                </div>
-              )}
             </div>
 
             {/* Form actions */}
@@ -815,14 +963,35 @@ function BookPageInner() {
               >
                 {saving ? 'Saving…' : formIsEdit ? 'Confirm' : 'Add to Order'}
               </button>
-              <button
-                onClick={() => { setShowForm(false); resetForm() }}
-                disabled={saving}
-                className="px-5 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
-                style={{ border: '1px solid rgba(196, 184, 154, 0.3)', color: 'rgba(196, 184, 154, 0.7)' }}
-              >
-                {formIsEdit ? 'Delete' : 'Cancel'}
-              </button>
+              {formIsEdit ? (
+                <>
+                  <button
+                    onClick={handleCancelForm}
+                    disabled={saving}
+                    className="px-4 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
+                    style={{ border: '1px solid rgba(196, 184, 154, 0.3)', color: 'rgba(196, 184, 154, 0.7)' }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteEditingItem}
+                    disabled={saving}
+                    className="px-4 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
+                    style={{ border: '1px solid rgba(220,80,60,0.4)', color: 'rgba(220,80,60,0.7)' }}
+                  >
+                    Delete
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={handleCancelForm}
+                  disabled={saving}
+                  className="px-5 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
+                  style={{ border: '1px solid rgba(196, 184, 154, 0.3)', color: 'rgba(196, 184, 154, 0.7)' }}
+                >
+                  Cancel
+                </button>
+              )}
             </div>
           </div>
         )}
