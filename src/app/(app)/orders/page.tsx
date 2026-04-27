@@ -192,13 +192,22 @@ export default function OrdersPage() {
                           </>
                         )}
                         {appt.status === 'pending' && (
-                          <button
-                            onClick={() => handleCancelAppointment(appt)}
-                            className="text-xs font-light"
-                            style={{ color: 'rgba(196, 184, 154, 0.4)' }}
-                          >
-                            Cancel
-                          </button>
+                          <>
+                            <Link
+                              href={`/orders/${appt.id}`}
+                              className="text-xs font-light"
+                              style={{ color: '#c4b89a' }}
+                            >
+                              View
+                            </Link>
+                            <button
+                              onClick={() => handleCancelAppointment(appt)}
+                              className="text-xs font-light"
+                              style={{ color: 'rgba(196, 184, 154, 0.4)' }}
+                            >
+                              Cancel
+                            </button>
+                          </>
                         )}
                       </div>
                     </li>
