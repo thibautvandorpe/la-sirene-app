@@ -282,7 +282,7 @@ export default function AdminAppointmentDetail() {
               </p>
               {item.special_instructions && (
                 <p className="text-[11px] font-light italic mt-0.5" style={{ color: 'rgba(245,240,232,0.3)' }}>
-                  "{item.special_instructions}"
+                  {'"'}{item.special_instructions}{'"'}
                 </p>
               )}
             </div>
