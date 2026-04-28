@@ -20,7 +20,7 @@ export default function LoginPage() {
     setError(null)
     setLoading(true)
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
       email: form.email,
       password: form.password,
     })
@@ -31,7 +31,13 @@ export default function LoginPage() {
       return
     }
 
-    router.push('/')
+    const { data: client } = await supabase
+      .from('clients')
+      .select('role')
+      .eq('id', signInData.user.id)
+      .single()
+
+    router.push(client?.role === 'admin' ? '/admin' : '/')
   }
 
   return (
