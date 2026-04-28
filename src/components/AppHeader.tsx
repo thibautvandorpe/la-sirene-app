@@ -1,12 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 export default function AppHeader() {
   const router = useRouter()
+  const pathname = usePathname()
+  const isHome = pathname === '/'
+
   const [fullName, setFullName] = useState<string | null>(null)
   const [loggedIn, setLoggedIn] = useState(false)
   const [loaded, setLoaded] = useState(false)
@@ -42,25 +46,43 @@ export default function AppHeader() {
 
   if (!loaded) return null
 
-  return (
-    <header
-      className="w-full bg-transparent px-6 flex items-end justify-between"
-      style={{ paddingTop: 'max(env(safe-area-inset-top), 20px)' }}
-    >
-      {loggedIn ? (
+  const renderLeft = () => {
+    if (!isHome) {
+      return (
+        <Image
+          src="/logo.png"
+          alt="La Sirène"
+          width={36}
+          height={36}
+          className="mb-4"
+        />
+      )
+    }
+    if (loggedIn) {
+      return (
         <div className="pb-4">
           <p className="text-[10px] tracking-wide uppercase text-[#c4b89a]/60">
             Welcome back
           </p>
           <p className="text-lg font-light text-[#c4b89a]">
-            {fullName ? `Hi ${fullName}` : 'Hi'}
+            {fullName ?? ''}
           </p>
         </div>
-      ) : (
-        <div className="pb-4">
-          <p className="font-serif text-xl text-[#f5f0e8]">La Sirène</p>
-        </div>
-      )}
+      )
+    }
+    return (
+      <div className="pb-4">
+        <p className="font-serif text-xl text-[#f5f0e8]">La Sirène</p>
+      </div>
+    )
+  }
+
+  return (
+    <header
+      className="w-full bg-transparent px-6 flex items-end justify-between"
+      style={{ paddingTop: 'max(env(safe-area-inset-top), 20px)' }}
+    >
+      {renderLeft()}
 
       <div className="pb-4">
         {loggedIn ? (

@@ -1,12 +1,21 @@
 import AppHeader from '@/components/AppHeader'
+import Image from 'next/image'
 
 export default function HomePage() {
   return (
     <div className="flex flex-col">
       <AppHeader />
       {/* Hero */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-8 text-center">
-        <p className="text-[10px] tracking-[0.4em] uppercase text-[#c4b89a] mb-10">
+      <section className="flex flex-col items-center px-8 text-center pt-10 pb-14">
+        <Image
+          src="/logo.png"
+          alt="La Sirène"
+          width={140}
+          height={140}
+          className="mb-8"
+          priority
+        />
+        <p className="text-[10px] tracking-[0.4em] uppercase text-[#c4b89a] mb-6">
           Est. 2024
         </p>
         <h1

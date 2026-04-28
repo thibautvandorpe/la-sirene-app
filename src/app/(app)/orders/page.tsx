@@ -111,17 +111,23 @@ export default function OrdersPage() {
     <div className="min-h-screen flex flex-col">
       <AppHeader />
 
-      {loggedIn ? (
-        <div className="flex flex-col px-6 pt-6 gap-8">
+      {/* Fixed Book button — always visible above tab bar */}
+      {loggedIn && (
+        <Link
+          href="/book"
+          className="fixed left-0 right-0 z-10 py-4 text-center text-[10px] tracking-[0.35em] uppercase font-medium"
+          style={{
+            backgroundColor: '#c4b89a',
+            color: '#1c2b1e',
+            bottom: 'calc(59px + env(safe-area-inset-bottom))',
+          }}
+        >
+          Book an Appointment
+        </Link>
+      )}
 
-          {/* Book button */}
-          <Link
-            href="/book"
-            className="w-full py-4 text-center text-[10px] tracking-[0.35em] uppercase font-medium"
-            style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
-          >
-            Book an Appointment
-          </Link>
+      {loggedIn ? (
+        <div className="flex flex-col px-6 pt-6 pb-36 gap-8">
 
           {/* ── My Appointments ── */}
           <section>
