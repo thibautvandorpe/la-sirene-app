@@ -18,7 +18,9 @@ type Order = {
   id: string
   status: string
   total_price: number | null
-  appointments: { scheduled_at: string } | null
+  delivery_method: string | null
+  scheduled_at: string | null
+  notes: string | null
 }
 
 const APPT_BADGE: Record<string, string> = {
@@ -29,10 +31,25 @@ const APPT_BADGE: Record<string, string> = {
 }
 
 const ORDER_BADGE: Record<string, string> = {
-  pending:   'bg-[#c4b89a]/20 text-[#c4b89a]',
-  confirmed: 'bg-[#2e4a32]/60 text-[#a8c5a0]',
-  completed: 'bg-[#1c3a1e]/80 text-[#7aab80]',
-  cancelled: 'bg-[#3a1c1c]/60 text-[#c08080]',
+  under_review:           'bg-[#c4b89a]/15 text-[#c4b89a]',
+  awaiting_confirmation:  'bg-[#c87a3a]/20 text-[#c87a3a]',
+  in_progress:            'bg-[#2e4a32]/60 text-[#a8c5a0]',
+  ready:                  'bg-[#1c3a1e]/80 text-[#7aab80]',
+  completed:              'bg-[#1c3a1e]/80 text-[#7aab80]',
+  cancelled:              'bg-[#3a1c1c]/60 text-[#c08080]',
+}
+
+const ORDER_LABEL: Record<string, string> = {
+  under_review:           'Under Review',
+  awaiting_confirmation:  'Awaiting Confirmation',
+  in_progress:            'In Progress',
+  ready:                  'Ready',
+  completed:              'Completed',
+  cancelled:              'Cancelled',
+}
+
+function orderStatusLabel(status: string) {
+  return ORDER_LABEL[status.toLowerCase()] ?? status
 }
 
 function badgeClass(map: Record<string, string>, status: string) {
@@ -83,7 +100,7 @@ export default function OrdersPage() {
             .order('created_at', { ascending: false }),
           supabase
             .from('orders')
-            .select('id, status, total_price, appointments(scheduled_at)')
+            .select('id, status, total_price, delivery_method, scheduled_at, notes')
             .eq('client_id', session.user.id)
             .order('created_at', { ascending: false }),
         ])
@@ -298,14 +315,26 @@ export default function OrdersPage() {
                     className="flex items-center justify-between py-4 px-4"
                     style={CARD}
                   >
-                    <div className="flex flex-col gap-1">
-                      <p className="text-sm font-light text-[#f5f0e8]">
-                        {order.appointments?.scheduled_at
-                          ? formatOrderDate(order.appointments.scheduled_at)
-                          : 'Date TBD'}
-                      </p>
+                    <div className="flex flex-col gap-1.5">
+                      {/* Line 1 — delivery method + date/time (pick up only) */}
+                      <div className="flex flex-col gap-0.5">
+                        <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>
+                          {order.delivery_method === 'drop_off'
+                            ? 'Drop Off'
+                            : order.delivery_method === 'fedex'
+                              ? 'FedEx'
+                              : 'Pick Up'}
+                        </p>
+                        {(order.delivery_method === 'pick_up' || order.delivery_method == null) && order.scheduled_at && (
+                          <p className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+                            {formatApptDate(order.scheduled_at)}
+                            {order.notes ? ` · ${order.notes}` : ''}
+                          </p>
+                        )}
+                      </div>
+                      {/* Line 2 — status badge */}
                       <span className={`self-start text-[9px] tracking-[0.25em] uppercase px-2 py-0.5 rounded-sm ${badgeClass(ORDER_BADGE, order.status)}`}>
-                        {order.status}
+                        {orderStatusLabel(order.status)}
                       </span>
                     </div>
                     {order.total_price != null && (
