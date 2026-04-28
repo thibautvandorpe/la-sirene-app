@@ -10,6 +10,7 @@ type AppointmentItem = {
   special_instructions: string | null
   services: { sub_category: string } | null
   garments: { brand: string | null; color: string | null } | null
+  appointment_item_photos: { url: string }[]
 }
 
 type AppointmentDetail = {
@@ -42,7 +43,8 @@ function AppointmentDetailInner() {
             estimated_price,
             special_instructions,
             services ( sub_category ),
-            garments ( brand, color )
+            garments ( brand, color ),
+            appointment_item_photos ( url )
           )
         `)
         .eq('id', id)
@@ -64,6 +66,7 @@ function AppointmentDetailInner() {
           special_instructions: ai.special_instructions ?? null,
           services: Array.isArray(ai.services) ? (ai.services[0] ?? null) : (ai.services ?? null),
           garments: Array.isArray(ai.garments) ? (ai.garments[0] ?? null) : (ai.garments ?? null),
+          appointment_item_photos: Array.isArray(ai.appointment_item_photos) ? ai.appointment_item_photos : [],
         })),
       }
 
@@ -150,6 +153,20 @@ function AppointmentDetailInner() {
                 <p className="text-[11px] font-light italic mt-0.5" style={{ color: 'rgba(245, 240, 232, 0.35)' }}>
                   {'"'}{item.special_instructions}{'"'}
                 </p>
+              )}
+              {item.appointment_item_photos.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {item.appointment_item_photos.map((photo, i) => (
+                    <a key={i} href={photo.url} target="_blank" rel="noopener noreferrer">
+                      <img
+                        src={photo.url}
+                        alt=""
+                        className="w-16 h-16 object-cover rounded-sm"
+                        style={{ border: '1px solid rgba(196,184,154,0.2)' }}
+                      />
+                    </a>
+                  ))}
+                </div>
               )}
             </div>
             {/* Right: price */}

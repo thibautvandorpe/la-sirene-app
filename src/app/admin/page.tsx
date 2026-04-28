@@ -10,6 +10,8 @@ export default function AdminHome() {
   const [loaded, setLoaded] = useState(false)
   const [pendingCount, setPendingCount] = useState(0)
   const [pendingTotal, setPendingTotal] = useState(0)
+  const [orderCount, setOrderCount] = useState(0)
+  const [orderTotal, setOrderTotal] = useState(0)
 
   async function handleSignOut() {
     await supabase.auth.signOut()
@@ -28,14 +30,21 @@ export default function AdminHome() {
 
       if (client?.role !== 'admin') { router.replace('/'); return }
 
-      // Fetch pending appointments with item prices to compute totals
-      const { data } = await supabase
-        .from('appointments')
-        .select('id, appointment_items(estimated_price)')
-        .eq('status', 'pending')
+      const [{ data: apptData }, { data: orderData }] = await Promise.all([
+        // Pending appointments with item prices
+        supabase
+          .from('appointments')
+          .select('id, appointment_items(estimated_price)')
+          .eq('status', 'pending'),
+        // Active orders (under_review + awaiting_confirmation)
+        supabase
+          .from('orders')
+          .select('id, total_price, status')
+          .in('status', ['under_review', 'awaiting_confirmation']),
+      ])
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const appts = (data as any[]) ?? []
+      const appts = (apptData as any[]) ?? []
       setPendingCount(appts.length)
       setPendingTotal(
         appts.reduce(
@@ -44,6 +53,15 @@ export default function AdminHome() {
           0
         )
       )
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const orders = (orderData as any[]) ?? []
+      setOrderCount(orders.length)
+      setOrderTotal(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        orders.reduce((sum: number, o: any) => sum + (o.total_price ?? 0), 0)
+      )
+
       setLoaded(true)
     })
   }, [router])
@@ -102,23 +120,33 @@ export default function AdminHome() {
           <span className="text-lg shrink-0 ml-4" style={{ color: 'rgba(196,184,154,0.5)' }}>→</span>
         </Link>
 
-        {/* Orders card — placeholder */}
-        <div
-          className="flex items-center justify-between px-6 py-6"
+        {/* Orders card */}
+        <Link
+          href="/admin/orders"
+          className="flex items-center justify-between px-6 py-6 transition-opacity hover:opacity-80"
           style={{
-            backgroundColor: 'rgba(245,240,232,0.02)',
-            border: '1px solid rgba(196,184,154,0.07)',
+            backgroundColor: 'rgba(245,240,232,0.04)',
+            border: '1px solid rgba(196,184,154,0.15)',
           }}
         >
           <div className="flex flex-col gap-2">
-            <p className="text-[10px] tracking-[0.3em] uppercase" style={{ color: 'rgba(196,184,154,0.35)' }}>
+            <p className="text-[10px] tracking-[0.3em] uppercase" style={{ color: '#c4b89a' }}>
               Orders
             </p>
-            <p className="text-sm font-light" style={{ color: 'rgba(245,240,232,0.2)' }}>
-              Coming soon
+            <p className="text-3xl font-light" style={{ color: '#f5f0e8' }}>
+              {orderCount}
+              <span className="text-base ml-2" style={{ color: 'rgba(245,240,232,0.45)' }}>
+                to review
+              </span>
+            </p>
+            <p className="text-sm font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>
+              {orderTotal > 0
+                ? `$${orderTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })} total value`
+                : 'No active orders'}
             </p>
           </div>
-        </div>
+          <span className="text-lg shrink-0 ml-4" style={{ color: 'rgba(196,184,154,0.5)' }}>→</span>
+        </Link>
 
       </div>
     </main>
