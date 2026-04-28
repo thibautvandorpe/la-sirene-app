@@ -114,7 +114,7 @@ export default function AdminOrderDetail() {
         .map(i => i.reviewed_service_id)
         .filter(Boolean) as string[]
 
-      let reviewedServicesMap: Record<string, { category: string; sub_category: string; price: number }> = {}
+      const reviewedServicesMap: Record<string, { category: string; sub_category: string; price: number }> = {}
       if (reviewedIds.length > 0) {
         const { data: revSvcs } = await supabase
           .from('services')
