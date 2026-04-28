@@ -62,11 +62,6 @@ function formatApptDate(iso: string) {
   })
 }
 
-function formatOrderDate(iso: string) {
-  return new Date(iso).toLocaleDateString('fr-FR', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-  })
-}
 
 const CARD = {
   backgroundColor: 'rgba(245, 240, 232, 0.04)',
