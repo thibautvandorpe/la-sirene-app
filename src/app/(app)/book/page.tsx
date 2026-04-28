@@ -13,6 +13,29 @@ const TIME_SLOTS = [
   '5:00 PM – 7:00 PM',
 ]
 
+const BOUTIQUE_ADDRESS = '401 N Beverly Drive, Beverly Hills, CA 90210'
+const BOUTIQUE_HOURS = 'Tuesday – Saturday · 11:00 AM – 7:00 PM'
+
+type DeliveryMethod = 'pick_up' | 'drop_off' | 'fedex'
+
+const DELIVERY_OPTIONS: { value: DeliveryMethod; label: string; description: string }[] = [
+  {
+    value: 'pick_up',
+    label: 'Pick Up',
+    description: 'Schedule a pick-up window. Our team comes to you.',
+  },
+  {
+    value: 'drop_off',
+    label: 'Drop Off',
+    description: 'Bring your items to our Beverly Hills boutique.',
+  },
+  {
+    value: 'fedex',
+    label: 'FedEx',
+    description: 'Ship your garments to us at your convenience.',
+  },
+]
+
 function getTomorrow() {
   const d = new Date()
   d.setDate(d.getDate() + 1)
@@ -42,6 +65,79 @@ function isoToSlot(iso: string): string {
     if (period === 'AM' && h === 12) h = 0
     return h === hour
   }) ?? ''
+}
+
+function getStepLabel(step: 1 | 2 | 3 | 4, method: DeliveryMethod | null): string {
+  if (step === 1) return 'Step 1 — Delivery Method'
+  if (step === 2) return 'Step 2 of 4 — Date & Time'
+  if (step === 3) return method === 'pick_up' ? 'Step 3 of 4 — Your Items' : 'Step 2 of 3 — Your Items'
+  return method === 'pick_up' ? 'Step 4 of 4 — Review & Quote' : 'Step 3 of 3 — Review & Quote'
+}
+
+// Compact recap strip shown at the top of Steps 3 and 4
+function DeliveryRecap({
+  deliveryMethod,
+  date,
+  time,
+}: {
+  deliveryMethod: DeliveryMethod | null
+  date: string
+  time: string
+}) {
+  if (deliveryMethod === 'pick_up' && date) {
+    return (
+      <div
+        className="flex flex-col gap-1 pl-3 mb-8"
+        style={{ borderLeft: '1px solid rgba(196, 184, 154, 0.35)' }}
+      >
+        <p className="text-xs font-light" style={{ color: 'rgba(196, 184, 154, 0.75)' }}>
+          Pick Up
+        </p>
+        <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.55)' }}>
+          {new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {
+            weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
+          })}
+        </p>
+        <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.4)' }}>
+          {time}
+        </p>
+      </div>
+    )
+  }
+  if (deliveryMethod === 'drop_off') {
+    return (
+      <div
+        className="flex flex-col gap-1 pl-3 mb-8"
+        style={{ borderLeft: '1px solid rgba(196, 184, 154, 0.35)' }}
+      >
+        <p className="text-xs font-light" style={{ color: 'rgba(196, 184, 154, 0.75)' }}>
+          Drop Off
+        </p>
+        <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.55)' }}>
+          {BOUTIQUE_ADDRESS}
+        </p>
+        <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.4)' }}>
+          {BOUTIQUE_HOURS}
+        </p>
+      </div>
+    )
+  }
+  if (deliveryMethod === 'fedex') {
+    return (
+      <div
+        className="flex flex-col gap-1 pl-3 mb-8"
+        style={{ borderLeft: '1px solid rgba(196, 184, 154, 0.35)' }}
+      >
+        <p className="text-xs font-light" style={{ color: 'rgba(196, 184, 154, 0.75)' }}>
+          Ship via FedEx
+        </p>
+        <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.55)' }}>
+          {BOUTIQUE_ADDRESS}
+        </p>
+      </div>
+    )
+  }
+  return null
 }
 
 type Service = {
@@ -76,31 +172,35 @@ function BookPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [loaded, setLoaded] = useState(false)
-  const [step, setStep] = useState<1 | 2 | 3>(1)
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
   const [saving, setSaving] = useState(false)
 
-  // Step 1
+  // Step 1 — Delivery Method
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod | null>(null)
+  const [step1Error, setStep1Error] = useState<string | null>(null)
+
+  // Step 2 (Pick Up only) — Date & Time
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
-  const [step1Error, setStep1Error] = useState<string | null>(null)
+  const [step2Error, setStep2Error] = useState<string | null>(null)
 
   // Persisted across steps
   const [clientId, setClientId] = useState<string | null>(null)
   const [appointmentId, setAppointmentId] = useState<string | null>(null)
 
-  // Step 2 — services
+  // Step 3 — services
   const [services, setServices] = useState<Service[]>([])
-  // Step 2 — items list
+  // Step 3 — items list
   const [items, setItems] = useState<OrderItem[]>([])
-  // Step 2 — inline form visibility
+  // Step 3 — inline form visibility
   const [showForm, setShowForm] = useState(false)
   const [formIsEdit, setFormIsEdit] = useState(false)
   const [editingItem, setEditingItem] = useState<OrderItem | null>(null)
   const [editRemovedPhotoUrls, setEditRemovedPhotoUrls] = useState<string[]>([])
-  // Step 2 — wardrobe selector
+  // Step 3 — wardrobe selector
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([])
   const [selectedWardrobeId, setSelectedWardrobeId] = useState<string | null>(null)
-  // Step 2 — form fields
+  // Step 3 — form fields
   const [formCategory, setFormCategory] = useState('')
   const [formSubCategory, setFormSubCategory] = useState('')
   const [formBrand, setFormBrand] = useState('')
@@ -110,6 +210,7 @@ function BookPageInner() {
   const [formPreviews, setFormPreviews] = useState<string[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Restore a draft appointment from URL param
   useEffect(() => {
     const urlApptId = searchParams.get('appointmentId')
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -119,7 +220,7 @@ function BookPageInner() {
       if (urlApptId) {
         const { data: draft } = await supabase
           .from('appointments')
-          .select('id, scheduled_at, appointment_items(id, garment_id, estimated_price, special_instructions, garments(brand, color), services(category, sub_category), appointment_item_photos(url))')
+          .select('id, scheduled_at, delivery_method, appointment_items(id, garment_id, estimated_price, special_instructions, garments(brand, color), services(category, sub_category), appointment_item_photos(url))')
           .eq('id', urlApptId)
           .maybeSingle()
 
@@ -127,8 +228,12 @@ function BookPageInner() {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const d = draft as any
           setAppointmentId(d.id)
-          setDate((d.scheduled_at as string).split('T')[0])
-          setTime(isoToSlot(d.scheduled_at as string))
+          const dm = (d.delivery_method as DeliveryMethod | null) ?? 'pick_up'
+          setDeliveryMethod(dm)
+          if (d.scheduled_at) {
+            setDate((d.scheduled_at as string).split('T')[0])
+            setTime(isoToSlot(d.scheduled_at as string))
+          }
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           setItems(((d.appointment_items ?? []) as any[]).map((ai: any) => {
             const g   = ai.garments ?? {}
@@ -150,7 +255,7 @@ function BookPageInner() {
               photoUrls: photos,
             }
           }))
-          setStep(2)
+          setStep(3)
         }
       }
 
@@ -158,8 +263,9 @@ function BookPageInner() {
     })
   }, [router, searchParams])
 
+  // Fetch services + wardrobe when reaching Step 3
   useEffect(() => {
-    if (step !== 2 || !clientId) return
+    if (step !== 3 || !clientId) return
     Promise.all([
       supabase.from('services').select('id, category, sub_category, price'),
       supabase.from('garments').select('id, brand, color, services(category, sub_category)').eq('client_id', clientId).order('created_at', { ascending: false }),
@@ -199,7 +305,6 @@ function BookPageInner() {
 
   function handleCancelForm() {
     if (formIsEdit && editingItem) {
-      // Restore the item back to the list — item was never deleted from DB
       setItems(prev => [...prev, editingItem])
     }
     setShowForm(false)
@@ -208,7 +313,6 @@ function BookPageInner() {
 
   function handleSelectWardrobeItem(item: WardrobeItem) {
     if (selectedWardrobeId === item.id) {
-      // Tap again to deselect
       setSelectedWardrobeId(null)
       setFormCategory('')
       setFormSubCategory('')
@@ -220,7 +324,6 @@ function BookPageInner() {
       setFormSubCategory(item.services?.sub_category ?? '')
       setFormBrand(item.brand ?? '')
       setFormColor(item.color ?? '')
-      // special instructions intentionally left empty
     }
   }
 
@@ -230,34 +333,75 @@ function BookPageInner() {
     setFormPreviews(files.map(f => URL.createObjectURL(f)))
   }
 
-  async function handleContinueToStep2(e: React.FormEvent) {
-    e.preventDefault()
-    if (!date || !time) {
-      setStep1Error('Please fill in both fields before continuing.')
+  // ── Step 1 → Step 2 (Pick Up) or Step 3 (Drop Off / FedEx) ───
+  async function handleDeliveryMethodContinue() {
+    if (!deliveryMethod) {
+      setStep1Error('Please select a delivery method.')
       return
     }
     setStep1Error(null)
+
+    if (deliveryMethod === 'pick_up') {
+      // No Supabase call yet — appointment is created when date/time is confirmed
+      setStep(2)
+      return
+    }
+
+    // Drop Off / FedEx: create (or update) the appointment now with no scheduled_at
+    setSaving(true)
+    try {
+      if (appointmentId) {
+        const { error } = await supabase
+          .from('appointments')
+          .update({ delivery_method: deliveryMethod, scheduled_at: null })
+          .eq('id', appointmentId)
+        if (error) throw error
+      } else {
+        const { data, error } = await supabase
+          .from('appointments')
+          .insert({ client_id: clientId, scheduled_at: null, status: 'draft', delivery_method: deliveryMethod })
+          .select('id')
+          .single()
+        if (error) throw error
+        setAppointmentId(data.id)
+      }
+      setStep(3)
+    } catch {
+      setStep1Error('Failed to save. Please try again.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  // ── Step 2 → Step 3 (Pick Up only) ───────────────────────────
+  async function handleContinueToItems(e: React.FormEvent) {
+    e.preventDefault()
+    if (!date || !time) {
+      setStep2Error('Please fill in both fields before continuing.')
+      return
+    }
+    setStep2Error(null)
     setSaving(true)
     try {
       const scheduledAt = slotToISO(date, time)
       if (appointmentId) {
         const { error } = await supabase
           .from('appointments')
-          .update({ scheduled_at: scheduledAt, notes: time })
+          .update({ scheduled_at: scheduledAt, notes: time, delivery_method: 'pick_up' })
           .eq('id', appointmentId)
         if (error) throw error
       } else {
         const { data, error } = await supabase
           .from('appointments')
-          .insert({ client_id: clientId, scheduled_at: scheduledAt, status: 'draft', notes: time })
+          .insert({ client_id: clientId, scheduled_at: scheduledAt, status: 'draft', notes: time, delivery_method: 'pick_up' })
           .select('id')
           .single()
         if (error) throw error
         setAppointmentId(data.id)
       }
-      setStep(2)
+      setStep(3)
     } catch {
-      setStep1Error('Failed to save. Please try again.')
+      setStep2Error('Failed to save. Please try again.')
     } finally {
       setSaving(false)
     }
@@ -272,9 +416,8 @@ function BookPageInner() {
 
     setSaving(true)
     try {
-      // ── EDIT MODE: update existing rows ──────────────────────────
+      // ── EDIT MODE ──────────────────────────────────────────────
       if (formIsEdit && editingItem) {
-        // Update the appointment_item
         const { error: aiErr } = await supabase
           .from('appointment_items')
           .update({
@@ -285,19 +428,16 @@ function BookPageInner() {
           .eq('id', editingItem.appointmentItemId)
         if (aiErr) throw aiErr
 
-        // Update the garment (brand / color may have changed)
         const { error: garmentErr } = await supabase
           .from('garments')
           .update({ brand: formBrand || null, color: formColor || null })
           .eq('id', editingItem.garmentId)
         if (garmentErr) throw garmentErr
 
-        // Delete removed photo DB rows (blocking)
         if (editRemovedPhotoUrls.length > 0) {
           await supabase.from('appointment_item_photos').delete().in('url', editRemovedPhotoUrls)
         }
 
-        // Update local state immediately
         const snapshotRemoved = editRemovedPhotoUrls
         const remainingUrls = editingItem.photoUrls.filter(u => !snapshotRemoved.includes(u))
         const updatedItem: OrderItem = {
@@ -316,7 +456,6 @@ function BookPageInner() {
         resetForm()
         setSaving(false)
 
-        // Fire-and-forget: delete files from storage
         if (snapshotRemoved.length > 0) {
           Promise.all(
             snapshotRemoved.map(async url => {
@@ -328,7 +467,6 @@ function BookPageInner() {
           ).catch(() => {})
         }
 
-        // Fire-and-forget: upload any new photos added during edit
         if (formPhotos.length > 0) {
           const snapshot = { photos: formPhotos, clientId, appointmentItemId: editingItem.appointmentItemId }
           Promise.all(
@@ -354,14 +492,12 @@ function BookPageInner() {
         return
       }
 
-      // ── ADD MODE: insert new rows ─────────────────────────────────
+      // ── ADD MODE ──────────────────────────────────────────────
       let garmentId: string
 
       if (selectedWardrobeId) {
-        // Reuse the existing garment from the wardrobe
         garmentId = selectedWardrobeId
       } else {
-        // Create a new garment row — notes intentionally empty (Task #8)
         const { data: garment, error: garmentErr } = await supabase
           .from('garments')
           .insert({
@@ -390,7 +526,6 @@ function BookPageInner() {
         .single()
       if (aiErr) throw aiErr
 
-      // Update UI immediately — don't wait for photo uploads
       setItems(prev => [
         ...prev,
         {
@@ -411,7 +546,6 @@ function BookPageInner() {
       resetForm()
       setSaving(false)
 
-      // Fire-and-forget: upload photos in the background
       if (formPhotos.length > 0) {
         const snapshot = { photos: formPhotos, clientId, appointmentItemId: ai.id }
         Promise.all(
@@ -435,7 +569,6 @@ function BookPageInner() {
         ).catch(() => {})
       }
     } catch {
-      // no-op — keep form open so user can retry
       setSaving(false)
     }
   }
@@ -446,7 +579,6 @@ function BookPageInner() {
   }
 
   function handleEditItem(item: OrderItem) {
-    // Hide from list locally — do NOT delete from DB yet
     setItems(prev => prev.filter(i => i.id !== item.id))
     setEditingItem(item)
     setFormCategory(item.category)
@@ -463,7 +595,6 @@ function BookPageInner() {
 
   async function handleDeleteEditingItem() {
     if (!editingItem) return
-    // Item is already removed from local list — just delete from DB
     setShowForm(false)
     resetForm()
     await supabase.from('appointment_items').delete().eq('id', editingItem.appointmentItemId)
@@ -480,14 +611,14 @@ function BookPageInner() {
       if (error) throw error
       router.replace('/orders')
     } catch {
-      // keep user on step 3, they can retry
+      // keep user on step 4, they can retry
     } finally {
       setSaving(false)
     }
   }
 
-  // ── STEP 3 ────────────────────────────────────────────────────
-  if (step === 3) {
+  // ── STEP 4 — Review & Quote ───────────────────────────────────
+  if (step === 4) {
     const estimatedTotal = items.reduce((sum, i) => sum + i.price, 0)
     return (
       <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#1c2b1e' }}>
@@ -495,10 +626,10 @@ function BookPageInner() {
         {/* Top row */}
         <div className="flex items-center gap-4 mb-8">
           <button
-            onClick={() => setStep(2)}
+            onClick={() => setStep(3)}
             className="text-lg leading-none"
             style={{ color: '#c4b89a' }}
-            aria-label="Back to step 2"
+            aria-label="Back to items"
           >
             ←
           </button>
@@ -509,23 +640,11 @@ function BookPageInner() {
 
         {/* Step indicator */}
         <p className="text-[10px] tracking-[0.3em] uppercase mb-5" style={{ color: '#c4b89a' }}>
-          Step 3 of 3 — Review &amp; Quote
+          {getStepLabel(4, deliveryMethod)}
         </p>
 
-        {/* Appointment recap */}
-        <div
-          className="flex flex-col gap-1 pl-3 mb-8"
-          style={{ borderLeft: '1px solid rgba(196, 184, 154, 0.35)' }}
-        >
-          <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.55)' }}>
-            {new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {
-              weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
-            })}
-          </p>
-          <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.4)' }}>
-            {time}
-          </p>
-        </div>
+        {/* Delivery recap */}
+        <DeliveryRecap deliveryMethod={deliveryMethod} date={date} time={time} />
 
         {/* Section label */}
         <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'rgba(196, 184, 154, 0.6)' }}>
@@ -543,7 +662,6 @@ function BookPageInner() {
                 borderBottom: '1px solid rgba(196, 184, 154, 0.15)',
               }}
             >
-              {/* Left: item details */}
               <div className="flex flex-col gap-1 flex-1 min-w-0 pr-4">
                 <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>
                   {item.subCategory}
@@ -557,7 +675,6 @@ function BookPageInner() {
                   </p>
                 )}
               </div>
-              {/* Right: price */}
               <p className="text-sm font-light shrink-0" style={{ color: '#c4b89a' }}>
                 {item.price > 0
                   ? `$${item.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
@@ -611,18 +728,18 @@ function BookPageInner() {
     )
   }
 
-  // ── STEP 2 ────────────────────────────────────────────────────
-  if (step === 2) {
+  // ── STEP 3 — Items ────────────────────────────────────────────
+  if (step === 3) {
     return (
       <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#1c2b1e' }}>
 
         {/* Top row */}
         <div className="flex items-center gap-4 mb-8">
           <button
-            onClick={() => { setShowForm(false); setStep(1) }}
+            onClick={() => { setShowForm(false); setStep(deliveryMethod === 'pick_up' ? 2 : 1) }}
             className="text-lg leading-none"
             style={{ color: '#c4b89a' }}
-            aria-label="Back to step 1"
+            aria-label="Back"
           >
             ←
           </button>
@@ -633,23 +750,11 @@ function BookPageInner() {
 
         {/* Step indicator */}
         <p className="text-[10px] tracking-[0.3em] uppercase mb-5" style={{ color: '#c4b89a' }}>
-          Step 2 of 3 — Your Items
+          {getStepLabel(3, deliveryMethod)}
         </p>
 
-        {/* Step 1 recap */}
-        <div
-          className="flex flex-col gap-1 pl-3 mb-8"
-          style={{ borderLeft: '1px solid rgba(196, 184, 154, 0.35)' }}
-        >
-          <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.55)' }}>
-            {new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {
-              weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
-            })}
-          </p>
-          <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.4)' }}>
-            {time}
-          </p>
-        </div>
+        {/* Delivery recap */}
+        <DeliveryRecap deliveryMethod={deliveryMethod} date={date} time={time} />
 
         {/* Items list */}
         {items.length > 0 && (
@@ -726,7 +831,7 @@ function BookPageInner() {
               backgroundColor: 'rgba(245, 240, 232, 0.02)',
             }}
           >
-            {/* From your wardrobe — only shown when adding a new item */}
+            {/* From your wardrobe */}
             {!formIsEdit && wardrobeItems.length > 0 && (
               <div>
                 <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
@@ -842,10 +947,7 @@ function BookPageInner() {
                 onChange={e => setFormBrand(e.target.value)}
                 placeholder="e.g. Louis Vuitton"
                 className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(245,240,232,0.25)]"
-                style={{
-                  color: '#f5f0e8',
-                  borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
-                }}
+                style={{ color: '#f5f0e8', borderBottom: '1px solid rgba(196, 184, 154, 0.4)' }}
               />
             </div>
 
@@ -863,10 +965,7 @@ function BookPageInner() {
                 onChange={e => setFormColor(e.target.value)}
                 placeholder="e.g. Black"
                 className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(245,240,232,0.25)]"
-                style={{
-                  color: '#f5f0e8',
-                  borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
-                }}
+                style={{ color: '#f5f0e8', borderBottom: '1px solid rgba(196, 184, 154, 0.4)' }}
               />
             </div>
 
@@ -884,10 +983,7 @@ function BookPageInner() {
                 placeholder="Any special care instructions…"
                 rows={3}
                 className="w-full bg-transparent outline-none text-sm font-light resize-none pb-2 placeholder:text-[rgba(245,240,232,0.25)]"
-                style={{
-                  color: '#f5f0e8',
-                  borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
-                }}
+                style={{ color: '#f5f0e8', borderBottom: '1px solid rgba(196, 184, 154, 0.4)' }}
               />
             </div>
 
@@ -900,7 +996,6 @@ function BookPageInner() {
                 </span>
               </label>
 
-              {/* Existing DB photos — only shown in edit mode */}
               {formIsEdit && editingItem && editingItem.photoUrls.filter(u => !editRemovedPhotoUrls.includes(u)).length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
                   {editingItem.photoUrls
@@ -927,7 +1022,6 @@ function BookPageInner() {
                 </div>
               )}
 
-              {/* New photo previews (blob URLs) */}
               {formPreviews.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
                   {formPreviews.map((src, i) => (
@@ -998,7 +1092,7 @@ function BookPageInner() {
 
         {/* Continue to Review */}
         <button
-          onClick={() => setStep(3)}
+          onClick={() => setStep(4)}
           disabled={items.length === 0}
           className="w-full py-4 text-[10px] tracking-[0.35em] uppercase font-medium disabled:opacity-40"
           style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
@@ -1009,7 +1103,114 @@ function BookPageInner() {
     )
   }
 
-  // ── STEP 1 ────────────────────────────────────────────────────
+  // ── STEP 2 — Date & Time (Pick Up only) ──────────────────────
+  if (step === 2) {
+    return (
+      <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#1c2b1e' }}>
+
+        {/* Top row */}
+        <div className="flex items-center gap-4 mb-8">
+          <button
+            onClick={() => setStep(1)}
+            className="text-lg leading-none"
+            style={{ color: '#c4b89a' }}
+            aria-label="Back to delivery method"
+          >
+            ←
+          </button>
+          <h1 className="text-xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+            New Appointment
+          </h1>
+        </div>
+
+        {/* Step indicator */}
+        <p className="text-[10px] tracking-[0.3em] uppercase mb-10" style={{ color: '#c4b89a' }}>
+          {getStepLabel(2, deliveryMethod)}
+        </p>
+
+        <form onSubmit={handleContinueToItems} className="flex flex-col">
+          <div className="flex flex-col gap-10">
+
+            {/* Preferred date */}
+            <div>
+              <label
+                htmlFor="preferred-date"
+                className="block text-[10px] tracking-[0.3em] uppercase mb-3"
+                style={{ color: '#c4b89a' }}
+              >
+                Preferred Date
+              </label>
+              <input
+                id="preferred-date"
+                type="date"
+                value={date}
+                min={getTomorrow()}
+                onChange={e => setDate(e.target.value)}
+                className="w-full bg-transparent outline-none text-sm font-light pb-3 transition-colors"
+                style={{
+                  color: date ? '#f5f0e8' : 'rgba(245, 240, 232, 0.35)',
+                  borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
+                  colorScheme: 'dark',
+                }}
+              />
+            </div>
+
+            {/* Preferred time */}
+            <div>
+              <label
+                className="block text-[10px] tracking-[0.3em] uppercase mb-3"
+                style={{ color: '#c4b89a' }}
+              >
+                Preferred Time
+              </label>
+              <div className="flex flex-col gap-2">
+                {TIME_SLOTS.map(slot => (
+                  <button
+                    key={slot}
+                    type="button"
+                    onClick={() => setTime(slot)}
+                    className="flex items-center justify-between px-4 py-3 rounded-xl transition-colors"
+                    style={{
+                      backgroundColor: time === slot ? 'rgba(196,184,154,0.15)' : 'rgba(255,255,255,0.04)',
+                      border: time === slot ? '1px solid #c4b89a' : '1px solid rgba(196,184,154,0.15)',
+                      color: time === slot ? '#c4b89a' : 'rgba(245,240,232,0.75)',
+                    }}
+                  >
+                    <span className="text-sm font-light">{slot}</span>
+                    <div
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{
+                        backgroundColor: time === slot ? '#c4b89a' : 'transparent',
+                        border: time === slot ? '1px solid #c4b89a' : '1px solid rgba(196,184,154,0.3)',
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+          {step2Error && (
+            <p className="text-sm font-light text-center mt-6" style={{ color: '#e8a090' }}>
+              {step2Error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={saving}
+            className="w-full py-4 text-[10px] tracking-[0.35em] uppercase font-medium mt-10 disabled:opacity-40"
+            style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+          >
+            {saving ? 'Saving…' : 'Continue'}
+          </button>
+        </form>
+      </main>
+    )
+  }
+
+  // ── STEP 1 — Delivery Method ──────────────────────────────────
   return (
     <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#1c2b1e' }}>
 
@@ -1030,89 +1231,100 @@ function BookPageInner() {
 
       {/* Step indicator */}
       <p className="text-[10px] tracking-[0.3em] uppercase mb-10" style={{ color: '#c4b89a' }}>
-        Step 1 of 3 — Date &amp; Time
+        {getStepLabel(1, deliveryMethod)}
       </p>
 
-      <form onSubmit={handleContinueToStep2} className="flex flex-col">
-        <div className="flex flex-col gap-10">
-
-          {/* Preferred date */}
-          <div>
-            <label
-              htmlFor="preferred-date"
-              className="block text-[10px] tracking-[0.3em] uppercase mb-3"
-              style={{ color: '#c4b89a' }}
-            >
-              Preferred Date
-            </label>
-            <input
-              id="preferred-date"
-              type="date"
-              value={date}
-              min={getTomorrow()}
-              onChange={e => setDate(e.target.value)}
-              className="w-full bg-transparent outline-none text-sm font-light pb-3 transition-colors"
+      {/* Delivery method cards */}
+      <div className="flex flex-col gap-3 mb-8">
+        {DELIVERY_OPTIONS.map(option => {
+          const isSelected = deliveryMethod === option.value
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => { setDeliveryMethod(option.value); setStep1Error(null) }}
+              className="flex flex-col gap-1 px-5 py-4 rounded-xl text-left transition-colors"
               style={{
-                color: date ? '#f5f0e8' : 'rgba(245, 240, 232, 0.35)',
-                borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
-                colorScheme: 'dark',
+                backgroundColor: isSelected ? 'rgba(196,184,154,0.12)' : 'rgba(255,255,255,0.03)',
+                border: isSelected ? '1px solid #c4b89a' : '1px solid rgba(196,184,154,0.18)',
               }}
-            />
-          </div>
-
-          {/* Preferred time */}
-          <div>
-            <label
-              className="block text-[10px] tracking-[0.3em] uppercase mb-3"
-              style={{ color: '#c4b89a' }}
             >
-              Preferred Time
-            </label>
-            <div className="flex flex-col gap-2">
-              {TIME_SLOTS.map(slot => (
-                <button
-                  key={slot}
-                  type="button"
-                  onClick={() => setTime(slot)}
-                  className="flex items-center justify-between px-4 py-3 rounded-xl transition-colors"
-                  style={{
-                    backgroundColor: time === slot ? 'rgba(196,184,154,0.15)' : 'rgba(255,255,255,0.04)',
-                    border: time === slot ? '1px solid #c4b89a' : '1px solid rgba(196,184,154,0.15)',
-                    color: time === slot ? '#c4b89a' : 'rgba(245,240,232,0.75)',
-                  }}
-                >
-                  <span className="text-sm font-light">{slot}</span>
-                  <div
-                    className="w-1.5 h-1.5 rounded-full"
-                    style={{
-                      backgroundColor: time === slot ? '#c4b89a' : 'transparent',
-                      border: time === slot ? '1px solid #c4b89a' : '1px solid rgba(196,184,154,0.3)',
-                    }}
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
+              <span
+                className="text-sm font-light tracking-wide"
+                style={{ color: isSelected ? '#c4b89a' : '#f5f0e8' }}
+              >
+                {option.label}
+              </span>
+              <span
+                className="text-[11px] font-light leading-relaxed"
+                style={{ color: 'rgba(245,240,232,0.45)' }}
+              >
+                {option.description}
+              </span>
+            </button>
+          )
+        })}
+      </div>
 
-        </div>
-
-        {/* Error */}
-        {step1Error && (
-          <p className="text-sm font-light text-center mt-6" style={{ color: '#e8a090' }}>
-            {step1Error}
-          </p>
-        )}
-
-        {/* Continue */}
-        <button
-          type="submit"
-          disabled={saving}
-          className="w-full py-4 text-[10px] tracking-[0.35em] uppercase font-medium mt-10 disabled:opacity-40"
-          style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+      {/* Contextual info for the selected method */}
+      {deliveryMethod === 'drop_off' && (
+        <div
+          className="flex flex-col gap-2 px-5 py-4 mb-8"
+          style={{
+            backgroundColor: 'rgba(196,184,154,0.06)',
+            border: '1px solid rgba(196,184,154,0.15)',
+          }}
         >
-          {saving ? 'Saving…' : 'Continue'}
-        </button>
-      </form>
+          <p className="text-[10px] tracking-[0.25em] uppercase mb-1" style={{ color: 'rgba(196,184,154,0.7)' }}>
+            Our Boutique
+          </p>
+          <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>
+            {BOUTIQUE_ADDRESS}
+          </p>
+          <p className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+            {BOUTIQUE_HOURS}
+          </p>
+        </div>
+      )}
+
+      {deliveryMethod === 'fedex' && (
+        <div
+          className="flex flex-col gap-2 px-5 py-4 mb-8"
+          style={{
+            backgroundColor: 'rgba(196,184,154,0.06)',
+            border: '1px solid rgba(196,184,154,0.15)',
+          }}
+        >
+          <p className="text-[10px] tracking-[0.25em] uppercase mb-1" style={{ color: 'rgba(196,184,154,0.7)' }}>
+            Ship To
+          </p>
+          <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>
+            La Sirène
+          </p>
+          <p className="text-sm font-light" style={{ color: 'rgba(245,240,232,0.7)' }}>
+            {BOUTIQUE_ADDRESS}
+          </p>
+          <p className="text-xs font-light mt-1" style={{ color: 'rgba(245,240,232,0.4)' }}>
+            Please include your name and contact information inside the package.
+          </p>
+        </div>
+      )}
+
+      {step1Error && (
+        <p className="text-sm font-light text-center mb-6" style={{ color: '#e8a090' }}>
+          {step1Error}
+        </p>
+      )}
+
+      {/* Continue */}
+      <button
+        onClick={handleDeliveryMethodContinue}
+        disabled={!deliveryMethod || saving}
+        className="w-full py-4 text-[10px] tracking-[0.35em] uppercase font-medium disabled:opacity-40"
+        style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+      >
+        {saving ? 'Saving…' : 'Continue'}
+      </button>
     </main>
   )
 }

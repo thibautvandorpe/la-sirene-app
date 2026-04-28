@@ -7,9 +7,10 @@ import AppHeader from '@/components/AppHeader'
 
 type Appointment = {
   id: string
-  scheduled_at: string
+  scheduled_at: string | null
   notes: string | null
   status: string
+  delivery_method: string | null
   appointment_items: { id: string }[]
 }
 
@@ -22,7 +23,7 @@ type Order = {
 
 const APPT_BADGE: Record<string, string> = {
   draft:     'bg-[#c4b89a]/15 text-[#c4b89a]',
-  pending:   'bg-[#c4b89a]/20 text-[#c4b89a]',
+  pending:   'bg-[#c87a3a]/20 text-[#c87a3a]',
   confirmed: 'bg-[#2e4a32]/60 text-[#a8c5a0]',
   cancelled: 'bg-[#3a1c1c]/60 text-[#c08080]',
 }
@@ -64,6 +65,8 @@ export default function OrdersPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [dataLoaded, setDataLoaded] = useState(false)
+  const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   useEffect(() => {
     supabase.auth.getSession()
@@ -75,9 +78,9 @@ export default function OrdersPage() {
         const [{ data: apptData }, { data: orderData }] = await Promise.all([
           supabase
             .from('appointments')
-            .select('id, scheduled_at, notes, status, appointment_items(id)')
+            .select('id, scheduled_at, notes, status, delivery_method, appointment_items(id)')
             .eq('client_id', session.user.id)
-            .order('scheduled_at', { ascending: false }),
+            .order('created_at', { ascending: false }),
           supabase
             .from('orders')
             .select('id, status, total_price, appointments(scheduled_at)')
@@ -151,25 +154,33 @@ export default function OrdersPage() {
                       className="flex items-center justify-between py-4 px-4"
                       style={CARD}
                     >
-                      <div className="flex flex-col gap-1">
-                        <p
-                          className="text-sm font-light"
-                          style={{ color: isCancelled ? 'rgba(245, 240, 232, 0.35)' : '#f5f0e8' }}
-                        >
-                          {formatApptDate(appt.scheduled_at)}
-                        </p>
-
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`text-[9px] tracking-[0.25em] uppercase px-2 py-0.5 rounded-sm ${badgeClass(APPT_BADGE, appt.status)}`}>
-                            {appt.status === 'draft' ? 'In Progress' : appt.status}
-                          </span>
-                          {appt.notes && !isCancelled && (
-                            <span className="text-[9px] font-light" style={{ color: 'rgba(196, 184, 154, 0.5)' }}>
-                              {appt.notes}
-                            </span>
+                      <div className="flex flex-col gap-1.5">
+                        {/* Line 1 — delivery method + date/time (pick up only) */}
+                        <div className="flex flex-col gap-0.5">
+                          <p
+                            className="text-sm font-light"
+                            style={{ color: isCancelled ? 'rgba(245, 240, 232, 0.35)' : '#f5f0e8' }}
+                          >
+                            {appt.delivery_method === 'drop_off'
+                              ? 'Drop Off'
+                              : appt.delivery_method === 'fedex'
+                                ? 'FedEx'
+                                : 'Pick Up'}
+                          </p>
+                          {(appt.delivery_method === 'pick_up' || appt.delivery_method == null) && appt.scheduled_at && (
+                            <p className="text-xs font-light" style={{ color: isCancelled ? 'rgba(245, 240, 232, 0.25)' : 'rgba(245, 240, 232, 0.5)' }}>
+                              {formatApptDate(appt.scheduled_at)}
+                              {appt.notes ? ` · ${appt.notes}` : ''}
+                            </p>
                           )}
                         </div>
 
+                        {/* Line 2 — status badge */}
+                        <span className={`self-start text-[9px] tracking-[0.25em] uppercase px-2 py-0.5 rounded-sm ${badgeClass(APPT_BADGE, appt.status)}`}>
+                          {appt.status === 'draft' ? 'In Progress' : appt.status}
+                        </span>
+
+                        {/* Line 3 — item count */}
                         {itemCount > 0 && !isCancelled && (
                           <p className="text-[10px] font-light" style={MUTED}>
                             {itemCount} {itemCount === 1 ? 'item' : 'items'}
@@ -178,44 +189,90 @@ export default function OrdersPage() {
                       </div>
 
                       {/* Actions */}
-                      <div className="flex items-center gap-3 ml-4 shrink-0">
-                        {appt.status === 'draft' && (
-                          <>
-                            <Link
-                              href={`/book?appointmentId=${appt.id}`}
-                              className="text-xs font-light"
-                              style={{ color: '#c4b89a' }}
-                            >
-                              Continue →
-                            </Link>
+                      {confirmDeleteId === appt.id ? (
+                        <div className="flex flex-col items-end gap-2 ml-4 shrink-0">
+                          <p className="text-[10px] font-light text-right" style={{ color: 'rgba(245, 240, 232, 0.5)' }}>
+                            Delete this draft?
+                          </p>
+                          <div className="flex gap-2">
                             <button
-                              onClick={() => handleDeleteDraft(appt)}
-                              className="text-xs font-light"
-                              style={{ color: 'rgba(196, 184, 154, 0.4)' }}
+                              onClick={() => { handleDeleteDraft(appt); setConfirmDeleteId(null) }}
+                              className="px-3 py-1.5 text-[9px] tracking-[0.2em] uppercase font-medium"
+                              style={{ backgroundColor: 'rgba(220,80,60,0.75)', color: '#f5f0e8' }}
                             >
-                              Delete
+                              Yes, Delete
                             </button>
-                          </>
-                        )}
-                        {appt.status === 'pending' && (
-                          <>
-                            <Link
-                              href={`/orders/${appt.id}`}
-                              className="text-xs font-light"
-                              style={{ color: '#c4b89a' }}
-                            >
-                              View
-                            </Link>
                             <button
-                              onClick={() => handleCancelAppointment(appt)}
-                              className="text-xs font-light"
-                              style={{ color: 'rgba(196, 184, 154, 0.4)' }}
+                              onClick={() => setConfirmDeleteId(null)}
+                              className="px-3 py-1.5 text-[9px] tracking-[0.2em] uppercase font-light"
+                              style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
                             >
-                              Cancel
+                              Keep
                             </button>
-                          </>
-                        )}
-                      </div>
+                          </div>
+                        </div>
+                      ) : confirmCancelId === appt.id ? (
+                        <div className="flex flex-col items-end gap-2 ml-4 shrink-0">
+                          <p className="text-[10px] font-light text-right" style={{ color: 'rgba(245, 240, 232, 0.5)' }}>
+                            Cancel this appointment?
+                          </p>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => { handleCancelAppointment(appt); setConfirmCancelId(null) }}
+                              className="px-3 py-1.5 text-[9px] tracking-[0.2em] uppercase font-medium"
+                              style={{ backgroundColor: 'rgba(220,80,60,0.75)', color: '#f5f0e8' }}
+                            >
+                              Yes, Cancel
+                            </button>
+                            <button
+                              onClick={() => setConfirmCancelId(null)}
+                              className="px-3 py-1.5 text-[9px] tracking-[0.2em] uppercase font-light"
+                              style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+                            >
+                              Keep
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-3 ml-4 shrink-0">
+                          {appt.status === 'draft' && (
+                            <>
+                              <Link
+                                href={`/book?appointmentId=${appt.id}`}
+                                className="text-xs font-light"
+                                style={{ color: '#c4b89a' }}
+                              >
+                                Continue
+                              </Link>
+                              <button
+                                onClick={() => setConfirmDeleteId(appt.id)}
+                                className="text-xs font-light"
+                                style={{ color: 'rgba(196, 184, 154, 0.4)' }}
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                          {appt.status === 'pending' && (
+                            <>
+                              <Link
+                                href={`/orders/${appt.id}`}
+                                className="text-xs font-light"
+                                style={{ color: '#c4b89a' }}
+                              >
+                                View
+                              </Link>
+                              <button
+                                onClick={() => setConfirmCancelId(appt.id)}
+                                className="text-xs font-light"
+                                style={{ color: 'rgba(196, 184, 154, 0.4)' }}
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )}
                     </li>
                   )
                 })}
