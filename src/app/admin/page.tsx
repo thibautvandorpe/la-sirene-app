@@ -57,7 +57,9 @@ export default function AdminHome() {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const orders = (orderData as any[]) ?? []
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setUnderReviewCount(orders.filter((o: any) => o.status === 'under_review').length)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setAwaitingCount(orders.filter((o: any) => o.status === 'awaiting_confirmation').length)
       setOrderTotal(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
