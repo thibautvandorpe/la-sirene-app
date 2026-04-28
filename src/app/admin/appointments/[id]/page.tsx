@@ -13,6 +13,7 @@ type AppointmentItem = {
   special_instructions: string | null
   garments: { brand: string | null; color: string | null } | null
   services: { category: string; sub_category: string } | null
+  appointment_item_photos: { url: string }[]
 }
 
 type Appointment = {
@@ -59,7 +60,8 @@ export default function AdminAppointmentDetail() {
           appointment_items(
             id, garment_id, service_id, estimated_price, special_instructions,
             garments(brand, color),
-            services(category, sub_category)
+            services(category, sub_category),
+            appointment_item_photos(url)
           )
         `)
         .eq('id', id)
@@ -94,37 +96,69 @@ export default function AdminAppointmentDetail() {
         .single()
       if (orderErr) throw orderErr
 
-      // 2. Copy appointment_items → order_items
-      if (items.length > 0) {
-        const { error: itemsErr } = await supabase
+      // 2. Insert order_items one by one to capture each new ID
+      //    and build a map: appointment_item_id → order_item_id
+      const itemIdMap: Record<string, string> = {}
+      for (const ai of items) {
+        const { data: oi, error: oiErr } = await supabase
           .from('order_items')
-          .insert(
-            items.map(ai => ({
-              order_id: order.id,
-              garment_id: ai.garment_id,
-              service_id: ai.service_id,
-              special_instructions: ai.special_instructions,
-              final_price: ai.estimated_price,
-            }))
-          )
-        if (itemsErr) throw itemsErr
+          .insert({
+            order_id: order.id,
+            garment_id: ai.garment_id,
+            service_id: ai.service_id,
+            special_instructions: ai.special_instructions,
+            final_price: ai.estimated_price,
+          })
+          .select('id')
+          .single()
+        if (oiErr) throw oiErr
+        itemIdMap[ai.id] = oi.id
       }
 
-      // 3. Delete appointment_items
+      // 3. Copy appointment_item_photos → order_item_photos, then delete originals
+      for (const [apptItemId, orderItemId] of Object.entries(itemIdMap)) {
+        const { data: photos } = await supabase
+          .from('appointment_item_photos')
+          .select('url, label')
+          .eq('appointment_item_id', apptItemId)
+
+        if (photos && photos.length > 0) {
+          await supabase.from('order_item_photos').insert(
+            photos.map((p: { url: string; label: string | null }) => ({
+              order_item_id: orderItemId,
+              url: p.url,
+              label: p.label,
+            }))
+          )
+        }
+
+        await supabase
+          .from('appointment_item_photos')
+          .delete()
+          .eq('appointment_item_id', apptItemId)
+      }
+
+      // 4. Delete appointment_items (photos already removed — no FK conflict)
       const { error: delItemsErr } = await supabase
         .from('appointment_items')
         .delete()
         .eq('appointment_id', appt.id)
       if (delItemsErr) throw delItemsErr
 
-      // 4. Delete appointment
+      // 5. Break the FK link from order → appointment before deleting
+      const { error: unlinkErr } = await supabase
+        .from('orders')
+        .update({ appointment_id: null })
+        .eq('id', order.id)
+      if (unlinkErr) throw unlinkErr
+
+      // 6. Delete appointment
       const { error: delApptErr } = await supabase
         .from('appointments')
         .delete()
         .eq('id', appt.id)
       if (delApptErr) throw delApptErr
 
-      // 5. Navigate back to appointments list
       router.replace('/admin/appointments')
     } catch {
       setError('Something went wrong. Please try again.')
@@ -284,6 +318,20 @@ export default function AdminAppointmentDetail() {
                 <p className="text-[11px] font-light italic mt-0.5" style={{ color: 'rgba(245,240,232,0.3)' }}>
                   {'"'}{item.special_instructions}{'"'}
                 </p>
+              )}
+              {item.appointment_item_photos?.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {item.appointment_item_photos.map((photo, i) => (
+                    <a key={i} href={photo.url} target="_blank" rel="noopener noreferrer">
+                      <img
+                        src={photo.url}
+                        alt=""
+                        className="w-16 h-16 object-cover rounded-sm"
+                        style={{ border: '1px solid rgba(196,184,154,0.2)' }}
+                      />
+                    </a>
+                  ))}
+                </div>
               )}
             </div>
             <p className="text-sm font-light shrink-0" style={{ color: '#c4b89a' }}>

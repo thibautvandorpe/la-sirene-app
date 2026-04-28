@@ -11,6 +11,11 @@ export default function AdminHome() {
   const [pendingCount, setPendingCount] = useState(0)
   const [pendingTotal, setPendingTotal] = useState(0)
 
+  async function handleSignOut() {
+    await supabase.auth.signOut()
+    router.push('/')
+  }
+
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) { router.replace('/login'); return }
@@ -49,13 +54,22 @@ export default function AdminHome() {
     <main className="min-h-screen px-6 py-10" style={{ backgroundColor: '#1c2b1e' }}>
 
       {/* Header */}
-      <div className="mb-10">
-        <p className="text-[10px] tracking-[0.35em] uppercase mb-1" style={{ color: 'rgba(196,184,154,0.5)' }}>
-          La Sirène
-        </p>
-        <h1 className="text-2xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
-          Team Dashboard
-        </h1>
+      <div className="flex items-start justify-between mb-10">
+        <div>
+          <p className="text-[10px] tracking-[0.35em] uppercase mb-1" style={{ color: 'rgba(196,184,154,0.5)' }}>
+            La Sirène
+          </p>
+          <h1 className="text-2xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+            Team Dashboard
+          </h1>
+        </div>
+        <button
+          onClick={handleSignOut}
+          className="text-[10px] tracking-wide uppercase underline underline-offset-2"
+          style={{ color: '#c4b89a', textDecorationColor: 'rgba(196,184,154,0.4)' }}
+        >
+          Sign Out
+        </button>
       </div>
 
       <div className="flex flex-col gap-4 max-w-2xl">
