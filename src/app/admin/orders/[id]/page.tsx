@@ -70,7 +70,7 @@ export default function AdminOrderDetail() {
   const [adminMessage, setAdminMessage] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [confirmAction, setConfirmAction] = useState<'approval' | 'in_progress' | null>(null)
+  const [confirmAction, setConfirmAction] = useState<'approval' | 'in_progress' | 'update' | null>(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -167,38 +167,63 @@ export default function AdminOrderDetail() {
     }))
   }
 
+  async function saveItems() {
+    if (!order) return
+    for (const item of order.order_items) {
+      const edit = itemEdits[item.id]
+      if (!edit) continue
+      const reviewedServiceId = edit.reviewedServiceId || null
+      const reviewedPrice = edit.reviewedPrice !== '' ? parseFloat(edit.reviewedPrice) : null
+      await supabase
+        .from('order_items')
+        .update({ reviewed_service_id: reviewedServiceId, reviewed_price: reviewedPrice })
+        .eq('id', item.id)
+    }
+  }
+
+  function computeTotal() {
+    return (order?.order_items ?? []).reduce((sum, item) => {
+      const edit = itemEdits[item.id]
+      const price = edit?.reviewedPrice !== '' ? parseFloat(edit?.reviewedPrice ?? '') : item.final_price
+      return sum + (isNaN(price) ? item.final_price : price)
+    }, 0)
+  }
+
+  async function handleSaveOnly() {
+    if (!order) return
+    setSaving(true)
+    setError(null)
+    try {
+      await saveItems()
+      const { error: orderErr } = await supabase
+        .from('orders')
+        .update({
+          admin_message: adminMessage.trim() || null,
+          total_price: computeTotal(),
+        })
+        .eq('id', order.id)
+      if (orderErr) throw orderErr
+      router.replace('/admin/orders')
+    } catch {
+      setError('Something went wrong. Please try again.')
+      setSaving(false)
+    }
+  }
+
   async function handleSaveAndAdvance(newStatus: 'awaiting_confirmation' | 'in_progress') {
     if (!order) return
     setSaving(true)
     setError(null)
     try {
-      // 1. Save each item's reviewed values (only if changed)
-      for (const item of order.order_items) {
-        const edit = itemEdits[item.id]
-        if (!edit) continue
-        const reviewedServiceId = edit.reviewedServiceId || null
-        const reviewedPrice = edit.reviewedPrice !== '' ? parseFloat(edit.reviewedPrice) : null
+      await saveItems()
 
-        await supabase
-          .from('order_items')
-          .update({ reviewed_service_id: reviewedServiceId, reviewed_price: reviewedPrice })
-          .eq('id', item.id)
-      }
-
-      // 2. Recompute total_price: use reviewed_price if set, otherwise final_price
-      const newTotal = order.order_items.reduce((sum, item) => {
-        const edit = itemEdits[item.id]
-        const price = edit?.reviewedPrice !== '' ? parseFloat(edit?.reviewedPrice ?? '') : item.final_price
-        return sum + (isNaN(price) ? item.final_price : price)
-      }, 0)
-
-      // 3. Update order status + admin_message + total_price
+      // Update order status + admin_message + total_price
       const { error: orderErr } = await supabase
         .from('orders')
         .update({
           status: newStatus,
           admin_message: adminMessage.trim() || null,
-          total_price: newTotal,
+          total_price: computeTotal(),
         })
         .eq('id', order.id)
       if (orderErr) throw orderErr
@@ -510,7 +535,67 @@ export default function AdminOrderDetail() {
       {/* Action buttons */}
       {isEditable && (
         <div className="max-w-2xl flex flex-col gap-3">
-          {confirmAction === 'approval' ? (
+
+          {/* awaiting_confirmation — Update Changes (saves without changing status) */}
+          {order.status === 'awaiting_confirmation' && confirmAction === null && (
+            <button
+              onClick={() => setConfirmAction('update')}
+              className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
+              style={{ border: '1px solid #c4b89a', color: '#c4b89a', backgroundColor: 'transparent' }}
+            >
+              Update Changes
+            </button>
+          )}
+
+          {/* under_review — Send for Approval + Move to In Progress */}
+          {order.status === 'under_review' && confirmAction === null && (
+            <>
+              <button
+                onClick={() => setConfirmAction('approval')}
+                className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
+                style={{ border: '1px solid #c4b89a', color: '#c4b89a', backgroundColor: 'transparent' }}
+              >
+                Send for Approval
+              </button>
+              <button
+                onClick={() => setConfirmAction('in_progress')}
+                className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
+                style={{ border: '1px solid rgba(46,74,50,0.8)', color: '#a8c5a0', backgroundColor: 'transparent' }}
+              >
+                Move to In Progress
+              </button>
+            </>
+          )}
+
+          {/* Confirm: update changes (stays awaiting_confirmation) */}
+          {confirmAction === 'update' && (
+            <div className="flex flex-col gap-3">
+              <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+                This will update the order details sent to the client. The status will remain Awaiting Confirmation. Continue?
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleSaveOnly}
+                  disabled={saving}
+                  className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
+                  style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+                >
+                  {saving ? 'Saving…' : 'Yes, Update'}
+                </button>
+                <button
+                  onClick={() => setConfirmAction(null)}
+                  disabled={saving}
+                  className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
+                  style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Confirm: send for approval */}
+          {confirmAction === 'approval' && (
             <div className="flex flex-col gap-3">
               <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
                 This will save your changes and send the order to the client for approval. Continue?
@@ -534,10 +619,15 @@ export default function AdminOrderDetail() {
                 </button>
               </div>
             </div>
-          ) : confirmAction === 'in_progress' ? (
+          )}
+
+          {/* Confirm: move to in progress / confirm changes */}
+          {confirmAction === 'in_progress' && (
             <div className="flex flex-col gap-3">
               <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
-                This will move the order to In Progress. Continue?
+                {order.status === 'awaiting_confirmation'
+                  ? 'This will save your changes and move the order to In Progress. Continue?'
+                  : 'This will move the order to In Progress. Continue?'}
               </p>
               <div className="flex gap-3">
                 <button
@@ -546,7 +636,7 @@ export default function AdminOrderDetail() {
                   className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
                   style={{ backgroundColor: 'rgba(46,74,50,0.8)', color: '#a8c5a0' }}
                 >
-                  {saving ? 'Saving…' : 'Yes, Move'}
+                  {saving ? 'Saving…' : order.status === 'awaiting_confirmation' ? 'Yes, Confirm' : 'Yes, Move'}
                 </button>
                 <button
                   onClick={() => setConfirmAction(null)}
@@ -558,26 +648,11 @@ export default function AdminOrderDetail() {
                 </button>
               </div>
             </div>
-          ) : (
-            <>
-              <button
-                onClick={() => setConfirmAction('approval')}
-                className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
-                style={{ border: '1px solid #c4b89a', color: '#c4b89a', backgroundColor: 'transparent' }}
-              >
-                Send for Approval
-              </button>
-              <button
-                onClick={() => setConfirmAction('in_progress')}
-                className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
-                style={{ border: '1px solid rgba(46,74,50,0.8)', color: '#a8c5a0', backgroundColor: 'transparent' }}
-              >
-                Move to In Progress
-              </button>
-            </>
           )}
+
         </div>
       )}
+
 
     </main>
   )

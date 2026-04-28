@@ -332,11 +332,22 @@ export default function OrdersPage() {
                         {orderStatusLabel(order.status)}
                       </span>
                     </div>
-                    {order.total_price != null && (
-                      <p className="text-sm font-light text-[#c4b89a] ml-4 shrink-0">
-                        {order.total_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
-                      </p>
-                    )}
+                    <div className="flex items-center gap-4 ml-4 shrink-0">
+                      {order.total_price != null && (
+                        <p className="text-sm font-light text-[#c4b89a]">
+                          {order.total_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                        </p>
+                      )}
+                      {order.status === 'awaiting_confirmation' && (
+                        <Link
+                          href={`/orders/order/${order.id}`}
+                          className="text-xs font-light"
+                          style={{ color: '#c87a3a' }}
+                        >
+                          Review
+                        </Link>
+                      )}
+                    </div>
                   </li>
                 ))}
               </ul>
