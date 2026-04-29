@@ -96,6 +96,9 @@ export default function AdminAppointmentDetail() {
         .single()
       if (orderErr) throw orderErr
 
+      // 1b. Log initial status in history
+      await supabase.from('order_status_history').insert({ order_id: order.id, status: 'under_review' })
+
       // 2. Insert order_items one by one to capture each new ID
       //    and build a map: appointment_item_id → order_item_id
       const itemIdMap: Record<string, string> = {}

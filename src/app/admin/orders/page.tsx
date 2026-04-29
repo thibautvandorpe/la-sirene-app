@@ -34,7 +34,7 @@ export default function AdminOrders() {
   const router = useRouter()
   const [loaded, setLoaded] = useState(false)
   const [orders, setOrders] = useState<Order[]>([])
-  const [filter, setFilter] = useState<FilterKey>('under_review')
+  const [filter, setFilter] = useState<FilterKey>('all')
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -51,7 +51,7 @@ export default function AdminOrders() {
       const { data } = await supabase
         .from('orders')
         .select('id, status, total_price, delivery_method, scheduled_at, created_at, clients(full_name)')
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: true })
 
       setOrders((data as unknown as Order[]) ?? [])
       setLoaded(true)
@@ -69,9 +69,68 @@ export default function AdminOrders() {
     { key: 'all',                    label: 'All' },
   ]
 
+  const STATUS_ORDER = ['under_review', 'awaiting_confirmation', 'in_progress', 'ready', 'completed', 'cancelled']
+
   const filtered = filter === 'all'
     ? orders
     : orders.filter(o => o.status === filter)
+
+  const grouped = STATUS_ORDER
+    .map(s => ({ status: s, items: filtered.filter(o => o.status === s) }))
+    .filter(g => g.items.length > 0)
+
+  function renderOrderRow(order: Order, idx: number) {
+    const { bg, color, label } = badge(order.status)
+    const deliveryLabel =
+      order.delivery_method === 'drop_off' ? 'Drop Off'
+      : order.delivery_method === 'fedex' ? 'FedEx'
+      : 'Pick Up'
+    return (
+      <li key={order.id}>
+        <Link
+          href={`/admin/orders/${order.id}`}
+          className="flex items-center justify-between py-4 px-4 transition-opacity hover:opacity-75"
+          style={{
+            borderTop: idx === 0 ? '1px solid rgba(196,184,154,0.1)' : undefined,
+            borderBottom: '1px solid rgba(196,184,154,0.1)',
+          }}
+        >
+          <div className="flex flex-col gap-1.5 min-w-0 flex-1 pr-4">
+            <p className="text-sm font-light truncate" style={{ color: '#f5f0e8' }}>
+              {order.clients?.full_name ?? '—'}
+            </p>
+            <div className="flex items-center gap-2 flex-wrap">
+              {filter === 'all' && (
+                <span
+                  className="text-[9px] tracking-[0.2em] uppercase px-2 py-0.5 rounded-sm"
+                  style={{ backgroundColor: bg, color }}
+                >
+                  {label}
+                </span>
+              )}
+              <span className="text-[10px] font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>
+                {deliveryLabel}
+                {(order.delivery_method === 'pick_up' || order.delivery_method == null) && order.scheduled_at
+                  ? ` · ${new Date(order.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+                  : ''}
+              </span>
+            </div>
+          <p className="text-[10px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+              Order created on {new Date(order.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <p className="text-sm font-light" style={{ color: order.total_price ? '#c4b89a' : 'rgba(245,240,232,0.25)' }}>
+              {order.total_price
+                ? `$${order.total_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+                : 'TBD'}
+            </p>
+            <span style={{ color: 'rgba(196,184,154,0.35)' }}>›</span>
+          </div>
+        </Link>
+      </li>
+    )
+  }
 
   return (
     <main className="min-h-screen px-6 py-10" style={{ backgroundColor: '#1c2b1e' }}>
@@ -121,59 +180,22 @@ export default function AdminOrders() {
         <p className="text-sm font-light text-center mt-16" style={{ color: 'rgba(245,240,232,0.3)' }}>
           No {filter === 'all' ? '' : filter.replace(/_/g, ' ')} orders
         </p>
+      ) : filter === 'all' ? (
+        <div className="flex flex-col gap-8 max-w-2xl">
+          {grouped.map(({ status, items }) => (
+            <div key={status}>
+              <p className="text-[9px] tracking-[0.28em] uppercase mb-3" style={{ color: 'rgba(196,184,154,0.45)' }}>
+                {badge(status).label}
+              </p>
+              <ul className="flex flex-col">
+                {items.map((order, idx) => renderOrderRow(order, idx))}
+              </ul>
+            </div>
+          ))}
+        </div>
       ) : (
         <ul className="flex flex-col max-w-2xl">
-          {filtered.map((order, idx) => {
-            const { bg, color, label } = badge(order.status)
-            const deliveryLabel =
-              order.delivery_method === 'drop_off' ? 'Drop Off'
-              : order.delivery_method === 'fedex' ? 'FedEx'
-              : 'Pick Up'
-
-            return (
-              <li key={order.id}>
-                <Link
-                  href={`/admin/orders/${order.id}`}
-                  className="flex items-center justify-between py-4 px-4 transition-opacity hover:opacity-75"
-                  style={{
-                    borderTop: idx === 0 ? '1px solid rgba(196,184,154,0.1)' : undefined,
-                    borderBottom: '1px solid rgba(196,184,154,0.1)',
-                  }}
-                >
-                  {/* Left: client + status + delivery */}
-                  <div className="flex flex-col gap-1.5 min-w-0 flex-1 pr-4">
-                    <p className="text-sm font-light truncate" style={{ color: '#f5f0e8' }}>
-                      {order.clients?.full_name ?? '—'}
-                    </p>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span
-                        className="text-[9px] tracking-[0.2em] uppercase px-2 py-0.5 rounded-sm"
-                        style={{ backgroundColor: bg, color }}
-                      >
-                        {label}
-                      </span>
-                      <span className="text-[10px] font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>
-                        {deliveryLabel}
-                        {(order.delivery_method === 'pick_up' || order.delivery_method == null) && order.scheduled_at
-                          ? ` · ${new Date(order.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
-                          : ''}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Right: total */}
-                  <div className="flex items-center gap-2 shrink-0">
-                    <p className="text-sm font-light" style={{ color: order.total_price ? '#c4b89a' : 'rgba(245,240,232,0.25)' }}>
-                      {order.total_price
-                        ? `$${order.total_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
-                        : 'TBD'}
-                    </p>
-                    <span style={{ color: 'rgba(196,184,154,0.35)' }}>›</span>
-                  </div>
-                </Link>
-              </li>
-            )
-          })}
+          {filtered.map((order, idx) => renderOrderRow(order, idx))}
         </ul>
       )}
     </main>

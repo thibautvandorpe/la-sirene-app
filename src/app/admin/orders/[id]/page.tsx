@@ -40,6 +40,12 @@ type Order = {
   order_items: OrderItem[]
 }
 
+type StatusHistoryEntry = {
+  id: string
+  status: string
+  changed_at: string
+}
+
 // Local state per item for admin edits
 type ItemEdit = {
   reviewedServiceId: string   // '' = no change
@@ -73,6 +79,7 @@ export default function AdminOrderDetail() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [confirmAction, setConfirmAction] = useState<'approval' | 'in_progress' | 'update' | 'ready' | 'completed' | null>(null)
+  const [statusHistory, setStatusHistory] = useState<StatusHistoryEntry[]>([])
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -86,7 +93,7 @@ export default function AdminOrderDetail() {
 
       if (client?.role !== 'admin') { router.replace('/'); return }
 
-      const [{ data: orderData, error: orderErr }, { data: svcsData, error: svcsErr }] = await Promise.all([
+      const [{ data: orderData, error: orderErr }, { data: svcsData, error: svcsErr }, { data: historyData }] = await Promise.all([
         supabase
           .from('orders')
           .select(`
@@ -103,6 +110,7 @@ export default function AdminOrderDetail() {
           .eq('id', id)
           .maybeSingle(),
         supabase.from('services').select('id, category, sub_category, price').order('category').order('sub_category'),
+        supabase.from('order_status_history').select('id, status, changed_at').eq('order_id', id).order('changed_at', { ascending: true }),
       ])
 
       if (orderErr) { console.error('Order query error:', orderErr); router.replace('/admin/orders'); return }
@@ -150,6 +158,7 @@ export default function AdminOrderDetail() {
         }
       }
       setItemEdits(initialEdits)
+      setStatusHistory((historyData as unknown as StatusHistoryEntry[]) ?? [])
       setLoaded(true)
     })
   }, [id, router])
@@ -232,6 +241,9 @@ export default function AdminOrderDetail() {
         })
         .eq('id', order.id)
       if (orderErr) throw orderErr
+
+      // Log status change in history
+      await supabase.from('order_status_history').insert({ order_id: order.id, status: newStatus })
 
       router.replace('/admin/orders')
     } catch {
@@ -792,6 +804,43 @@ export default function AdminOrderDetail() {
         </div>
       )}
 
+
+      {/* Status history timeline */}
+      {statusHistory.length > 0 && (
+        <div className="max-w-2xl mt-10">
+          <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: 'rgba(196,184,154,0.6)' }}>
+            Order History
+          </p>
+          <div className="flex flex-col">
+            {statusHistory.map((entry, idx) => {
+              const { color, label } = badge(entry.status)
+              const isLast = idx === statusHistory.length - 1
+              return (
+                <div key={entry.id} className="flex gap-4">
+                  {/* Timeline spine */}
+                  <div className="flex flex-col items-center" style={{ width: 16 }}>
+                    <div className="w-2 h-2 rounded-full mt-1 shrink-0" style={{ backgroundColor: color }} />
+                    {!isLast && <div className="flex-1 w-px mt-1" style={{ backgroundColor: 'rgba(196,184,154,0.15)' }} />}
+                  </div>
+                  {/* Content */}
+                  <div className="pb-5">
+                    <p className="text-xs font-light" style={{ color }}>{label}</p>
+                    <p className="text-[10px] font-light mt-0.5" style={{ color: 'rgba(245,240,232,0.35)' }}>
+                      {new Date(entry.changed_at).toLocaleDateString('en-US', {
+                        month: 'long', day: 'numeric', year: 'numeric',
+                      })}{' '}
+                      at{' '}
+                      {new Date(entry.changed_at).toLocaleTimeString('en-US', {
+                        hour: 'numeric', minute: '2-digit',
+                      })}
+                    </p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
     </main>
   )

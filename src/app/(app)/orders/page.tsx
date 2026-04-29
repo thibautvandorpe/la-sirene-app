@@ -189,7 +189,7 @@ export default function OrdersPage() {
 
                         {/* Line 2 — status badge */}
                         <span className={`self-start text-[9px] tracking-[0.25em] uppercase px-2 py-0.5 rounded-sm ${badgeClass(APPT_BADGE, appt.status)}`}>
-                          {appt.status === 'draft' ? 'In Progress' : appt.status}
+                          {{ draft: 'Draft', pending: 'Pending', confirmed: 'Confirmed', cancelled: 'Cancelled' }[appt.status] ?? appt.status}
                         </span>
 
                         {/* Line 3 — item count */}

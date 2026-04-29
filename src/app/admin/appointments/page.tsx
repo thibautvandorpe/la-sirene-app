@@ -17,7 +17,7 @@ type Appointment = {
 }
 
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
-  draft:     { bg: 'rgba(196,184,154,0.12)', color: '#c4b89a',  label: 'In Progress' },
+  draft:     { bg: 'rgba(196,184,154,0.12)', color: '#c4b89a',  label: 'Draft' },
   pending:   { bg: 'rgba(200,122,58,0.18)',  color: '#c87a3a',  label: 'Pending' },
   confirmed: { bg: 'rgba(46,74,50,0.6)',     color: '#a8c5a0',  label: 'Confirmed' },
   cancelled: { bg: 'rgba(58,28,28,0.6)',     color: '#c08080',  label: 'Cancelled' },
@@ -31,7 +31,7 @@ export default function AdminAppointments() {
   const router = useRouter()
   const [loaded, setLoaded] = useState(false)
   const [appointments, setAppointments] = useState<Appointment[]>([])
-  const [filter, setFilter] = useState<'pending' | 'draft' | 'cancelled' | 'all'>('pending')
+  const [filter, setFilter] = useState<'pending' | 'draft' | 'cancelled' | 'all'>('all')
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -50,7 +50,9 @@ export default function AdminAppointments() {
         .select('id, delivery_method, scheduled_at, notes, status, created_at, clients(full_name), appointment_items(estimated_price)')
         .order('created_at', { ascending: false })
 
-      setAppointments((data as unknown as Appointment[]) ?? [])
+      const sorted = ((data as unknown as Appointment[]) ?? [])
+        .sort((a, b) => (a.clients?.full_name ?? '').localeCompare(b.clients?.full_name ?? ''))
+      setAppointments(sorted)
       setLoaded(true)
     })
   }, [router])
@@ -84,7 +86,7 @@ export default function AdminAppointments() {
       <div className="flex gap-1 mb-6 max-w-2xl">
         {(['pending', 'draft', 'cancelled', 'all'] as const).map(f => {
           const isActive = filter === f
-          const labels = { pending: 'Pending', draft: 'In Progress', cancelled: 'Cancelled', all: 'All' }
+          const labels = { pending: 'Pending', draft: 'Draft', cancelled: 'Cancelled', all: 'All' }
           return (
             <button
               key={f}
