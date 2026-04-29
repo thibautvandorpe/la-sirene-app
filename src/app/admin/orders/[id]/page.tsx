@@ -20,6 +20,7 @@ type OrderItem = {
   special_instructions: string | null
   reviewed_service_id: string | null
   reviewed_price: number | null
+  treatment_notes: string | null
   garments: { brand: string | null; color: string | null } | null
   services: { category: string; sub_category: string; price: number } | null
   reviewed_service: { category: string; sub_category: string; price: number } | null
@@ -43,6 +44,7 @@ type Order = {
 type ItemEdit = {
   reviewedServiceId: string   // '' = no change
   reviewedPrice: string       // '' = no change
+  treatmentNotes: string      // free-text, filled in when in_progress
 }
 
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
@@ -92,7 +94,7 @@ export default function AdminOrderDetail() {
             clients(full_name, email),
             order_items(
               id, garment_id, service_id, final_price, special_instructions,
-              reviewed_service_id, reviewed_price,
+              reviewed_service_id, reviewed_price, treatment_notes,
               garments(brand, color),
               services!order_items_service_id_fkey(category, sub_category, price),
               order_item_photos(url)
@@ -144,6 +146,7 @@ export default function AdminOrderDetail() {
         initialEdits[item.id] = {
           reviewedServiceId: item.reviewed_service_id ?? '',
           reviewedPrice: item.reviewed_price != null ? String(item.reviewed_price) : '',
+          treatmentNotes: item.treatment_notes ?? '',
         }
       }
       setItemEdits(initialEdits)
@@ -161,6 +164,7 @@ export default function AdminOrderDetail() {
     setItemEdits(prev => ({
       ...prev,
       [itemId]: {
+        ...prev[itemId],
         reviewedServiceId: serviceId,
         reviewedPrice: svc ? String(svc.price) : prev[itemId]?.reviewedPrice ?? '',
       },
@@ -174,9 +178,10 @@ export default function AdminOrderDetail() {
       if (!edit) continue
       const reviewedServiceId = edit.reviewedServiceId || null
       const reviewedPrice = edit.reviewedPrice !== '' ? parseFloat(edit.reviewedPrice) : null
+      const treatmentNotes = edit.treatmentNotes.trim() || null
       await supabase
         .from('order_items')
-        .update({ reviewed_service_id: reviewedServiceId, reviewed_price: reviewedPrice })
+        .update({ reviewed_service_id: reviewedServiceId, reviewed_price: reviewedPrice, treatment_notes: treatmentNotes })
         .eq('id', item.id)
     }
   }
@@ -294,6 +299,7 @@ export default function AdminOrderDetail() {
         >
           {statusLabel}
         </span>
+
       </div>
 
       {/* Section label */}
@@ -304,7 +310,7 @@ export default function AdminOrderDetail() {
       {/* Items */}
       <ul className="flex flex-col mb-1 max-w-2xl">
         {items.map((item, idx) => {
-          const edit = itemEdits[item.id] ?? { reviewedServiceId: '', reviewedPrice: '' }
+          const edit = itemEdits[item.id] ?? { reviewedServiceId: '', reviewedPrice: '', treatmentNotes: '' }
           const selectedCat = edit.reviewedServiceId
             ? (services.find(s => s.id === edit.reviewedServiceId)?.category ?? '')
             : ''
@@ -372,6 +378,39 @@ export default function AdminOrderDetail() {
                       ${parseFloat(edit.reviewedPrice).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                     </p>
                   )}
+                </div>
+              )}
+
+              {/* Treatment notes — editable when in_progress, read-only otherwise */}
+              {order.status?.toLowerCase() === 'in_progress' && (
+                <div className="mt-4">
+                  <p className="text-[9px] tracking-[0.2em] uppercase mb-2" style={{ color: 'rgba(196,184,154,0.5)' }}>
+                    Treatment Notes
+                  </p>
+                  <textarea
+                    rows={2}
+                    placeholder="Describe exactly what was done — e.g. Full dry clean, stain removal on left sleeve…"
+                    value={edit.treatmentNotes}
+                    onChange={e => setEdit(item.id, 'treatmentNotes', e.target.value)}
+                    className="w-full text-[11px] font-light px-3 py-2 resize-none leading-relaxed"
+                    style={{
+                      backgroundColor: 'rgba(245,240,232,0.04)',
+                      border: '1px solid rgba(196,184,154,0.2)',
+                      color: '#f5f0e8',
+                      borderRadius: 0,
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+              )}
+              {order.status !== 'in_progress' && item.treatment_notes && (
+                <div className="mt-3 pl-3" style={{ borderLeft: '1px solid rgba(196,184,154,0.2)' }}>
+                  <p className="text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: 'rgba(196,184,154,0.5)' }}>
+                    Treatment Notes
+                  </p>
+                  <p className="text-[11px] font-light leading-relaxed" style={{ color: 'rgba(245,240,232,0.6)' }}>
+                    {item.treatment_notes}
+                  </p>
                 </div>
               )}
 
@@ -454,7 +493,7 @@ export default function AdminOrderDetail() {
                       <button
                         onClick={() => setItemEdits(prev => ({
                           ...prev,
-                          [item.id]: { reviewedServiceId: '', reviewedPrice: '' },
+                          [item.id]: { ...prev[item.id], reviewedServiceId: '', reviewedPrice: '' },
                         }))}
                         className="text-[9px] tracking-[0.15em] uppercase"
                         style={{ color: 'rgba(196,184,154,0.4)' }}
@@ -530,6 +569,30 @@ export default function AdminOrderDetail() {
         <p className="text-xs font-light mb-4 max-w-2xl" style={{ color: '#e8a090' }}>
           {error}
         </p>
+      )}
+
+      {/* Save treatment notes button — only shown when in_progress */}
+      {order.status?.toLowerCase() === 'in_progress' && (
+        <div className="max-w-2xl mb-6">
+          <button
+            onClick={async () => {
+              setSaving(true)
+              setError(null)
+              try {
+                await saveItems()
+              } catch {
+                setError('Something went wrong. Please try again.')
+              } finally {
+                setSaving(false)
+              }
+            }}
+            disabled={saving}
+            className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
+            style={{ border: '1px solid #c4b89a', color: '#c4b89a', backgroundColor: 'transparent' }}
+          >
+            {saving ? 'Saving…' : 'Save Treatment Notes'}
+          </button>
+        </div>
       )}
 
       {/* Action buttons */}
