@@ -18,9 +18,9 @@ type Order = {
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
   under_review:          { bg: 'rgba(196,184,154,0.12)', color: '#c4b89a',  label: 'Under Review' },
   awaiting_confirmation: { bg: 'rgba(200,122,58,0.18)',  color: '#c87a3a',  label: 'Awaiting Confirmation' },
-  in_progress:           { bg: 'rgba(46,74,50,0.6)',     color: '#a8c5a0',  label: 'In Progress' },
-  ready:                 { bg: 'rgba(28,58,30,0.8)',     color: '#7aab80',  label: 'Ready' },
-  completed:             { bg: 'rgba(28,58,30,0.8)',     color: '#7aab80',  label: 'Completed' },
+  in_progress:           { bg: 'rgba(30,70,100,0.45)',   color: '#70b8d8',  label: 'In Progress' },
+  ready:                 { bg: 'rgba(20,75,35,0.65)',    color: '#5dce7a',  label: 'Ready' },
+  completed:             { bg: 'rgba(50,60,55,0.5)',     color: '#8fa8a0',  label: 'Completed' },
   cancelled:             { bg: 'rgba(58,28,28,0.6)',     color: '#c08080',  label: 'Cancelled' },
 }
 
@@ -28,7 +28,7 @@ function badge(status: string) {
   return STATUS_BADGE[status.toLowerCase()] ?? STATUS_BADGE.under_review
 }
 
-type FilterKey = 'under_review' | 'awaiting_confirmation' | 'in_progress' | 'all'
+type FilterKey = 'under_review' | 'awaiting_confirmation' | 'in_progress' | 'ready' | 'completed' | 'all'
 
 export default function AdminOrders() {
   const router = useRouter()
@@ -64,6 +64,8 @@ export default function AdminOrders() {
     { key: 'under_review',          label: 'Under Review' },
     { key: 'awaiting_confirmation',  label: 'Awaiting' },
     { key: 'in_progress',            label: 'In Progress' },
+    { key: 'ready',                  label: 'Ready' },
+    { key: 'completed',              label: 'Completed' },
     { key: 'all',                    label: 'All' },
   ]
 

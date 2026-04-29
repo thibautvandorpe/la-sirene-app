@@ -33,9 +33,9 @@ const APPT_BADGE: Record<string, string> = {
 const ORDER_BADGE: Record<string, string> = {
   under_review:           'bg-[#c4b89a]/15 text-[#c4b89a]',
   awaiting_confirmation:  'bg-[#c87a3a]/20 text-[#c87a3a]',
-  in_progress:            'bg-[#2e4a32]/60 text-[#a8c5a0]',
-  ready:                  'bg-[#1c3a1e]/80 text-[#7aab80]',
-  completed:              'bg-[#1c3a1e]/80 text-[#7aab80]',
+  in_progress:            'bg-[rgba(30,70,100,0.45)] text-[#70b8d8]',
+  ready:                  'bg-[rgba(20,75,35,0.65)] text-[#5dce7a]',
+  completed:              'bg-[rgba(50,60,55,0.5)] text-[#8fa8a0]',
   cancelled:              'bg-[#3a1c1c]/60 text-[#c08080]',
 }
 

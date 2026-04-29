@@ -121,9 +121,9 @@ export default function WardrobePage() {
 
   if (!loggedIn) {
     return (
-      <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#1c2b1e' }}>
+      <div className="min-h-screen" style={{ backgroundColor: '#1c2b1e' }}>
         <AppHeader />
-        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+        <div className="flex flex-col items-center justify-center px-6 text-center pt-32">
           <p className="text-sm font-light tracking-wide" style={{ color: '#f5f0e8' }}>Please sign in to access your wardrobe</p>
           <Link href="/login" className="mt-5 px-6 py-2 text-[10px] tracking-widest uppercase" style={{ color: '#c4b89a', border: '1px solid rgba(196,184,154,0.3)' }}>Sign In</Link>
         </div>
@@ -135,9 +135,9 @@ export default function WardrobePage() {
   const addSubCategoryOptions = services.filter(s => s.category === addCategory)
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#1c2b1e' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#1c2b1e' }}>
       <AppHeader />
-      <main className="flex-1 px-6 pt-4 pb-24">
+      <main className="px-6 pt-4 pb-32">
 
         {/* Header row */}
         <div className="flex items-center justify-between mb-8">
@@ -238,7 +238,7 @@ export default function WardrobePage() {
 
         {/* Category cards grid */}
         {categoryCards.length > 0 && !showAddForm && (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 content-start">
             {categoryCards.map(({ category, count, firstPhotoUrl }) => (
               <Link
                 key={category}

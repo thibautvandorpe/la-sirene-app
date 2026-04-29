@@ -53,9 +53,9 @@ export default function WardrobeSubCategoryPage() {
   if (!loaded) return null
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#1c2b1e' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#1c2b1e' }}>
       <AppHeader />
-      <main className="flex-1 px-6 pt-4 pb-24">
+      <main className="px-6 pt-4 pb-32">
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -79,7 +79,7 @@ export default function WardrobeSubCategoryPage() {
             <p className="text-sm font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>No items here yet</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 content-start">
             {garments.map(garment => (
               <Link
                 key={garment.id}

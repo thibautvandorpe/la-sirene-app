@@ -206,9 +206,9 @@ export default function WardrobeItemDetailPage() {
   const activePhoto = visiblePhotos[activePhotoIdx] ?? null
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#1c2b1e' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#1c2b1e' }}>
       <AppHeader />
-      <main className="flex-1 pb-24">
+      <main className="pb-32">
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-4 mb-4">

@@ -50,9 +50,9 @@ type ItemEdit = {
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
   under_review:          { bg: 'rgba(196,184,154,0.12)', color: '#c4b89a',  label: 'Under Review' },
   awaiting_confirmation: { bg: 'rgba(200,122,58,0.18)',  color: '#c87a3a',  label: 'Awaiting Confirmation' },
-  in_progress:           { bg: 'rgba(46,74,50,0.6)',     color: '#a8c5a0',  label: 'In Progress' },
-  ready:                 { bg: 'rgba(28,58,30,0.8)',     color: '#7aab80',  label: 'Ready' },
-  completed:             { bg: 'rgba(28,58,30,0.8)',     color: '#7aab80',  label: 'Completed' },
+  in_progress:           { bg: 'rgba(30,70,100,0.45)',   color: '#70b8d8',  label: 'In Progress' },
+  ready:                 { bg: 'rgba(20,75,35,0.65)',    color: '#5dce7a',  label: 'Ready' },
+  completed:             { bg: 'rgba(50,60,55,0.5)',     color: '#8fa8a0',  label: 'Completed' },
   cancelled:             { bg: 'rgba(58,28,28,0.6)',     color: '#c08080',  label: 'Cancelled' },
 }
 
@@ -72,7 +72,7 @@ export default function AdminOrderDetail() {
   const [adminMessage, setAdminMessage] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [confirmAction, setConfirmAction] = useState<'approval' | 'in_progress' | 'update' | null>(null)
+  const [confirmAction, setConfirmAction] = useState<'approval' | 'in_progress' | 'update' | 'ready' | 'completed' | null>(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -215,7 +215,7 @@ export default function AdminOrderDetail() {
     }
   }
 
-  async function handleSaveAndAdvance(newStatus: 'awaiting_confirmation' | 'in_progress') {
+  async function handleSaveAndAdvance(newStatus: 'awaiting_confirmation' | 'in_progress' | 'ready' | 'completed') {
     if (!order) return
     setSaving(true)
     setError(null)
@@ -592,6 +592,82 @@ export default function AdminOrderDetail() {
           >
             {saving ? 'Saving…' : 'Save Treatment Notes'}
           </button>
+        </div>
+      )}
+
+      {/* Mark as Ready — shown when in_progress */}
+      {order.status?.toLowerCase() === 'in_progress' && confirmAction === null && (
+        <div className="max-w-2xl mb-3">
+          <button
+            onClick={() => setConfirmAction('ready')}
+            className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
+            style={{ backgroundColor: 'rgba(28,58,30,0.8)', color: '#7aab80', border: '1px solid rgba(122,171,128,0.3)' }}
+          >
+            Mark as Ready
+          </button>
+        </div>
+      )}
+      {confirmAction === 'ready' && (
+        <div className="max-w-2xl mb-6 flex flex-col gap-3">
+          <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+            This will save treatment notes and mark the order as Ready to Pick Up. The client will be notified. Continue?
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => handleSaveAndAdvance('ready')}
+              disabled={saving}
+              className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
+              style={{ backgroundColor: 'rgba(28,58,30,0.8)', color: '#7aab80' }}
+            >
+              {saving ? 'Saving…' : 'Yes, Mark Ready'}
+            </button>
+            <button
+              onClick={() => setConfirmAction(null)}
+              disabled={saving}
+              className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
+              style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Mark as Completed — shown when ready */}
+      {order.status?.toLowerCase() === 'ready' && confirmAction === null && (
+        <div className="max-w-2xl mb-3">
+          <button
+            onClick={() => setConfirmAction('completed')}
+            className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
+            style={{ backgroundColor: 'rgba(28,58,30,0.8)', color: '#7aab80', border: '1px solid rgba(122,171,128,0.3)' }}
+          >
+            Mark as Completed
+          </button>
+        </div>
+      )}
+      {confirmAction === 'completed' && (
+        <div className="max-w-2xl mb-6 flex flex-col gap-3">
+          <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+            This will mark the order as Completed. This cannot be undone. Continue?
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => handleSaveAndAdvance('completed')}
+              disabled={saving}
+              className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
+              style={{ backgroundColor: 'rgba(28,58,30,0.8)', color: '#7aab80' }}
+            >
+              {saving ? 'Saving…' : 'Yes, Complete'}
+            </button>
+            <button
+              onClick={() => setConfirmAction(null)}
+              disabled={saving}
+              className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
+              style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       )}
 
