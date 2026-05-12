@@ -14,6 +14,12 @@ This is an MVP — features are built one at a time so the developer (Thibaut) c
 
 ---
 
+## Token Efficiency
+
+For any read-only or investigative task — including reading logs, searching the codebase, exploring unfamiliar files, or debugging an issue — delegate to a sub-agent rather than doing it in the main context. Only bring the relevant findings back into the main session, not the raw content.
+
+---
+
 ## How to Work with Thibaut
 
 - **Always show a plan before touching any file.** Describe what you will change, which files are affected, and why — then wait for explicit approval. No exceptions.
