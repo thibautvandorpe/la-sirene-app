@@ -13,6 +13,7 @@ export default function AdminHome() {
   const [underReviewCount, setUnderReviewCount] = useState(0)
   const [awaitingCount, setAwaitingCount] = useState(0)
   const [orderTotal, setOrderTotal] = useState(0)
+  const [unreadMessages, setUnreadMessages] = useState(0)
 
   async function handleSignOut() {
     await supabase.auth.signOut()
@@ -31,7 +32,7 @@ export default function AdminHome() {
 
       if (client?.role !== 'admin') { router.replace('/'); return }
 
-      const [{ data: apptData }, { data: orderData }] = await Promise.all([
+      const [{ data: apptData }, { data: orderData }, { count: unreadCount }] = await Promise.all([
         // Pending appointments with item prices
         supabase
           .from('appointments')
@@ -42,6 +43,12 @@ export default function AdminHome() {
           .from('orders')
           .select('id, total_price, status')
           .in('status', ['under_review', 'awaiting_confirmation']),
+        // Unread client messages
+        supabase
+          .from('chat_messages')
+          .select('id', { count: 'exact', head: true })
+          .eq('sender', 'client')
+          .is('read_at', null),
       ])
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,6 +73,7 @@ export default function AdminHome() {
         orders.reduce((sum: number, o: any) => sum + (o.total_price ?? 0), 0)
       )
 
+      setUnreadMessages(unreadCount ?? 0)
       setLoaded(true)
     })
   }, [router])
@@ -155,6 +163,29 @@ export default function AdminHome() {
               {orderTotal > 0
                 ? `$${orderTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })} total value`
                 : 'No active orders'}
+            </p>
+          </div>
+          <span className="text-lg shrink-0 ml-4" style={{ color: 'rgba(196,184,154,0.5)' }}>→</span>
+        </Link>
+
+        {/* Conversations card */}
+        <Link
+          href="/admin/conversations"
+          className="flex items-center justify-between px-6 py-6 transition-opacity hover:opacity-80"
+          style={{
+            backgroundColor: 'rgba(245,240,232,0.04)',
+            border: '1px solid rgba(196,184,154,0.15)',
+          }}
+        >
+          <div className="flex flex-col gap-2">
+            <p className="text-[10px] tracking-[0.3em] uppercase" style={{ color: '#c4b89a' }}>
+              Conversations
+            </p>
+            <p className="text-3xl font-light" style={{ color: unreadMessages > 0 ? '#c87a3a' : 'rgba(245,240,232,0.2)' }}>
+              {unreadMessages}
+              <span className="text-base ml-2" style={{ color: unreadMessages > 0 ? 'rgba(200,122,58,0.7)' : 'rgba(245,240,232,0.2)' }}>
+                unread
+              </span>
             </p>
           </div>
           <span className="text-lg shrink-0 ml-4" style={{ color: 'rgba(196,184,154,0.5)' }}>→</span>

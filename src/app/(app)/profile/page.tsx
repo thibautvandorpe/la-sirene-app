@@ -206,6 +206,23 @@ export default function ProfilePage() {
 
         </div>
 
+        {/* Messages section */}
+        {!editing && (
+          <div className="mt-10">
+            <p className="text-[10px] tracking-[0.35em] uppercase mb-4" style={{ color: '#c4b89a' }}>
+              Messages
+            </p>
+            <Link
+              href="/profile/chat"
+              className="flex items-center justify-between py-4 transition-opacity hover:opacity-70"
+              style={{ borderBottom: '1px solid rgba(196,184,154,0.15)' }}
+            >
+              <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>Chat with our team</p>
+              <span style={{ color: 'rgba(196,184,154,0.5)' }}>→</span>
+            </Link>
+          </div>
+        )}
+
         {/* Save / Cancel — only shown in edit mode */}
         {editing && (
           <div className="flex flex-col gap-3 mt-10">
