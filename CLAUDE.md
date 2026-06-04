@@ -144,7 +144,7 @@ On load: reads `?appointmentId` from URL, fetches draft from Supabase, restores 
 Work through these **one at a time**. Do not start the next until Thibaut confirms the current one is complete and understood.
 
 1. ✅ **Treatment history** — Past treatments displayed per garment in the wardrobe. Team enters treatment notes in admin when order is in progress. Visible in garment detail page.
-2. **Chat with advisor** — Chat section in Profile tab. Team accesses from admin. Notifications on both sides.
+2. ✅ **Chat with advisor** — Chat section in Profile tab (Phase 1). Real-time messaging via Supabase Realtime. Team accesses from admin Conversations section. Push notifications deferred to Phase 2.
 3. **Order change notifications** — Team edits trigger "awaiting confirmation" status + client notification. Client confirmation triggers team notification.
 4. ✅ **Extended order status flow** — "Ready" and "Completed" statuses added. Team sets from admin order detail page. Status history timeline shown on each order.
 5. **Payment method** — Add payment info to Profile tab. Block appointment confirmation if no payment method on file.
