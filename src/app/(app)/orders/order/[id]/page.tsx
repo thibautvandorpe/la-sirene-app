@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
 type OrderItem = {
@@ -26,6 +27,12 @@ type Order = {
   order_items: OrderItem[]
 }
 
+type StatusHistoryEntry = {
+  id: string
+  status: string
+  changed_at: string
+}
+
 function OrderDetailInner() {
   const router = useRouter()
   const params = useParams()
@@ -33,6 +40,7 @@ function OrderDetailInner() {
 
   const [loaded, setLoaded] = useState(false)
   const [order, setOrder] = useState<Order | null>(null)
+  const [statusHistory, setStatusHistory] = useState<StatusHistoryEntry[]>([])
   const [confirming, setConfirming] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -41,21 +49,28 @@ function OrderDetailInner() {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) { router.replace('/login'); return }
 
-      // 1. Fetch order with original service only — can't join services twice in one query
-      const { data, error: queryErr } = await supabase
-        .from('orders')
-        .select(`
-          id, status, total_price, delivery_method, scheduled_at, notes, admin_message,
-          order_items(
-            id, final_price, special_instructions, reviewed_price, reviewed_service_id,
-            services!order_items_service_id_fkey(category, sub_category),
-            garments(brand, color),
-            order_item_photos(url)
-          )
-        `)
-        .eq('id', id)
-        .eq('client_id', session.user.id)
-        .maybeSingle()
+      // 1. Fetch order and status history in parallel
+      const [{ data, error: queryErr }, { data: historyData }] = await Promise.all([
+        supabase
+          .from('orders')
+          .select(`
+            id, status, total_price, delivery_method, scheduled_at, notes, admin_message,
+            order_items(
+              id, final_price, special_instructions, reviewed_price, reviewed_service_id,
+              services!order_items_service_id_fkey(category, sub_category),
+              garments(brand, color),
+              order_item_photos(url)
+            )
+          `)
+          .eq('id', id)
+          .eq('client_id', session.user.id)
+          .maybeSingle(),
+        supabase
+          .from('order_status_history')
+          .select('id, status, changed_at')
+          .eq('order_id', id)
+          .order('changed_at', { ascending: true }),
+      ])
 
       if (queryErr) { console.error(queryErr); router.replace('/orders'); return }
       if (!data) { router.replace('/orders'); return }
@@ -95,6 +110,7 @@ function OrderDetailInner() {
       }
 
       setOrder(enriched)
+      setStatusHistory((historyData as StatusHistoryEntry[]) ?? [])
       setLoaded(true)
     })
   }, [id, router])
@@ -106,7 +122,7 @@ function OrderDetailInner() {
     try {
       const { error: err } = await supabase
         .from('orders')
-        .update({ status: 'in_progress' })
+        .update({ status: 'under_review' })
         .eq('id', order.id)
       if (err) throw err
       router.replace('/orders')
@@ -124,6 +140,16 @@ function OrderDetailInner() {
     : order.delivery_method === 'fedex' ? 'FedEx'
     : 'Pick Up'
 
+  const STATUS_BADGE: Record<string, { color: string; label: string }> = {
+    under_review:          { color: '#c4b89a',  label: 'Under Review' },
+    awaiting_confirmation: { color: '#c87a3a',  label: 'Awaiting Confirmation' },
+    in_progress:           { color: '#70b8d8',  label: 'In Progress' },
+    ready:                 { color: '#5dce7a',  label: 'Ready' },
+    completed:             { color: '#8fa8a0',  label: 'Completed' },
+    cancelled:             { color: '#c08080',  label: 'Cancelled' },
+  }
+  const { color: badgeColor, label: badgeLabel } = STATUS_BADGE[order.status] ?? STATUS_BADGE.under_review
+
   return (
     <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#1c2b1e' }}>
 
@@ -138,7 +164,7 @@ function OrderDetailInner() {
           ←
         </button>
         <h1 className="text-xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
-          Order Review
+          Order Details
         </h1>
       </div>
 
@@ -159,9 +185,9 @@ function OrderDetailInner() {
         )}
         <span
           className="self-start mt-1 text-[9px] tracking-[0.25em] uppercase px-2 py-0.5 rounded-sm"
-          style={{ backgroundColor: 'rgba(200,122,58,0.18)', color: '#c87a3a' }}
+          style={{ backgroundColor: `${badgeColor}18`, color: badgeColor }}
         >
-          Awaiting Your Confirmation
+          {badgeLabel}
         </span>
       </div>
 
@@ -271,51 +297,107 @@ function OrderDetailInner() {
         </p>
       </div>
 
-      {/* Disclaimer */}
-      <p className="text-[11px] font-light leading-relaxed mb-8" style={{ color: 'rgba(245,240,232,0.35)' }}>
-        Please review the services and pricing above. By confirming, you agree to proceed with the order as shown.
-      </p>
-
-      {/* Error */}
-      {error && (
-        <p className="text-xs font-light mb-4" style={{ color: '#e8a090' }}>
-          {error}
-        </p>
-      )}
-
-      {/* Confirm action */}
-      {confirming ? (
-        <div className="flex flex-col gap-3">
-          <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
-            By confirming, you approve the order and our team will begin working on your garments.
+      {order.status === 'awaiting_confirmation' && (
+        <>
+          {/* Disclaimer */}
+          <p className="text-[11px] font-light leading-relaxed mb-8" style={{ color: 'rgba(245,240,232,0.35)' }}>
+            Please review the services and pricing above. By confirming, you agree to proceed with the order as shown.
           </p>
-          <div className="flex gap-3">
+
+          {/* Error */}
+          {error && (
+            <p className="text-xs font-light mb-4" style={{ color: '#e8a090' }}>
+              {error}
+            </p>
+          )}
+
+          {/* Confirm action */}
+          {confirming ? (
+            <div className="flex flex-col gap-3">
+              <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+                By confirming, you approve the order and our team will begin working on your garments.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleConfirm}
+                  disabled={saving}
+                  className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
+                  style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+                >
+                  {saving ? 'Confirming…' : 'Yes, Confirm'}
+                </button>
+                <button
+                  onClick={() => setConfirming(false)}
+                  disabled={saving}
+                  className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
+                  style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
             <button
-              onClick={handleConfirm}
-              disabled={saving}
-              className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
+              onClick={() => setConfirming(true)}
+              className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
               style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
             >
-              {saving ? 'Confirming…' : 'Yes, Confirm'}
+              Confirm Order
             </button>
-            <button
-              onClick={() => setConfirming(false)}
-              disabled={saving}
-              className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
-              style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
-            >
-              Cancel
-            </button>
+          )}
+
+          <Link
+            href="/profile/chat"
+            className="block text-center mt-5 text-[11px] font-light"
+            style={{ color: 'rgba(196,184,154,0.5)' }}
+          >
+            Have a question? Chat with our team →
+          </Link>
+        </>
+      )}
+
+      {order.status !== 'awaiting_confirmation' && (
+        <Link
+          href="/profile/chat"
+          className="block text-center mt-4 text-[11px] font-light"
+          style={{ color: 'rgba(196,184,154,0.5)' }}
+        >
+          Chat with our team →
+        </Link>
+      )}
+
+      {statusHistory.length > 0 && (
+        <div className="mt-10">
+          <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: 'rgba(196,184,154,0.6)' }}>
+            Order History
+          </p>
+          <div className="flex flex-col">
+            {statusHistory.map((entry, idx) => {
+              const { color, label } = STATUS_BADGE[entry.status] ?? STATUS_BADGE.under_review
+              const isLast = idx === statusHistory.length - 1
+              return (
+                <div key={entry.id} className="flex gap-4">
+                  <div className="flex flex-col items-center" style={{ width: 16 }}>
+                    <div className="w-2 h-2 rounded-full mt-1 shrink-0" style={{ backgroundColor: color }} />
+                    {!isLast && <div className="flex-1 w-px mt-1" style={{ backgroundColor: 'rgba(196,184,154,0.15)' }} />}
+                  </div>
+                  <div className="pb-5">
+                    <p className="text-xs font-light" style={{ color }}>{label}</p>
+                    <p className="text-[10px] font-light mt-0.5" style={{ color: 'rgba(245,240,232,0.35)' }}>
+                      {new Date(entry.changed_at).toLocaleDateString('en-US', {
+                        month: 'long', day: 'numeric', year: 'numeric',
+                      })}{' '}
+                      at{' '}
+                      {new Date(entry.changed_at).toLocaleTimeString('en-US', {
+                        hour: 'numeric', minute: '2-digit',
+                      })}
+                    </p>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
-      ) : (
-        <button
-          onClick={() => setConfirming(true)}
-          className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
-          style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
-        >
-          Confirm Order
-        </button>
       )}
 
     </main>

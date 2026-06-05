@@ -21,6 +21,7 @@ type Order = {
   delivery_method: string | null
   scheduled_at: string | null
   notes: string | null
+  created_at: string
 }
 
 const APPT_BADGE: Record<string, string> = {
@@ -95,7 +96,7 @@ export default function OrdersPage() {
             .order('created_at', { ascending: false }),
           supabase
             .from('orders')
-            .select('id, status, total_price, delivery_method, scheduled_at, notes')
+            .select('id, status, total_price, delivery_method, scheduled_at, notes, created_at')
             .eq('client_id', session.user.id)
             .order('created_at', { ascending: false }),
         ])
@@ -303,51 +304,45 @@ export default function OrdersPage() {
                 No orders yet
               </p>
             ) : (
-              <ul className="flex flex-col gap-3">
+              <ul className="flex flex-col">
                 {orders.map(order => (
-                  <li
-                    key={order.id}
-                    className="flex items-center justify-between py-4 px-4"
-                    style={CARD}
-                  >
-                    <div className="flex flex-col gap-1.5">
-                      {/* Line 1 — delivery method + date/time (pick up only) */}
-                      <div className="flex flex-col gap-0.5">
+                  <li key={order.id} style={{ borderBottom: '1px solid rgba(196,184,154,0.12)' }}>
+                    <Link
+                      href={`/orders/order/${order.id}`}
+                      className="flex items-center justify-between py-4 px-4"
+                      style={{ borderLeft: order.status === 'awaiting_confirmation' ? '2px solid #c87a3a' : '2px solid transparent' }}
+                    >
+                      <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                        {/* Row 1 — delivery method + pick-up date */}
                         <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>
                           {order.delivery_method === 'drop_off'
                             ? 'Drop Off'
                             : order.delivery_method === 'fedex'
                               ? 'FedEx'
                               : 'Pick Up'}
+                          {(order.delivery_method === 'pick_up' || order.delivery_method == null) && order.scheduled_at && (
+                            <span className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+                              {' · '}{formatApptDate(order.scheduled_at)}
+                            </span>
+                          )}
                         </p>
-                        {(order.delivery_method === 'pick_up' || order.delivery_method == null) && order.scheduled_at && (
-                          <p className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
-                            {formatApptDate(order.scheduled_at)}
-                            {order.notes ? ` · ${order.notes}` : ''}
-                          </p>
-                        )}
+                        {/* Row 2 — status badge */}
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[9px] tracking-[0.25em] uppercase px-2 py-0.5 rounded-sm ${badgeClass(ORDER_BADGE, order.status)}`}>
+                            {orderStatusLabel(order.status)}
+                          </span>
+                        </div>
+                        {/* Row 3 — created date */}
+                        <p className="text-[10px] font-light" style={{ color: 'rgba(245,240,232,0.35)' }}>
+                          Order created on {new Date(order.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </p>
                       </div>
-                      {/* Line 2 — status badge */}
-                      <span className={`self-start text-[9px] tracking-[0.25em] uppercase px-2 py-0.5 rounded-sm ${badgeClass(ORDER_BADGE, order.status)}`}>
-                        {orderStatusLabel(order.status)}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4 ml-4 shrink-0">
                       {order.total_price != null && (
-                        <p className="text-sm font-light text-[#c4b89a]">
+                        <p className="text-sm font-light text-[#c4b89a] ml-4 shrink-0">
                           {order.total_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
                         </p>
                       )}
-                      {order.status === 'awaiting_confirmation' && (
-                        <Link
-                          href={`/orders/order/${order.id}`}
-                          className="text-xs font-light"
-                          style={{ color: '#c87a3a' }}
-                        >
-                          Review
-                        </Link>
-                      )}
-                    </div>
+                    </Link>
                   </li>
                 ))}
               </ul>
