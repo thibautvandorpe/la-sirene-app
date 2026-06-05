@@ -77,8 +77,11 @@ export default function ConversationsPage() {
         unreadCount: grouped.get(id)!.unreadCount,
       }))
 
-      // Sort by last message date descending
-      rows.sort((a, b) => new Date(b.lastMessage.created_at).getTime() - new Date(a.lastMessage.created_at).getTime())
+      // Sort by last message date descending within each group
+      const byRecent = (a: ConversationRow, b: ConversationRow) =>
+        new Date(b.lastMessage.created_at).getTime() - new Date(a.lastMessage.created_at).getTime()
+
+      rows.sort(byRecent)
 
       setConversations(rows)
       setLoaded(true)
@@ -107,39 +110,69 @@ export default function ConversationsPage() {
         <p className="text-sm font-light" style={{ color: 'rgba(245,240,232,0.3)' }}>
           No conversations yet.
         </p>
-      ) : (
-        <div className="flex flex-col max-w-2xl" style={{ borderTop: '1px solid rgba(196,184,154,0.1)' }}>
-          {conversations.map(row => (
-            <Link
-              key={row.clientId}
-              href={`/admin/conversations/${row.clientId}`}
-              className="flex items-center justify-between py-5 transition-opacity hover:opacity-70"
-              style={{ borderBottom: '1px solid rgba(196,184,154,0.1)' }}
-            >
-              <div className="flex flex-col gap-1 flex-1 min-w-0 mr-4">
-                <div className="flex items-center gap-3">
-                  <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>{row.clientName}</p>
-                  {row.unreadCount > 0 && (
-                    <span
-                      className="text-[9px] font-medium px-1.5 py-0.5 rounded-full"
-                      style={{ backgroundColor: '#c87a3a', color: '#f5f0e8', minWidth: '18px', textAlign: 'center' }}
-                    >
-                      {row.unreadCount}
-                    </span>
-                  )}
-                </div>
-                <p
-                  className="text-xs font-light truncate"
-                  style={{ color: 'rgba(245,240,232,0.4)' }}
-                >
-                  {row.lastMessage.sender === 'team' ? 'You: ' : ''}{row.lastMessage.content}
-                </p>
+      ) : (() => {
+        const unread = conversations.filter(r => r.unreadCount > 0)
+        const read = conversations.filter(r => r.unreadCount === 0)
+        const hasBoth = unread.length > 0 && read.length > 0
+
+        const renderRows = (rows: ConversationRow[]) => rows.map(row => (
+          <Link
+            key={row.clientId}
+            href={`/admin/conversations/${row.clientId}`}
+            className="flex items-center justify-between py-5 transition-opacity hover:opacity-70"
+            style={{ borderBottom: '1px solid rgba(196,184,154,0.1)' }}
+          >
+            <div className="flex flex-col gap-1 flex-1 min-w-0 mr-4">
+              <div className="flex items-center gap-3">
+                <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>{row.clientName}</p>
+                {row.unreadCount > 0 && (
+                  <span
+                    className="text-[9px] font-medium px-1.5 py-0.5 rounded-full"
+                    style={{ backgroundColor: '#c87a3a', color: '#f5f0e8', minWidth: '18px', textAlign: 'center' }}
+                  >
+                    {row.unreadCount}
+                  </span>
+                )}
               </div>
-              <span className="text-sm shrink-0" style={{ color: 'rgba(196,184,154,0.4)' }}>→</span>
-            </Link>
-          ))}
-        </div>
-      )}
+              <p
+                className="text-xs font-light truncate"
+                style={{ color: 'rgba(245,240,232,0.4)' }}
+              >
+                {row.lastMessage.sender === 'team' ? 'You: ' : ''}{row.lastMessage.content}
+              </p>
+            </div>
+            <span className="text-sm shrink-0" style={{ color: 'rgba(196,184,154,0.4)' }}>→</span>
+          </Link>
+        ))
+
+        return (
+          <div className="flex flex-col max-w-2xl">
+            {unread.length > 0 && (
+              <div>
+                <p className="text-[10px] tracking-[0.35em] uppercase pb-2 pt-1" style={{ color: 'rgba(196,184,154,0.5)' }}>
+                  Unread
+                </p>
+                <div style={{ borderTop: '1px solid rgba(196,184,154,0.1)' }}>
+                  {renderRows(unread)}
+                </div>
+              </div>
+            )}
+            {hasBoth && <div className="mt-8" />}
+            {read.length > 0 && (
+              <div>
+                {hasBoth && (
+                  <p className="text-[10px] tracking-[0.35em] uppercase pb-2 pt-1" style={{ color: 'rgba(196,184,154,0.5)' }}>
+                    All Conversations
+                  </p>
+                )}
+                <div style={{ borderTop: '1px solid rgba(196,184,154,0.1)' }}>
+                  {renderRows(read)}
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      })()}
 
     </main>
   )

@@ -29,6 +29,7 @@ export default function AdminConversationPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
+  const [markingUnread, setMarkingUnread] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -105,6 +106,26 @@ export default function AdminConversationPage() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  async function handleMarkAsUnread() {
+    if (markingUnread) return
+    setMarkingUnread(true)
+    const { data } = await supabase
+      .from('chat_messages')
+      .select('id')
+      .eq('client_id', clientId)
+      .eq('sender', 'client')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+    if (data) {
+      await supabase
+        .from('chat_messages')
+        .update({ read_at: null })
+        .eq('id', data.id)
+    }
+    router.push('/admin/conversations')
+  }
+
   async function handleSend() {
     if (!input.trim() || sending) return
     setSending(true)
@@ -135,6 +156,14 @@ export default function AdminConversationPage() {
           </p>
           <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>{clientName}</p>
         </div>
+        <button
+          onClick={handleMarkAsUnread}
+          disabled={markingUnread}
+          className="ml-auto text-[10px] tracking-[0.25em] uppercase font-light disabled:opacity-30"
+          style={{ color: 'rgba(196,184,154,0.5)' }}
+        >
+          Mark as Unread
+        </button>
       </div>
 
       {/* Message list */}

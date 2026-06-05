@@ -147,7 +147,9 @@ Work through these **one at a time**. Do not start the next until Thibaut confir
 2. ✅ **Chat with advisor** — Chat section in Profile tab (Phase 1). Real-time messaging via Supabase Realtime. Team accesses from admin Conversations section. Push notifications deferred to Phase 2.
 3. **Order change notifications** — Team edits trigger "awaiting confirmation" status + client notification. Client confirmation triggers team notification.
 4. ✅ **Extended order status flow** — "Ready" and "Completed" statuses added. Team sets from admin order detail page. Status history timeline shown on each order.
-5. **Payment method** — Add payment info to Profile tab. Block appointment confirmation if no payment method on file.
+5. **Payment method** — Pending CleanCloud API investigation. If no API, use Stripe: card on file in Profile tab, automatic charge when order is marked Completed, order marked Paid via webhook.
+6. **Push notifications (Phase 2)** — PWA Web Push for chat messages and order status changes. Requires user to install app from Safari first. Will be replaced by full native push when app is wrapped with Capacitor.
+7. **Capacitor wrap** — Convert PWA to native iOS + Android app for App Store and Google Play submission. Unlocks full native push notifications without caveats.
 
 ---
 
