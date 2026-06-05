@@ -136,6 +136,16 @@ export default function AdminConversationPage() {
       sender: 'team',
       content,
     })
+    fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clientId,
+        type: 'chat_message',
+        title: 'New message from La Sirène',
+        body: content,
+      }),
+    }).catch(() => {})
     setSending(false)
   }
 

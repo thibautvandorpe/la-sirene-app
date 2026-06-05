@@ -264,7 +264,7 @@ export default function AdminOrderDetail() {
       // Log status change in history
       await supabase.from('order_status_history').insert({ order_id: order.id, status: newStatus })
 
-      // Notify the client
+      // Notify the client (in-app + email)
       const msg = statusMessages[newStatus]
       if (msg) {
         await supabase.from('notifications').insert({
@@ -274,6 +274,17 @@ export default function AdminOrderDetail() {
           body: msg.body,
           order_id: order.id,
         })
+        fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            clientId: order.client_id,
+            type: 'order_status',
+            title: msg.title,
+            body: msg.body,
+            orderId: order.id,
+          }),
+        }).catch(() => {})
       }
 
       router.replace('/admin/orders')

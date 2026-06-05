@@ -145,7 +145,7 @@ Work through these **one at a time**. Do not start the next until Thibaut confir
 
 1. ✅ **Treatment history** — Past treatments displayed per garment in the wardrobe. Team enters treatment notes in admin when order is in progress. Visible in garment detail page.
 2. ✅ **Chat with advisor** — Chat section in Profile tab (Phase 1). Real-time messaging via Supabase Realtime. Team accesses from admin Conversations section. Push notifications deferred to Phase 2.
-3. **Order change notifications** — Team edits trigger "awaiting confirmation" status + client notification. Client confirmation triggers team notification.
+3. ✅ **Order change notifications** — Team advances order to "awaiting confirmation" + client receives in-app notification. Client reviews order details, confirms (returns to "under review") or chats with team. Notification center (bell icon) and email toggle built. Email sending deferred to Phase 2.
 4. ✅ **Extended order status flow** — "Ready" and "Completed" statuses added. Team sets from admin order detail page. Status history timeline shown on each order.
 5. **Payment method** — Pending CleanCloud API investigation. If no API, use Stripe: card on file in Profile tab, automatic charge when order is marked Completed, order marked Paid via webhook.
 6. **Push notifications (Phase 2)** — PWA Web Push for chat messages and order status changes. Requires user to install app from Safari first. Will be replaced by full native push when app is wrapped with Capacitor.
