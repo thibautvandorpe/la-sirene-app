@@ -14,6 +14,13 @@ type ChatMessage = {
   read_at: string | null
 }
 
+function formatTime(iso: string) {
+  return new Date(iso).toLocaleString('en-US', {
+    month: 'short', day: 'numeric',
+    hour: 'numeric', minute: '2-digit', hour12: true,
+  })
+}
+
 export default function ChatPage() {
   const router = useRouter()
   const [loaded, setLoaded] = useState(false)
@@ -117,6 +124,15 @@ export default function ChatPage() {
                 <p className="text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: '#c4b89a' }}>La Sirène</p>
               )}
               <p>{msg.content}</p>
+              <p
+                className="text-[10px] mt-1.5"
+                style={{
+                  color: msg.sender === 'client' ? 'rgba(28,43,30,0.45)' : 'rgba(245,240,232,0.35)',
+                  textAlign: msg.sender === 'client' ? 'right' : 'left',
+                }}
+              >
+                {formatTime(msg.created_at)}
+              </p>
             </div>
           </div>
         ))}

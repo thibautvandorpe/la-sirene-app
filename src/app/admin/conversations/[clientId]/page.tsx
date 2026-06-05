@@ -14,6 +14,13 @@ type ChatMessage = {
   read_at: string | null
 }
 
+function formatTime(iso: string) {
+  return new Date(iso).toLocaleString('en-US', {
+    month: 'short', day: 'numeric',
+    hour: 'numeric', minute: '2-digit', hour12: true,
+  })
+}
+
 export default function AdminConversationPage() {
   const router = useRouter()
   const { clientId } = useParams<{ clientId: string }>()
@@ -150,6 +157,15 @@ export default function AdminConversationPage() {
                 <p className="text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: '#c4b89a' }}>{clientName}</p>
               )}
               <p>{msg.content}</p>
+              <p
+                className="text-[10px] mt-1.5"
+                style={{
+                  color: msg.sender === 'team' ? 'rgba(28,43,30,0.45)' : 'rgba(245,240,232,0.35)',
+                  textAlign: msg.sender === 'team' ? 'right' : 'left',
+                }}
+              >
+                {formatTime(msg.created_at)}
+              </p>
             </div>
           </div>
         ))}
