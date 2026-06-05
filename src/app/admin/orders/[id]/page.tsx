@@ -224,6 +224,25 @@ export default function AdminOrderDetail() {
     }
   }
 
+  const statusMessages: Record<string, { title: string; body: string }> = {
+    awaiting_confirmation: {
+      title: 'Your order is awaiting confirmation',
+      body: 'The La Sirène team has reviewed your order and is requesting your approval.',
+    },
+    in_progress: {
+      title: 'Your order is in progress',
+      body: 'The La Sirène team has started working on your garments.',
+    },
+    ready: {
+      title: 'Your order is ready',
+      body: 'Your order is ready for pick up. We look forward to seeing you.',
+    },
+    completed: {
+      title: 'Your order is complete',
+      body: 'Your garments have been returned. Thank you for choosing La Sirène.',
+    },
+  }
+
   async function handleSaveAndAdvance(newStatus: 'awaiting_confirmation' | 'in_progress' | 'ready' | 'completed') {
     if (!order) return
     setSaving(true)
@@ -244,6 +263,18 @@ export default function AdminOrderDetail() {
 
       // Log status change in history
       await supabase.from('order_status_history').insert({ order_id: order.id, status: newStatus })
+
+      // Notify the client
+      const msg = statusMessages[newStatus]
+      if (msg) {
+        await supabase.from('notifications').insert({
+          client_id: order.client_id,
+          type: 'order_status',
+          title: msg.title,
+          body: msg.body,
+          order_id: order.id,
+        })
+      }
 
       router.replace('/admin/orders')
     } catch {

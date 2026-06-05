@@ -44,6 +44,14 @@ export default function ChatPage() {
         .order('created_at', { ascending: true })
 
       setMessages((data as ChatMessage[]) ?? [])
+
+      await supabase
+        .from('chat_messages')
+        .update({ read_at: new Date().toISOString() })
+        .eq('client_id', userId)
+        .eq('sender', 'team')
+        .is('read_at', null)
+
       setLoaded(true)
     })
   }, [router])

@@ -21,6 +21,8 @@ export default function ProfilePage() {
 
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [emailNotificationsEnabled, setEmailNotificationsEnabled] = useState(true)
+  const [userId, setUserId] = useState<string | null>(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -32,21 +34,33 @@ export default function ProfilePage() {
 
       setLoggedIn(true)
       setEmail(session.user.email ?? '')
+      setUserId(session.user.id)
 
       const { data } = await supabase
         .from('clients')
-        .select('full_name, phone')
+        .select('full_name, phone, email_notifications_enabled')
         .eq('id', session.user.id)
         .maybeSingle()
 
       if (data) {
         setFullName(data.full_name ?? '')
         setPhone(data.phone ?? '')
+        setEmailNotificationsEnabled(data.email_notifications_enabled ?? true)
       }
 
       setLoaded(true)
     })
   }, [])
+
+  async function handleToggleEmailNotifications() {
+    if (!userId) return
+    const next = !emailNotificationsEnabled
+    setEmailNotificationsEnabled(next)
+    await supabase
+      .from('clients')
+      .update({ email_notifications_enabled: next })
+      .eq('id', userId)
+  }
 
   function handleStartEdit() {
     setEditName(fullName)
@@ -204,24 +218,44 @@ export default function ProfilePage() {
             </p>
           </div>
 
-        </div>
-
-        {/* Messages section */}
-        {!editing && (
-          <div className="mt-10">
-            <p className="text-[10px] tracking-[0.35em] uppercase mb-4" style={{ color: '#c4b89a' }}>
-              Messages
-            </p>
-            <Link
-              href="/profile/chat"
-              className="flex items-center justify-between py-4 transition-opacity hover:opacity-70"
-              style={{ borderBottom: '1px solid rgba(196,184,154,0.15)' }}
+          {/* Email notifications toggle */}
+          <div
+            className="flex items-start justify-between pb-3"
+            style={{ borderBottom: '1px solid rgba(196,184,154,0.1)' }}
+          >
+            <div className="flex-1 pr-6">
+              <p className="text-[10px] tracking-[0.3em] uppercase mb-1.5" style={{ color: '#c4b89a' }}>
+                Email Notifications
+              </p>
+              <p className="text-xs font-light leading-relaxed" style={{ color: 'rgba(245,240,232,0.4)' }}>
+                Receive an email when your order status changes or you have a new message
+              </p>
+            </div>
+            <button
+              onClick={handleToggleEmailNotifications}
+              className="shrink-0 mt-0.5 relative"
+              style={{
+                width: 40, height: 22,
+                borderRadius: 11,
+                backgroundColor: emailNotificationsEnabled ? '#c4b89a' : 'rgba(245,240,232,0.15)',
+                transition: 'background-color 0.2s',
+              }}
+              aria-label={emailNotificationsEnabled ? 'Disable email notifications' : 'Enable email notifications'}
             >
-              <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>Chat with our team</p>
-              <span style={{ color: 'rgba(196,184,154,0.5)' }}>→</span>
-            </Link>
+              <span
+                className="absolute top-0.5"
+                style={{
+                  width: 18, height: 18,
+                  borderRadius: '50%',
+                  backgroundColor: emailNotificationsEnabled ? '#1c2b1e' : 'rgba(245,240,232,0.4)',
+                  left: emailNotificationsEnabled ? 19 : 3,
+                  transition: 'left 0.2s, background-color 0.2s',
+                }}
+              />
+            </button>
           </div>
-        )}
+
+        </div>
 
         {/* Save / Cancel — only shown in edit mode */}
         {editing && (
