@@ -41,15 +41,34 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16" style={{ backgroundColor: '#1c2b1e' }}>
+    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16" style={{ backgroundColor: '#F8F0ED' }}>
       <div className="w-full max-w-sm">
 
         {/* Wordmark */}
         <div className="text-center mb-10">
-          <h1 className="font-serif text-3xl font-light tracking-[0.15em]" style={{ color: '#f5f0e8' }}>
-            La Sirène
-          </h1>
-          <div className="mx-auto mt-5 mb-0 h-px w-16" style={{ backgroundColor: '#c4b89a' }} />
+          <div
+            className="mx-auto mb-6"
+            style={{
+              width: '96px',
+              height: '96px',
+              backgroundColor: '#9A7532',
+              WebkitMask: 'url(/logo.png) center / contain no-repeat',
+              mask: 'url(/logo.png) center / contain no-repeat',
+            }}
+          />
+          <h1 className="sr-only">La Sirène</h1>
+          <div
+            aria-hidden="true"
+            className="mx-auto"
+            style={{
+              width: '180px',
+              height: '48px',
+              backgroundColor: '#9A7532',
+              WebkitMask: 'url(/wordmark.png) center / contain no-repeat',
+              mask: 'url(/wordmark.png) center / contain no-repeat',
+            }}
+          />
+          <div className="mx-auto mt-5 mb-0 h-px w-16" style={{ backgroundColor: '#9A7532' }} />
         </div>
 
         {/* Error */}
@@ -61,7 +80,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div>
-            <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+            <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
               Email
             </label>
             <input
@@ -72,23 +91,23 @@ export default function LoginPage() {
               required
               autoComplete="email"
               placeholder="marie@example.com"
-              className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#f5f0e8]/20 transition-colors"
+              className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#141B45]/20 transition-colors"
               style={{
-                color: '#f5f0e8',
-                borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
+                color: '#141B45',
+                borderBottom: '1px solid rgba(154, 117, 50, 0.4)',
               }}
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-3">
-              <label className="block text-[10px] tracking-[0.3em] uppercase" style={{ color: '#c4b89a' }}>
+              <label className="block text-[10px] tracking-[0.3em] uppercase" style={{ color: '#9A7532' }}>
                 Password
               </label>
               <Link
                 href="/forgot-password"
                 className="text-[10px] tracking-wide transition-opacity hover:opacity-100"
-                style={{ color: 'rgba(196, 184, 154, 0.55)' }}
+                style={{ color: 'rgba(154, 117, 50, 0.55)' }}
               >
                 Forgot password?
               </Link>
@@ -101,10 +120,10 @@ export default function LoginPage() {
               required
               autoComplete="current-password"
               placeholder="Your password"
-              className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#f5f0e8]/20 transition-colors"
+              className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#141B45]/20 transition-colors"
               style={{
-                color: '#f5f0e8',
-                borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
+                color: '#141B45',
+                borderBottom: '1px solid rgba(154, 117, 50, 0.4)',
               }}
             />
           </div>
@@ -113,15 +132,15 @@ export default function LoginPage() {
             type="submit"
             disabled={loading}
             className="w-full text-[10px] tracking-[0.3em] uppercase py-4 mt-4 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+            style={{ backgroundColor: '#DBA69D', color: '#141B45' }}
           >
             {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
 
-        <p className="text-center text-xs font-light mt-10" style={{ color: 'rgba(245, 240, 232, 0.45)' }}>
+        <p className="text-center text-xs font-light mt-10" style={{ color: 'rgba(20, 27, 69, 0.45)' }}>
           New to La Sirène?{' '}
-          <Link href="/signup" className="transition-opacity hover:opacity-100" style={{ color: '#c4b89a' }}>
+          <Link href="/signup" className="transition-opacity hover:opacity-100" style={{ color: '#9A7532' }}>
             Create Account
           </Link>
         </p>
