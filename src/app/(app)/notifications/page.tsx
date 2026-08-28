@@ -88,29 +88,29 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#1c2b1e' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#F8F0ED' }}>
 
       {/* Header */}
       <div
         className="flex items-center gap-4 px-6 py-5 shrink-0"
         style={{
-          borderBottom: '1px solid rgba(196,184,154,0.1)',
+          borderBottom: '1px solid rgba(154,117,50,0.1)',
           paddingTop: 'max(env(safe-area-inset-top), 20px)',
         }}
       >
-        <button onClick={() => router.back()} style={{ color: '#c4b89a', fontSize: '1.125rem' }}>←</button>
+        <button onClick={() => router.back()} style={{ color: '#9A7532', fontSize: '1.125rem' }}>←</button>
         <div>
-          <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(196,184,154,0.5)' }}>
+          <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(154,117,50,0.5)' }}>
             La Sirène
           </p>
-          <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>Notifications</p>
+          <p className="text-sm font-light" style={{ color: '#141B45' }}>Notifications</p>
         </div>
       </div>
 
       {/* Content */}
       <div className="px-6 py-6">
         {notifications.length === 0 ? (
-          <p className="text-sm font-light text-center mt-16" style={{ color: 'rgba(245,240,232,0.3)' }}>
+          <p className="text-sm font-light text-center mt-16" style={{ color: 'rgba(20,27,69,0.3)' }}>
             No notifications yet.
           </p>
         ) : (
@@ -119,11 +119,11 @@ export default function NotificationsPage() {
               <div key={group.label}>
                 <p
                   className="text-[10px] tracking-[0.35em] uppercase mb-3"
-                  style={{ color: 'rgba(196,184,154,0.5)' }}
+                  style={{ color: 'rgba(154,117,50,0.5)' }}
                 >
                   {group.label}
                 </p>
-                <div className="flex flex-col" style={{ borderTop: '1px solid rgba(196,184,154,0.1)' }}>
+                <div className="flex flex-col" style={{ borderTop: '1px solid rgba(154,117,50,0.1)' }}>
                   {group.items.map(n => {
                     const isUnread = !n.read_at
                     const tappable = !!n.order_id || n.type === 'chat_message'
@@ -133,8 +133,8 @@ export default function NotificationsPage() {
                         onClick={() => tappable && handleTap(n)}
                         className="flex items-start gap-4 py-4"
                         style={{
-                          borderBottom: '1px solid rgba(196,184,154,0.1)',
-                          borderLeft: isUnread ? '2px solid rgba(196,184,154,0.6)' : '2px solid transparent',
+                          borderBottom: '1px solid rgba(154,117,50,0.1)',
+                          borderLeft: isUnread ? '2px solid rgba(154,117,50,0.6)' : '2px solid transparent',
                           paddingLeft: '12px',
                           cursor: tappable ? 'pointer' : 'default',
                         }}
@@ -143,10 +143,10 @@ export default function NotificationsPage() {
                           {n.type === 'order_status' ? '📦' : '💬'}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>{n.title}</p>
-                          <p className="text-xs font-light mt-0.5" style={{ color: 'rgba(245,240,232,0.5)' }}>{n.body}</p>
+                          <p className="text-sm font-light" style={{ color: '#141B45' }}>{n.title}</p>
+                          <p className="text-xs font-light mt-0.5" style={{ color: 'rgba(20,27,69,0.5)' }}>{n.body}</p>
                         </div>
-                        <p className="text-[10px] shrink-0 mt-0.5" style={{ color: 'rgba(196,184,154,0.4)' }}>
+                        <p className="text-[10px] shrink-0 mt-0.5" style={{ color: 'rgba(154,117,50,0.4)' }}>
                           {formatTime(n.created_at)}
                         </p>
                       </div>

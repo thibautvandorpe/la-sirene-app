@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>La Sirène — Light Redesign</title>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Archivo:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+--ink:#101740;--ink-2:#161e4d;--surface:#1c2660;--surface-2:#222d6e;
+--lapis:#3049b8;--lapis-lit:#4058d6;
+--blush:#eccfc9;--blush-2:#d7a49c;--blush-wash:rgba(236,207,201,.10);
+--brass:#c9a25a;--brass-soft:rgba(201,162,90,.32);
+--paper:#f6efeb;--paper-60:rgba(246,239,235,.60);--paper-38:rgba(246,239,235,.38);
+--arch:170px 170px 4px 4px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#8f8c88;font-family:'Archivo',system-ui,sans-serif}
+a{color:var(--blush);text-decoration:none}a:hover{color:var(--brass)}
+.frame{position:absolute;width:390px;background:var(--ink);color:var(--paper);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.flabel{position:absolute;top:-30px;left:0;font-family:'Bodoni Moda',serif;font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:#fff}
+/* chrome */
+.status{display:flex;justify-content:space-between;align-items:center;padding:14px 22px 4px;font-size:11px;letter-spacing:.04em;color:var(--paper-60)}
+.status .dots{display:flex;gap:4px;align-items:center}
+.status .dots i{display:block;width:15px;height:9px;border:1px solid var(--paper-38);border-radius:2px}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 22px 16px}
+.hdr .logo{width:34px;height:34px;border-radius:50%;object-fit:cover}
+.hdr .acts{display:flex;gap:16px;align-items:center}
+.hdr svg{display:block}
+.badgedot{position:relative}
+.badgedot em{position:absolute;top:-4px;right:-6px;width:15px;height:15px;border-radius:50%;background:var(--blush);color:var(--ink);font-style:normal;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:500}
+.tabs{margin-top:auto;display:grid;grid-template-columns:repeat(4,1fr);background:var(--ink-2);border-top:1px solid var(--brass-soft);padding:11px 0 16px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:6px;color:rgba(246,239,235,.30)}
+.tab span{font-size:8.5px;letter-spacing:.22em;text-transform:uppercase}
+.tab.on{color:var(--blush)}
+/* type */
+.kicker{font-size:9px;letter-spacing:.38em;text-transform:uppercase;color:var(--brass)}
+.h1{font-family:'Bodoni Moda',serif;font-size:40px;line-height:1.02;letter-spacing:.005em}
+.h2{font-family:'Bodoni Moda',serif;font-size:25px;line-height:1.12}
+.body{font-size:13px;line-height:1.62;color:var(--paper-60);font-weight:300}
+.rule{height:1px;background:var(--brass-soft)}
+.arch{border-radius:var(--arch);overflow:hidden}
+.pill{display:inline-flex;align-items:center;font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;padding:5px 10px;border-radius:2px}
+.btn{display:block;text-align:center;font-size:10px;letter-spacing:.34em;text-transform:uppercase;padding:17px;background:var(--lapis);color:var(--paper);border:1px solid var(--lapis-lit)}
+.btn-ghost{background:transparent;border:1px solid var(--brass-soft);color:var(--brass)}
+/* home */
+.hero{position:relative;margin:0 22px;height:392px}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:52% 46%;filter:saturate(.92)}
+.hero .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,23,64,.06) 0%,rgba(16,23,64,.14) 46%,rgba(16,23,64,.86) 100%);border-radius:var(--arch)}
+.hero .mark{position:absolute;left:0;right:0;bottom:30px;text-align:center}
+.hero .mark h1{font-family:'Bodoni Moda',serif;font-size:31px;letter-spacing:.26em;text-indent:.26em;color:#fff}
+.hero .mark p{margin-top:11px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+.hero .frameline{position:absolute;inset:9px;border:1px solid rgba(255,255,255,.30);border-radius:158px 158px 3px 3px;pointer-events:none}
+.svc{display:flex;gap:14px;align-items:flex-start}
+.svc .thumb{flex:0 0 84px;height:112px;border-radius:42px 42px 2px 2px;overflow:hidden}
+.svc .thumb img{width:100%;height:100%;object-fit:cover}
+.next{border:1px solid var(--brass-soft);background:var(--blush-wash);padding:16px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+/* lists */
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--brass-soft)}
+.seg div{text-align:center;padding:11px 0;font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:var(--paper-38)}
+.seg div.on{background:var(--blush);color:var(--ink);font-weight:500}
+.row{padding:16px 0;border-bottom:1px solid rgba(201,162,90,.16);display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.row .t{font-size:14px;font-weight:400}
+.row .s{font-size:11px;color:var(--paper-38);font-weight:300;margin-top:3px}
+.money{font-family:'Bodoni Moda',serif;font-size:17px;color:var(--brass);white-space:nowrap}
+.link{font-size:11px;color:var(--blush)}
+.b-draft{background:rgba(246,239,235,.09);color:var(--paper-60)}
+.b-wait{background:rgba(215,164,156,.20);color:var(--blush)}
+.b-conf{background:rgba(48,73,184,.45);color:#a9baff}
+.b-prog{background:rgba(201,162,90,.18);color:var(--brass)}
+.b-ready{background:rgba(236,207,201,.90);color:var(--ink);font-weight:500}
+.b-done{background:rgba(246,239,235,.06);color:var(--paper-38)}
+.stickybook{padding:16px 22px 0;background:linear-gradient(180deg,rgba(16,23,64,0),var(--ink) 40%)}
+/* detail */
+.tl{display:flex;flex-direction:column;gap:0}
+.tl li{list-style:none;display:grid;grid-template-columns:22px 1fr;gap:14px}
+.tl .mk{position:relative;display:flex;justify-content:center}
+.tl .mk i{width:7px;height:7px;border-radius:50%;background:var(--brass);margin-top:6px}
+.tl .mk:after{content:"";position:absolute;top:16px;bottom:-6px;width:1px;background:var(--brass-soft)}
+.tl li:last-child .mk:after{display:none}
+.tl li.future .mk i{background:transparent;border:1px solid rgba(246,239,235,.25)}
+.tl .st{font-size:12.5px;padding-bottom:18px}
+.tl li.future .st{color:var(--paper-38)}
+.tl .when{font-size:10px;color:var(--paper-38);margin-top:2px}
+.item{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(201,162,90,.16)}
+.item .ph{flex:0 0 58px;height:76px;border-radius:29px 29px 2px 2px;overflow:hidden;background:var(--surface)}
+.item .ph img{width:100%;height:100%;object-fit:cover}
+.total{display:flex;justify-content:space-between;align-items:baseline;padding:20px 0;border-bottom:1px solid var(--brass-soft)}
+/* tokens board */
+.board{position:absolute;width:520px;background:var(--paper);color:var(--ink);padding:40px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.board h2{font-family:'Bodoni Moda',serif;font-size:29px;letter-spacing:.02em;margin-bottom:6px}
+.board .sub{font-size:12px;line-height:1.6;color:rgba(16,23,64,.6);font-weight:300}
+.board .lab{font-size:9px;letter-spacing:.34em;text-transform:uppercase;color:rgba(16,23,64,.45);margin:32px 0 12px}
+.sw{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sw div{height:74px;border-radius:37px 37px 2px 2px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;font-size:8px;letter-spacing:.1em;color:#fff}
+.board .note{font-size:12px;line-height:1.7;color:rgba(16,23,64,.72);font-weight:300}
+.board .note b{font-weight:500}
+</style><style>
+:root{--ink:#f8f0ed;--ink-2:#f1e5e1;--surface:#fff;--surface-2:#fbf4f1;--paper:#141b45;--paper-60:rgba(20,27,69,.60);--paper-38:rgba(20,27,69,.40);--brass:#9a7532;--brass-soft:rgba(154,117,50,.30);--blush-wash:rgba(230,190,183,.42);--blush:#b45f52}
+.tab.on{color:#2f45a8}
+.b-wait{background:rgba(219,166,157,.45);color:#8a4239}
+.b-prog{background:rgba(154,117,50,.16);color:#7d5e1f}
+.stickybook{background:linear-gradient(180deg,rgba(248,240,237,0),var(--ink) 40%)}
+.seg div.on{background:#dba69d;color:#141b45}
+.hero .frameline{border-color:rgba(255,255,255,.5)}
+.hero .veil{background:linear-gradient(180deg,rgba(20,27,69,0) 0%,rgba(20,27,69,.06) 44%,rgba(20,27,69,.62) 100%)}
+.hero .mark p{color:rgba(255,255,255,.82)}
+
+body{background:#c9c3bd}
+.flabel{color:#22283f}
+.btn{background:#dba69d;border-color:#cf9489;color:#141b45}
+.btn-ghost{background:transparent;border-color:var(--brass-soft)}
+.btn-ghost{color:var(--brass)}
+.badgedot em{background:#dba69d;color:#141b45}
+.tabs{background:var(--ink-2)}
+.tab{color:rgba(23,29,63,.34)}
+.money{color:var(--brass)}
+.link{color:#2f45a8}
+.row,.item{border-bottom-color:rgba(23,29,63,.13)}
+.tl li.future .mk i{border-color:rgba(23,29,63,.28)}
+.b-draft{background:rgba(23,29,63,.07);color:var(--paper-60)}
+.b-conf{background:rgba(20,27,69,.07);color:#2c3f9e}
+.b-ready{background:#dba69d;color:#141b45}
+.b-done{background:rgba(23,29,63,.06);color:var(--paper-38)}
+.item .ph{background:rgba(23,29,63,.06)}
+.board{background:#fff;color:#141b45}
+.hdr .logo{background:#b97a6c;padding:0;border-radius:0;-webkit-mask:url(mark.png) center/contain no-repeat;mask:url(mark.png) center/contain no-repeat;display:block}
+</style>
+</head><body>
+
+<div class="board" style="left:60px;top:80px">
+<span class="flabel" style="color:#fff">Direction</span>
+<h2>Blush ground, blush action</h2>
+<p class="sub">The terrazzo floor becomes the interface. Warm blush paper, a deeper blush for anything the client taps, brass hairlines — the boutique read in daylight rather than at night.</p>
+<p class="lab">Palette</p>
+<div class="sw">
+<div style="background:#f8f0ed;color:#141b45">GROUND #F8F0ED</div><div style="background:#dba69d;color:#141b45">ACTION #DBA69D</div><div style="background:#2f45a8">STATE #2F45A8</div><div style="background:#9a7532">BRASS #9A7532</div>
+</div>
+<p class="lab">Typography</p>
+<p style="font-family:'Bodoni Moda',serif;font-size:34px;letter-spacing:.24em;text-indent:.24em">LA SIRÈNE</p>
+<p class="note" style="margin-top:10px">Bodoni Moda — headings and the wordmark, tracked wide to match the storefront signage. Archivo Light — body, labels and all uppercase micro-type.</p>
+<p class="lab">What changed</p>
+<p class="note">Light ground, dark type. A deeper blush carries every filled surface — buttons, the logo circle, the active segment, the ready badge — while lapis survives only as type: links, the active tab label, the confirmed state. Brass darkens to hold contrast on a pale surface. The renderings supply the only large areas of colour, framed in the arch.</p>
+</div>
+
+<!-- ══ HOME ══ -->
+<section class="frame" style="left:660px;top:80px;height:1180px">
+<span class="flabel">Home</span>
+<div class="status"><span>9:41</span><div class="dots"><i></i></div></div>
+<div class="hdr">
+<span class="logo" role="img" aria-label="La Sirène"></span>
+<div class="acts">
+<a class="badgedot" href="#"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#c9a25a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><em>2</em></a>
+<a href="#"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#c9a25a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></a>
+</div>
+</div>
+<div class="hero arch">
+<img src="renders/p8-img1.png" alt="La Sirène reception">
+<div class="veil"></div><div class="frameline"></div>
+<div class="mark"><img src="wordmark.png" alt="La Sirène" style="width:206px;height:auto;display:block;margin:0 auto"><p>The Spa for your Clothes</p></div>
+</div>
+<div style="padding:26px 22px 0;display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;flex-direction:column;gap:5px">
+<p class="kicker">Welcome back</p>
+<p class="h2">Camille</p>
+</div>
+<div class="next">
+<div>
+<p style="font-size:13px">Pick Up · Thursday, September 3</p>
+<p style="font-size:11px;color:var(--paper-38);margin-top:4px;font-weight:300">10:00 – 12:00 · 4 items</p>
+</div>
+<span class="pill b-conf">Confirmed</span>
+</div>
+<a class="btn" href="#">Book an appointment</a>
+<div class="rule"></div>
+<div style="display:flex;flex-direction:column;gap:20px">
+<p class="kicker">Our Services</p>
+<div class="svc">
+<div class="thumb"><img src="renders/p10-img1.png" alt=""></div>
+<div>
+<p style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px">Expert Garment Care</p>
+<p class="body">Meticulous cleaning, restoration, and alteration by artisans who treat each piece as a singular creation.</p>
+</div>
+</div>
+<div class="svc">
+<div class="thumb"><img src="renders/p2-img1.png" alt="" style="object-position:44% 62%"></div>
+<div>
+<p style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px">Digital Wardrobe</p>
+<p class="body">Your personal inventory, enriched with a complete care history for every garment you own.</p>
+</div>
+</div>
+</div>
+<div class="rule"></div>
+<div style="padding-bottom:28px">
+<p class="kicker" style="color:var(--paper-38)">The Boutique</p>
+<p style="font-family:'Bodoni Moda',serif;font-size:16px;margin-top:10px;line-height:1.5">401 N. Beverly Drive<br>Beverly Hills, California</p>
+</div>
+</div>
+<nav class="tabs">
+<div class="tab on"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M4 12v8a1 1 0 001 1h14a1 1 0 001-1v-8"/><path d="M9 21V15h6v6"/></svg><span>Home</span></div>
+<div class="tab"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.27 6.96L12 12l8.73-5.04"/><path d="M12 22V12"/></svg><span>Orders</span></div>
+<div class="tab"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V5.5a2 2 0 012-2h.5"/><path d="M12 8L3 17h18L12 8z"/></svg><span>Wardrobe</span></div>
+<div class="tab"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg><span>Profile</span></div>
+</nav>
+</section>
+
+<!-- ══ ORDERS ══ -->
+<section class="frame" style="left:1120px;top:80px;height:1180px">
+<span class="flabel">Orders</span>
+<div class="status"><span>9:41</span><div class="dots"><i></i></div></div>
+<div class="hdr">
+<span class="logo" role="img" aria-label="La Sirène"></span>
+<div class="acts">
+<a class="badgedot" href="#"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#c9a25a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><em>2</em></a>
+<a href="#"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#c9a25a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></a>
+</div>
+</div>
+<div style="padding:6px 22px 0;display:flex;flex-direction:column;gap:20px">
+<h1 class="h1">Orders</h1>
+<div class="seg"><div class="on">Appointments</div><div>Orders</div></div>
+<div>
+<p class="kicker" style="margin-bottom:6px">My Appointments</p>
+<div class="row">
+<div><p class="t">Pick Up</p><p class="s">Thursday, September 3 · 10:00 – 12:00</p><span class="pill b-conf" style="margin-top:9px">Confirmed</span><p class="s">4 items</p></div>
+<a class="link" href="#">View</a>
+</div>
+<div class="row">
+<div><p class="t">Drop Off</p><p class="s">Boutique · 401 N. Beverly Drive</p><span class="pill b-wait" style="margin-top:9px">Pending</span><p class="s">2 items</p></div>
+<a class="link" href="#">View</a>
+</div>
+<div class="row">
+<div><p class="t">FedEx</p><p class="s">Label not yet requested</p><span class="pill b-draft" style="margin-top:9px">Draft</span><p class="s">1 item</p></div>
+<div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px"><a class="link" href="#">Continue</a><a class="link" href="#" style="color:var(--paper-38)">Delete</a></div>
+</div>
+</div>
+<div>
+<p class="kicker" style="margin-bottom:6px">My Orders</p>
+<div class="row" style="border-left:2px solid var(--blush);padding-left:14px">
+<div><p class="t">Pick Up · August 19</p><span class="pill b-wait" style="margin-top:9px">Awaiting Confirmation</span><p class="s">Order No. 1042 · 4 items</p></div>
+<p class="money">$1,240</p>
+</div>
+<div class="row" style="padding-left:16px">
+<div><p class="t">Drop Off · August 11</p><span class="pill b-prog" style="margin-top:9px">In Progress</span><p class="s">Order No. 1038 · 2 items</p></div>
+<p class="money">$390</p>
+</div>
+<div class="row" style="padding-left:16px">
+<div><p class="t">Pick Up · July 28</p><span class="pill b-ready" style="margin-top:9px">Ready</span><p class="s">Order No. 1031 · 6 items</p></div>
+<p class="money">$2,105</p>
+</div>
+<div class="row" style="padding-left:16px">
+<div><p class="t">FedEx · July 02</p><span class="pill b-done" style="margin-top:9px">Completed</span><p class="s">Order No. 1024 · 3 items</p></div>
+<p class="money" style="color:var(--paper-38)">$865</p>
+</div>
+</div>
+</div>
+<div class="stickybook"><a class="btn" href="#">Book an appointment</a></div>
+<nav class="tabs" style="margin-top:16px">
+<div class="tab"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 3l9 9"/><path d="M4 12v8a1 1 0 001 1h14a1 1 0 001-1v-8"/><path d="M9 21V15h6v6"/></svg><span>Home</span></div>
+<div class="tab on"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.27 6.96L12 12l8.73-5.04"/><path d="M12 22V12"/></svg><span>Orders</span></div>
+<div class="tab"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V5.5a2 2 0 012-2h.5"/><path d="M12 8L3 17h18L12 8z"/></svg><span>Wardrobe</span></div>
+<div class="tab"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg><span>Profile</span></div>
+</nav>
+</section>
+
+<!-- ══ ORDER DETAIL ══ -->
+<section class="frame" style="left:1580px;top:80px;height:1380px">
+<span class="flabel">Order detail</span>
+<div class="status"><span>9:41</span><div class="dots"><i></i></div></div>
+<div class="hdr" style="padding-bottom:10px">
+<a href="#" style="font-size:19px;color:var(--brass);line-height:1">←</a>
+<span class="logo" style="width:28px;height:28px" role="img" aria-label="La Sirène"></span>
+</div>
+<div style="padding:8px 22px 0;display:flex;flex-direction:column;gap:24px">
+<div>
+<p class="kicker">Order No. 1042</p>
+<h1 class="h1" style="margin-top:10px">Pick Up<br>August 19</h1>
+<span class="pill b-wait" style="margin-top:14px">Awaiting Confirmation</span>
+</div>
+<div class="next" style="align-items:flex-start;flex-direction:column;gap:8px">
+<p style="font-size:12.5px;line-height:1.6;font-weight:300">Our atelier has revised two items after inspection. Please review and confirm the updated quote.</p>
+<a class="link" href="#" style="letter-spacing:.06em">Chat with your advisor →</a>
+</div>
+<div>
+<p class="kicker" style="margin-bottom:16px">Progress</p>
+<ul class="tl">
+<li><div class="mk"><i></i></div><div class="st">Received at the boutique<p class="when">August 19, 11:20</p></div></li>
+<li><div class="mk"><i></i></div><div class="st">Under review<p class="when">August 20, 09:05</p></div></li>
+<li><div class="mk"><i></i></div><div class="st">Awaiting your confirmation<p class="when">August 21, 16:40</p></div></li>
+<li class="future"><div class="mk"><i></i></div><div class="st">In progress</div></li>
+<li class="future"><div class="mk"><i></i></div><div class="st">Ready for collection</div></li>
+</ul>
+</div>
+<div>
+<p class="kicker" style="margin-bottom:6px">Items</p>
+<div class="item">
+<div class="ph"><img src="renders/p9-img1.png" alt=""></div>
+<div style="flex:1;display:flex;justify-content:space-between;gap:12px">
+<div><p style="font-size:13.5px">Silk Evening Gown</p><p class="s">Valentino · Ivory</p><p style="font-size:11px;color:var(--paper-38);font-style:italic;margin-top:5px;font-weight:300">"Hem needs re-stitching on the left seam"</p></div>
+<p class="money" style="font-size:15px">$620</p>
+</div>
+</div>
+<div class="item">
+<div class="ph"><img src="renders/p8-img1.png" alt="" style="object-position:20% 60%"></div>
+<div style="flex:1;display:flex;justify-content:space-between;gap:12px">
+<div><p style="font-size:13.5px">Wool Tailored Jacket</p><p class="s">Céline · Camel</p></div>
+<p class="money" style="font-size:15px">$340</p>
+</div>
+</div>
+<div class="item">
+<div class="ph"><img src="renders/p10-img1.png" alt="" style="object-position:70% 40%"></div>
+<div style="flex:1;display:flex;justify-content:space-between;gap:12px">
+<div><p style="font-size:13.5px">Cashmere Coat</p><p class="s">Loro Piana · Charcoal</p></div>
+<p class="money" style="font-size:15px">$280</p>
+</div>
+</div>
+<div class="item" style="border-bottom:1px solid rgba(201,162,90,.16)">
+<div class="ph" style="display:flex;align-items:center;justify-content:center;color:var(--paper-38);font-size:10px;letter-spacing:.1em">PHOTO</div>
+<div style="flex:1;display:flex;justify-content:space-between;gap:12px">
+<div><p style="font-size:13.5px">Leather Handbag</p><p class="s">Hermès · Étoupe</p></div>
+<p class="money" style="font-size:15px">TBD</p>
+</div>
+</div>
+<div class="total"><p class="kicker" style="letter-spacing:.3em">Revised Total</p><p class="money" style="font-size:24px">$1,240.00</p></div>
+<p class="body" style="font-size:11.5px;margin-top:16px">Prices shown are estimates based on your selections. The final invoice will be confirmed by our team after inspection of your garments.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;padding-bottom:28px">
+<a class="btn" href="#">Confirm the quote</a>
+<a class="btn btn-ghost" href="#">Ask a question</a>
+</div>
+</div>
+</section>
+
+</body></html>

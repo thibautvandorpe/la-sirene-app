@@ -25,14 +25,14 @@ type Order = {
 }
 
 const APPT_BADGE: Record<string, string> = {
-  draft:     'bg-[#c4b89a]/15 text-[#c4b89a]',
+  draft:     'bg-[#9A7532]/15 text-[#9A7532]',
   pending:   'bg-[#c87a3a]/20 text-[#c87a3a]',
   confirmed: 'bg-[#2e4a32]/60 text-[#a8c5a0]',
   cancelled: 'bg-[#3a1c1c]/60 text-[#c08080]',
 }
 
 const ORDER_BADGE: Record<string, string> = {
-  under_review:           'bg-[#c4b89a]/15 text-[#c4b89a]',
+  under_review:           'bg-[#9A7532]/15 text-[#9A7532]',
   awaiting_confirmation:  'bg-[#c87a3a]/20 text-[#c87a3a]',
   in_progress:            'bg-[rgba(30,70,100,0.45)] text-[#70b8d8]',
   ready:                  'bg-[rgba(20,75,35,0.65)] text-[#5dce7a]',
@@ -54,7 +54,7 @@ function orderStatusLabel(status: string) {
 }
 
 function badgeClass(map: Record<string, string>, status: string) {
-  return map[status.toLowerCase()] ?? 'bg-[#c4b89a]/20 text-[#c4b89a]'
+  return map[status.toLowerCase()] ?? 'bg-[#9A7532]/20 text-[#9A7532]'
 }
 
 function formatApptDate(iso: string) {
@@ -65,11 +65,11 @@ function formatApptDate(iso: string) {
 
 
 const CARD = {
-  backgroundColor: 'rgba(245, 240, 232, 0.04)',
-  borderBottom: '1px solid rgba(196, 184, 154, 0.12)',
+  backgroundColor: 'rgba(20,27,69, 0.04)',
+  borderBottom: '1px solid rgba(154,117,50, 0.12)',
 } as const
 
-const MUTED = { color: 'rgba(245, 240, 232, 0.35)' } as const
+const MUTED = { color: 'rgba(20,27,69, 0.35)' } as const
 
 export default function OrdersPage() {
   const [loggedIn, setLoggedIn] = useState(false)
@@ -133,8 +133,8 @@ export default function OrdersPage() {
           href="/book"
           className="fixed left-0 right-0 z-10 py-4 text-center text-[10px] tracking-[0.35em] uppercase font-medium"
           style={{
-            backgroundColor: '#c4b89a',
-            color: '#1c2b1e',
+            backgroundColor: '#DBA69D',
+            color: '#F8F0ED',
             bottom: 'calc(59px + env(safe-area-inset-bottom))',
           }}
         >
@@ -147,7 +147,7 @@ export default function OrdersPage() {
 
           {/* ── My Appointments ── */}
           <section>
-            <p className="text-[10px] tracking-[0.35em] uppercase text-[#c4b89a] mb-4">
+            <p className="text-[10px] tracking-[0.35em] uppercase text-[#9A7532] mb-4">
               My Appointments
             </p>
 
@@ -172,7 +172,7 @@ export default function OrdersPage() {
                         <div className="flex flex-col gap-0.5">
                           <p
                             className="text-sm font-light"
-                            style={{ color: isCancelled ? 'rgba(245, 240, 232, 0.35)' : '#f5f0e8' }}
+                            style={{ color: isCancelled ? 'rgba(20,27,69, 0.35)' : '#141B45' }}
                           >
                             {appt.delivery_method === 'drop_off'
                               ? 'Drop Off'
@@ -181,7 +181,7 @@ export default function OrdersPage() {
                                 : 'Pick Up'}
                           </p>
                           {(appt.delivery_method === 'pick_up' || appt.delivery_method == null) && appt.scheduled_at && (
-                            <p className="text-xs font-light" style={{ color: isCancelled ? 'rgba(245, 240, 232, 0.25)' : 'rgba(245, 240, 232, 0.5)' }}>
+                            <p className="text-xs font-light" style={{ color: isCancelled ? 'rgba(20,27,69, 0.25)' : 'rgba(20,27,69, 0.5)' }}>
                               {formatApptDate(appt.scheduled_at)}
                               {appt.notes ? ` · ${appt.notes}` : ''}
                             </p>
@@ -204,21 +204,21 @@ export default function OrdersPage() {
                       {/* Actions */}
                       {confirmDeleteId === appt.id ? (
                         <div className="flex flex-col items-end gap-2 ml-4 shrink-0">
-                          <p className="text-[10px] font-light text-right" style={{ color: 'rgba(245, 240, 232, 0.5)' }}>
+                          <p className="text-[10px] font-light text-right" style={{ color: 'rgba(20,27,69, 0.5)' }}>
                             Delete this draft?
                           </p>
                           <div className="flex gap-2">
                             <button
                               onClick={() => { handleDeleteDraft(appt); setConfirmDeleteId(null) }}
                               className="px-3 py-1.5 text-[9px] tracking-[0.2em] uppercase font-medium"
-                              style={{ backgroundColor: 'rgba(220,80,60,0.75)', color: '#f5f0e8' }}
+                              style={{ backgroundColor: 'rgba(220,80,60,0.75)', color: '#141B45' }}
                             >
                               Yes, Delete
                             </button>
                             <button
                               onClick={() => setConfirmDeleteId(null)}
                               className="px-3 py-1.5 text-[9px] tracking-[0.2em] uppercase font-light"
-                              style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+                              style={{ border: '1px solid rgba(154,117,50,0.25)', color: 'rgba(154,117,50,0.6)' }}
                             >
                               Keep
                             </button>
@@ -226,21 +226,21 @@ export default function OrdersPage() {
                         </div>
                       ) : confirmCancelId === appt.id ? (
                         <div className="flex flex-col items-end gap-2 ml-4 shrink-0">
-                          <p className="text-[10px] font-light text-right" style={{ color: 'rgba(245, 240, 232, 0.5)' }}>
+                          <p className="text-[10px] font-light text-right" style={{ color: 'rgba(20,27,69, 0.5)' }}>
                             Cancel this appointment?
                           </p>
                           <div className="flex gap-2">
                             <button
                               onClick={() => { handleCancelAppointment(appt); setConfirmCancelId(null) }}
                               className="px-3 py-1.5 text-[9px] tracking-[0.2em] uppercase font-medium"
-                              style={{ backgroundColor: 'rgba(220,80,60,0.75)', color: '#f5f0e8' }}
+                              style={{ backgroundColor: 'rgba(220,80,60,0.75)', color: '#141B45' }}
                             >
                               Yes, Cancel
                             </button>
                             <button
                               onClick={() => setConfirmCancelId(null)}
                               className="px-3 py-1.5 text-[9px] tracking-[0.2em] uppercase font-light"
-                              style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+                              style={{ border: '1px solid rgba(154,117,50,0.25)', color: 'rgba(154,117,50,0.6)' }}
                             >
                               Keep
                             </button>
@@ -253,14 +253,14 @@ export default function OrdersPage() {
                               <Link
                                 href={`/book?appointmentId=${appt.id}`}
                                 className="text-xs font-light"
-                                style={{ color: '#c4b89a' }}
+                                style={{ color: '#9A7532' }}
                               >
                                 Continue
                               </Link>
                               <button
                                 onClick={() => setConfirmDeleteId(appt.id)}
                                 className="text-xs font-light"
-                                style={{ color: 'rgba(196, 184, 154, 0.4)' }}
+                                style={{ color: 'rgba(154,117,50, 0.4)' }}
                               >
                                 Delete
                               </button>
@@ -271,14 +271,14 @@ export default function OrdersPage() {
                               <Link
                                 href={`/orders/${appt.id}`}
                                 className="text-xs font-light"
-                                style={{ color: '#c4b89a' }}
+                                style={{ color: '#9A7532' }}
                               >
                                 View
                               </Link>
                               <button
                                 onClick={() => setConfirmCancelId(appt.id)}
                                 className="text-xs font-light"
-                                style={{ color: 'rgba(196, 184, 154, 0.4)' }}
+                                style={{ color: 'rgba(154,117,50, 0.4)' }}
                               >
                                 Cancel
                               </button>
@@ -295,7 +295,7 @@ export default function OrdersPage() {
 
           {/* ── My Orders ── */}
           <section>
-            <p className="text-[10px] tracking-[0.35em] uppercase text-[#c4b89a] mb-4">
+            <p className="text-[10px] tracking-[0.35em] uppercase text-[#9A7532] mb-4">
               My Orders
             </p>
 
@@ -306,7 +306,7 @@ export default function OrdersPage() {
             ) : (
               <ul className="flex flex-col">
                 {orders.map(order => (
-                  <li key={order.id} style={{ borderBottom: '1px solid rgba(196,184,154,0.12)' }}>
+                  <li key={order.id} style={{ borderBottom: '1px solid rgba(154,117,50,0.12)' }}>
                     <Link
                       href={`/orders/order/${order.id}`}
                       className="flex items-center justify-between py-4 px-4"
@@ -314,14 +314,14 @@ export default function OrdersPage() {
                     >
                       <div className="flex flex-col gap-1.5 flex-1 min-w-0">
                         {/* Row 1 — delivery method + pick-up date */}
-                        <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>
+                        <p className="text-sm font-light" style={{ color: '#141B45' }}>
                           {order.delivery_method === 'drop_off'
                             ? 'Drop Off'
                             : order.delivery_method === 'fedex'
                               ? 'FedEx'
                               : 'Pick Up'}
                           {(order.delivery_method === 'pick_up' || order.delivery_method == null) && order.scheduled_at && (
-                            <span className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+                            <span className="text-xs font-light" style={{ color: 'rgba(20,27,69,0.5)' }}>
                               {' · '}{formatApptDate(order.scheduled_at)}
                             </span>
                           )}
@@ -333,12 +333,12 @@ export default function OrdersPage() {
                           </span>
                         </div>
                         {/* Row 3 — created date */}
-                        <p className="text-[10px] font-light" style={{ color: 'rgba(245,240,232,0.35)' }}>
+                        <p className="text-[10px] font-light" style={{ color: 'rgba(20,27,69,0.35)' }}>
                           Order created on {new Date(order.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </p>
                       </div>
                       {order.total_price != null && (
-                        <p className="text-sm font-light text-[#c4b89a] ml-4 shrink-0">
+                        <p className="text-sm font-light text-[#9A7532] ml-4 shrink-0">
                           {order.total_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
                         </p>
                       )}
@@ -352,12 +352,12 @@ export default function OrdersPage() {
         </div>
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
-          <p className="text-sm font-light tracking-wide text-[#f5f0e8]">
+          <p className="text-sm font-light tracking-wide text-[#141B45]">
             Please sign in to access your orders
           </p>
           <Link
             href="/login"
-            className="mt-5 px-6 py-2 text-[10px] tracking-widest uppercase text-[#c4b89a] border border-[#c4b89a]/30 rounded-sm"
+            className="mt-5 px-6 py-2 text-[10px] tracking-widest uppercase text-[#9A7532] border border-[#9A7532]/30 rounded-sm"
           >
             Sign In
           </Link>

@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  /* ground + surfaces */
+  --ground:#F8F0ED;
+  --ground-2:#F1E5E1;
+  --surface:#FFFFFF;
+  /* type */
+  --ink:#141B45;
+  --ink-60:rgba(20,27,69,.60);
+  --ink-40:rgba(20,27,69,.40);
+  --hairline:rgba(23,29,63,.13);
+  /* metal */
+  --brass:#9A7532;
+  --brass-soft:rgba(154,117,50,.30);
+  /* action — every filled interactive surface */
+  --action:#DBA69D;
+  --action-line:#CF9489;
+  --action-wash:rgba(230,190,183,.42);
+  --mark:#B97A6C;
+  /* lapis — TEXT ONLY, never a fill */
+  --lapis:#2F45A8;
+  --lapis-text:#2C3F9E;
+  --blush-text:#B45F52;
+  /* the arch */
+  --arch-hero:170px 170px 4px 4px;
+  --arch-thumb:42px 42px 2px 2px;
+  --arch-photo:29px 29px 2px 2px;
+
+  /* back-compat aliases while migrating away from the green theme */
+  --background:var(--ground);
+  --foreground:var(--ink);
+}
+
+html{font-size:16px}
+
+body{
+  color:var(--ink);
+  background:var(--ground);
+  font-family:var(--font-archivo),system-ui,sans-serif;
+  font-weight:300;
+  -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;
+}
+
+a{color:var(--lapis);text-decoration:none}
+a:hover{color:var(--brass)}
+
+@layer utilities{
+  .text-balance{text-wrap:balance}
+  .font-display{font-family:var(--font-bodoni),Georgia,serif}
+  .kicker{font-size:9px;letter-spacing:.38em;text-transform:uppercase;color:var(--brass)}
+  .arch{border-radius:var(--arch-hero);overflow:hidden}
+  .hairline{border-bottom:1px solid var(--hairline)}
+}

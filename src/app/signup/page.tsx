@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 
 export default function SignupPage() {
@@ -47,28 +46,32 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16" style={{ backgroundColor: '#1c2b1e' }}>
+    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16" style={{ backgroundColor: '#F8F0ED' }}>
       <div className="w-full max-w-sm">
 
         {/* Wordmark */}
         <div className="text-center mb-10">
-          <h1 className="font-serif text-3xl font-light tracking-[0.15em]" style={{ color: '#f5f0e8' }}>
+          <h1 className="font-serif text-3xl font-light tracking-[0.15em]" style={{ color: '#141B45' }}>
             La Sirène
           </h1>
-          <div className="mx-auto mt-5 mb-0 h-px w-16" style={{ backgroundColor: '#c4b89a' }} />
+          <div className="mx-auto mt-5 mb-0 h-px w-16" style={{ backgroundColor: '#9A7532' }} />
         </div>
 
         {notice ? (
           /* Confirmation screen — form is hidden */
           <div className="text-center space-y-6 mt-4">
-            <Image
-              src="/logo.png"
-              alt="La Sirène"
-              width={100}
-              height={100}
+            <div
+              aria-hidden="true"
               className="mx-auto"
+              style={{
+                width: '100px',
+                height: '100px',
+                backgroundColor: '#9A7532',
+                WebkitMask: 'url(/logo.png) center / contain no-repeat',
+                mask: 'url(/logo.png) center / contain no-repeat',
+              }}
             />
-            <p className="text-sm font-light leading-relaxed" style={{ color: '#c4b89a' }}>
+            <p className="text-sm font-light leading-relaxed" style={{ color: '#9A7532' }}>
               {notice}
             </p>
           </div>
@@ -82,7 +85,7 @@ export default function SignupPage() {
 
             <form onSubmit={handleSubmit} className="space-y-8">
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
                   Full Name
                 </label>
                 <input
@@ -93,16 +96,16 @@ export default function SignupPage() {
                   required
                   autoComplete="name"
                   placeholder="Marie Dupont"
-                  className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#f5f0e8]/20 transition-colors"
+                  className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#141B45]/20 transition-colors"
                   style={{
-                    color: '#f5f0e8',
-                    borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
+                    color: '#141B45',
+                    borderBottom: '1px solid rgba(154,117,50, 0.4)',
                   }}
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
                   Email
                 </label>
                 <input
@@ -113,16 +116,16 @@ export default function SignupPage() {
                   required
                   autoComplete="email"
                   placeholder="marie@example.com"
-                  className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#f5f0e8]/20 transition-colors"
+                  className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#141B45]/20 transition-colors"
                   style={{
-                    color: '#f5f0e8',
-                    borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
+                    color: '#141B45',
+                    borderBottom: '1px solid rgba(154,117,50, 0.4)',
                   }}
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
                   Phone Number
                 </label>
                 <input
@@ -132,16 +135,16 @@ export default function SignupPage() {
                   onChange={handleChange}
                   autoComplete="tel"
                   placeholder="+33 6 00 00 00 00"
-                  className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#f5f0e8]/20 transition-colors"
+                  className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#141B45]/20 transition-colors"
                   style={{
-                    color: '#f5f0e8',
-                    borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
+                    color: '#141B45',
+                    borderBottom: '1px solid rgba(154,117,50, 0.4)',
                   }}
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
                   Password
                 </label>
                 <input
@@ -153,10 +156,10 @@ export default function SignupPage() {
                   autoComplete="new-password"
                   minLength={8}
                   placeholder="Minimum 8 characters"
-                  className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#f5f0e8]/20 transition-colors"
+                  className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#141B45]/20 transition-colors"
                   style={{
-                    color: '#f5f0e8',
-                    borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
+                    color: '#141B45',
+                    borderBottom: '1px solid rgba(154,117,50, 0.4)',
                   }}
                 />
               </div>
@@ -165,15 +168,15 @@ export default function SignupPage() {
                 type="submit"
                 disabled={loading}
                 className="w-full text-[10px] tracking-[0.3em] uppercase py-4 mt-4 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+                style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
               >
                 {loading ? 'Creating account…' : 'Create Account'}
               </button>
             </form>
 
-            <p className="text-center text-xs font-light mt-10" style={{ color: 'rgba(245, 240, 232, 0.45)' }}>
+            <p className="text-center text-xs font-light mt-10" style={{ color: 'rgba(20,27,69, 0.45)' }}>
               Already have an account?{' '}
-              <Link href="/login" className="transition-opacity hover:opacity-100" style={{ color: '#c4b89a' }}>
+              <Link href="/login" className="transition-opacity hover:opacity-100" style={{ color: '#9A7532' }}>
                 Sign In
               </Link>
             </p>

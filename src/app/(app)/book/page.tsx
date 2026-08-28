@@ -88,17 +88,17 @@ function DeliveryRecap({
     return (
       <div
         className="flex flex-col gap-1 pl-3 mb-8"
-        style={{ borderLeft: '1px solid rgba(196, 184, 154, 0.35)' }}
+        style={{ borderLeft: '1px solid rgba(154,117,50, 0.35)' }}
       >
-        <p className="text-xs font-light" style={{ color: 'rgba(196, 184, 154, 0.75)' }}>
+        <p className="text-xs font-light" style={{ color: 'rgba(154,117,50, 0.75)' }}>
           Pick Up
         </p>
-        <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.55)' }}>
+        <p className="text-xs font-light" style={{ color: 'rgba(20,27,69, 0.55)' }}>
           {new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {
             weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
           })}
         </p>
-        <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.4)' }}>
+        <p className="text-xs font-light" style={{ color: 'rgba(20,27,69, 0.4)' }}>
           {time}
         </p>
       </div>
@@ -108,15 +108,15 @@ function DeliveryRecap({
     return (
       <div
         className="flex flex-col gap-1 pl-3 mb-8"
-        style={{ borderLeft: '1px solid rgba(196, 184, 154, 0.35)' }}
+        style={{ borderLeft: '1px solid rgba(154,117,50, 0.35)' }}
       >
-        <p className="text-xs font-light" style={{ color: 'rgba(196, 184, 154, 0.75)' }}>
+        <p className="text-xs font-light" style={{ color: 'rgba(154,117,50, 0.75)' }}>
           Drop Off
         </p>
-        <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.55)' }}>
+        <p className="text-xs font-light" style={{ color: 'rgba(20,27,69, 0.55)' }}>
           {BOUTIQUE_ADDRESS}
         </p>
-        <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.4)' }}>
+        <p className="text-xs font-light" style={{ color: 'rgba(20,27,69, 0.4)' }}>
           {BOUTIQUE_HOURS}
         </p>
       </div>
@@ -126,12 +126,12 @@ function DeliveryRecap({
     return (
       <div
         className="flex flex-col gap-1 pl-3 mb-8"
-        style={{ borderLeft: '1px solid rgba(196, 184, 154, 0.35)' }}
+        style={{ borderLeft: '1px solid rgba(154,117,50, 0.35)' }}
       >
-        <p className="text-xs font-light" style={{ color: 'rgba(196, 184, 154, 0.75)' }}>
+        <p className="text-xs font-light" style={{ color: 'rgba(154,117,50, 0.75)' }}>
           Ship via FedEx
         </p>
-        <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.55)' }}>
+        <p className="text-xs font-light" style={{ color: 'rgba(20,27,69, 0.55)' }}>
           {BOUTIQUE_ADDRESS}
         </p>
       </div>
@@ -621,25 +621,25 @@ function BookPageInner() {
   if (step === 4) {
     const estimatedTotal = items.reduce((sum, i) => sum + i.price, 0)
     return (
-      <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#1c2b1e' }}>
+      <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#F8F0ED' }}>
 
         {/* Top row */}
         <div className="flex items-center gap-4 mb-8">
           <button
             onClick={() => setStep(3)}
             className="text-lg leading-none"
-            style={{ color: '#c4b89a' }}
+            style={{ color: '#9A7532' }}
             aria-label="Back to items"
           >
             ←
           </button>
-          <h1 className="text-xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+          <h1 className="text-xl font-light tracking-wide" style={{ color: '#141B45' }}>
             New Appointment
           </h1>
         </div>
 
         {/* Step indicator */}
-        <p className="text-[10px] tracking-[0.3em] uppercase mb-5" style={{ color: '#c4b89a' }}>
+        <p className="text-[10px] tracking-[0.3em] uppercase mb-5" style={{ color: '#9A7532' }}>
           {getStepLabel(4, deliveryMethod)}
         </p>
 
@@ -647,7 +647,7 @@ function BookPageInner() {
         <DeliveryRecap deliveryMethod={deliveryMethod} date={date} time={time} />
 
         {/* Section label */}
-        <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'rgba(196, 184, 154, 0.6)' }}>
+        <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'rgba(154,117,50, 0.6)' }}>
           Your Items
         </p>
 
@@ -658,24 +658,24 @@ function BookPageInner() {
               key={item.id}
               className="flex items-start justify-between py-4"
               style={{
-                borderTop: idx === 0 ? '1px solid rgba(196, 184, 154, 0.15)' : undefined,
-                borderBottom: '1px solid rgba(196, 184, 154, 0.15)',
+                borderTop: idx === 0 ? '1px solid rgba(154,117,50, 0.15)' : undefined,
+                borderBottom: '1px solid rgba(154,117,50, 0.15)',
               }}
             >
               <div className="flex flex-col gap-1 flex-1 min-w-0 pr-4">
-                <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>
+                <p className="text-sm font-light" style={{ color: '#141B45' }}>
                   {item.subCategory}
                 </p>
-                <p className="text-[11px] font-light" style={{ color: 'rgba(245, 240, 232, 0.45)' }}>
+                <p className="text-[11px] font-light" style={{ color: 'rgba(20,27,69, 0.45)' }}>
                   {[item.brand, item.color].filter(Boolean).join(' · ') || item.category}
                 </p>
                 {item.instructions && (
-                  <p className="text-[11px] font-light italic mt-0.5" style={{ color: 'rgba(245, 240, 232, 0.35)' }}>
+                  <p className="text-[11px] font-light italic mt-0.5" style={{ color: 'rgba(20,27,69, 0.35)' }}>
                     {'"'}{item.instructions}{'"'}
                   </p>
                 )}
               </div>
-              <p className="text-sm font-light shrink-0" style={{ color: '#c4b89a' }}>
+              <p className="text-sm font-light shrink-0" style={{ color: '#9A7532' }}>
                 {item.price > 0
                   ? `$${item.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                   : 'TBD'}
@@ -686,10 +686,10 @@ function BookPageInner() {
 
         {/* Estimated total */}
         <div className="flex items-center justify-between mt-5 mb-8 px-1">
-          <p className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: '#c4b89a' }}>
+          <p className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: '#9A7532' }}>
             Estimated Total
           </p>
-          <p className="text-base font-light" style={{ color: '#c4b89a' }}>
+          <p className="text-base font-light" style={{ color: '#9A7532' }}>
             ${estimatedTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
           </p>
         </div>
@@ -698,8 +698,8 @@ function BookPageInner() {
         <p
           className="text-[11px] font-light leading-relaxed mb-10 pb-8"
           style={{
-            color: 'rgba(245, 240, 232, 0.35)',
-            borderBottom: '1px solid rgba(196, 184, 154, 0.1)',
+            color: 'rgba(20,27,69, 0.35)',
+            borderBottom: '1px solid rgba(154,117,50, 0.1)',
           }}
         >
           Prices shown are estimates based on your selections. The final invoice will be confirmed by our team after inspection of your garments. Additional services may be recommended.
@@ -710,7 +710,7 @@ function BookPageInner() {
           onClick={handleConfirmBooking}
           disabled={saving}
           className="w-full py-4 text-[10px] tracking-[0.35em] uppercase font-medium disabled:opacity-40"
-          style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+          style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
         >
           {saving ? 'Confirming…' : 'Confirm Booking Request'}
         </button>
@@ -720,7 +720,7 @@ function BookPageInner() {
           onClick={() => router.replace('/orders')}
           disabled={saving}
           className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-light mt-3 disabled:opacity-40"
-          style={{ color: 'rgba(196, 184, 154, 0.45)' }}
+          style={{ color: 'rgba(154,117,50, 0.45)' }}
         >
           Cancel
         </button>
@@ -731,25 +731,25 @@ function BookPageInner() {
   // ── STEP 3 — Items ────────────────────────────────────────────
   if (step === 3) {
     return (
-      <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#1c2b1e' }}>
+      <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#F8F0ED' }}>
 
         {/* Top row */}
         <div className="flex items-center gap-4 mb-8">
           <button
             onClick={() => { setShowForm(false); setStep(deliveryMethod === 'pick_up' ? 2 : 1) }}
             className="text-lg leading-none"
-            style={{ color: '#c4b89a' }}
+            style={{ color: '#9A7532' }}
             aria-label="Back"
           >
             ←
           </button>
-          <h1 className="text-xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+          <h1 className="text-xl font-light tracking-wide" style={{ color: '#141B45' }}>
             New Appointment
           </h1>
         </div>
 
         {/* Step indicator */}
-        <p className="text-[10px] tracking-[0.3em] uppercase mb-5" style={{ color: '#c4b89a' }}>
+        <p className="text-[10px] tracking-[0.3em] uppercase mb-5" style={{ color: '#9A7532' }}>
           {getStepLabel(3, deliveryMethod)}
         </p>
 
@@ -764,15 +764,15 @@ function BookPageInner() {
                 key={item.id}
                 className="flex items-center justify-between py-3 px-4"
                 style={{
-                  backgroundColor: 'rgba(245, 240, 232, 0.04)',
-                  borderBottom: '1px solid rgba(196, 184, 154, 0.12)',
+                  backgroundColor: 'rgba(20,27,69, 0.04)',
+                  borderBottom: '1px solid rgba(154,117,50, 0.12)',
                 }}
               >
                 <div className="flex flex-col gap-0.5">
-                  <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>
+                  <p className="text-sm font-light" style={{ color: '#141B45' }}>
                     {item.subCategory}{item.brand ? ` · ${item.brand}` : ''}
                   </p>
-                  <p className="text-xs" style={{ color: '#c4b89a' }}>
+                  <p className="text-xs" style={{ color: '#9A7532' }}>
                     {item.price > 0
                       ? `$${item.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                       : 'Price TBD'}
@@ -782,14 +782,14 @@ function BookPageInner() {
                   <button
                     onClick={() => handleEditItem(item)}
                     className="text-xs font-light"
-                    style={{ color: 'rgba(196, 184, 154, 0.7)' }}
+                    style={{ color: 'rgba(154,117,50, 0.7)' }}
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleRemoveItem(item)}
                     className="text-xs font-light"
-                    style={{ color: 'rgba(196, 184, 154, 0.4)' }}
+                    style={{ color: 'rgba(154,117,50, 0.4)' }}
                   >
                     Remove
                   </button>
@@ -802,10 +802,10 @@ function BookPageInner() {
         {/* Estimated total */}
         {items.length > 0 && (
           <div className="flex items-center justify-between mb-6 px-1">
-            <p className="text-[10px] tracking-[0.3em] uppercase" style={{ color: '#c4b89a' }}>
+            <p className="text-[10px] tracking-[0.3em] uppercase" style={{ color: '#9A7532' }}>
               Estimated Total
             </p>
-            <p className="text-sm font-light" style={{ color: '#c4b89a' }}>
+            <p className="text-sm font-light" style={{ color: '#9A7532' }}>
               ${items.reduce((sum, i) => sum + i.price, 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </p>
           </div>
@@ -816,7 +816,7 @@ function BookPageInner() {
           <button
             onClick={() => { resetForm(); setShowForm(true) }}
             className="w-full py-3 text-[10px] tracking-[0.35em] uppercase font-medium mb-4"
-            style={{ border: '1px solid #c4b89a', color: '#c4b89a', backgroundColor: 'transparent' }}
+            style={{ border: '1px solid #9A7532', color: '#9A7532', backgroundColor: 'transparent' }}
           >
             + Add Item
           </button>
@@ -827,14 +827,14 @@ function BookPageInner() {
           <div
             className="flex flex-col gap-7 mb-8 p-5"
             style={{
-              border: '1px solid rgba(196, 184, 154, 0.2)',
-              backgroundColor: 'rgba(245, 240, 232, 0.02)',
+              border: '1px solid rgba(154,117,50, 0.2)',
+              backgroundColor: 'rgba(20,27,69, 0.02)',
             }}
           >
             {/* From your wardrobe */}
             {!formIsEdit && wardrobeItems.length > 0 && (
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
                   From your wardrobe
                 </label>
                 <div className="flex flex-col gap-2">
@@ -847,40 +847,40 @@ function BookPageInner() {
                         onClick={() => handleSelectWardrobeItem(item)}
                         className="flex items-center justify-between px-3 py-3 rounded-xl text-left transition-colors"
                         style={{
-                          backgroundColor: isSelected ? 'rgba(196,184,154,0.18)' : 'rgba(255,255,255,0.03)',
-                          border: isSelected ? '1px solid #c4b89a' : '1px solid rgba(196,184,154,0.12)',
+                          backgroundColor: isSelected ? 'rgba(154,117,50,0.18)' : 'rgba(255,255,255,0.03)',
+                          border: isSelected ? '1px solid #9A7532' : '1px solid rgba(154,117,50,0.12)',
                         }}
                       >
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-xs font-light" style={{ color: isSelected ? '#c4b89a' : '#f5f0e8' }}>
+                          <span className="text-xs font-light" style={{ color: isSelected ? '#9A7532' : '#141B45' }}>
                             {item.services?.sub_category ?? '—'}
                           </span>
                           {(item.brand || item.color) && (
-                            <span className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.45)' }}>
+                            <span className="text-[11px] font-light" style={{ color: 'rgba(20,27,69,0.45)' }}>
                               {[item.brand, item.color].filter(Boolean).join(' · ')}
                             </span>
                           )}
                         </div>
                         {isSelected && (
-                          <span className="text-[10px] ml-3 shrink-0" style={{ color: '#c4b89a' }}>✓</span>
+                          <span className="text-[10px] ml-3 shrink-0" style={{ color: '#9A7532' }}>✓</span>
                         )}
                       </button>
                     )
                   })}
                 </div>
                 <div className="flex items-center gap-3 mt-4 mb-1">
-                  <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(196,184,154,0.12)' }} />
-                  <span className="text-[10px] tracking-[0.2em] uppercase" style={{ color: 'rgba(196,184,154,0.4)' }}>
+                  <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(154,117,50,0.12)' }} />
+                  <span className="text-[10px] tracking-[0.2em] uppercase" style={{ color: 'rgba(154,117,50,0.4)' }}>
                     or new item
                   </span>
-                  <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(196,184,154,0.12)' }} />
+                  <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(154,117,50,0.12)' }} />
                 </div>
               </div>
             )}
 
             {/* Category */}
             <div>
-              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
                 Category
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -891,9 +891,9 @@ function BookPageInner() {
                     onClick={() => { setFormCategory(cat); setFormSubCategory('') }}
                     className="py-3 px-2 rounded-xl text-xs text-center transition-colors"
                     style={{
-                      backgroundColor: formCategory === cat ? 'rgba(196,184,154,0.18)' : 'rgba(255,255,255,0.04)',
-                      border: formCategory === cat ? '1px solid #c4b89a' : '1px solid rgba(196,184,154,0.15)',
-                      color: formCategory === cat ? '#c4b89a' : 'rgba(245,240,232,0.75)',
+                      backgroundColor: formCategory === cat ? 'rgba(154,117,50,0.18)' : 'rgba(255,255,255,0.04)',
+                      border: formCategory === cat ? '1px solid #9A7532' : '1px solid rgba(154,117,50,0.15)',
+                      color: formCategory === cat ? '#9A7532' : 'rgba(20,27,69,0.75)',
                     }}
                   >
                     {cat}
@@ -905,7 +905,7 @@ function BookPageInner() {
             {/* Sub-category */}
             {formCategory && (
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
                   {formCategory}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -916,9 +916,9 @@ function BookPageInner() {
                       onClick={() => setFormSubCategory(svc.sub_category)}
                       className="py-3 px-2 rounded-xl text-xs text-center transition-colors"
                       style={{
-                        backgroundColor: formSubCategory === svc.sub_category ? 'rgba(196,184,154,0.18)' : 'rgba(255,255,255,0.03)',
-                        border: formSubCategory === svc.sub_category ? '1px solid #c4b89a' : '1px solid rgba(196,184,154,0.1)',
-                        color: formSubCategory === svc.sub_category ? '#c4b89a' : 'rgba(245,240,232,0.7)',
+                        backgroundColor: formSubCategory === svc.sub_category ? 'rgba(154,117,50,0.18)' : 'rgba(255,255,255,0.03)',
+                        border: formSubCategory === svc.sub_category ? '1px solid #9A7532' : '1px solid rgba(154,117,50,0.1)',
+                        color: formSubCategory === svc.sub_category ? '#9A7532' : 'rgba(20,27,69,0.7)',
                       }}
                     >
                       {svc.sub_category}
@@ -926,7 +926,7 @@ function BookPageInner() {
                   ))}
                 </div>
                 {selectedService && (
-                  <p className="mt-3 text-xs font-light" style={{ color: '#c4b89a' }}>
+                  <p className="mt-3 text-xs font-light" style={{ color: '#9A7532' }}>
                     ${selectedService.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </p>
                 )}
@@ -935,9 +935,9 @@ function BookPageInner() {
 
             {/* Brand */}
             <div>
-              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
                 Brand{' '}
-                <span style={{ color: 'rgba(196, 184, 154, 0.4)', textTransform: 'none', letterSpacing: 0 }}>
+                <span style={{ color: 'rgba(154,117,50, 0.4)', textTransform: 'none', letterSpacing: 0 }}>
                   (optional)
                 </span>
               </label>
@@ -946,16 +946,16 @@ function BookPageInner() {
                 value={formBrand}
                 onChange={e => setFormBrand(e.target.value)}
                 placeholder="e.g. Louis Vuitton"
-                className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(245,240,232,0.25)]"
-                style={{ color: '#f5f0e8', borderBottom: '1px solid rgba(196, 184, 154, 0.4)' }}
+                className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(20,27,69,0.25)]"
+                style={{ color: '#141B45', borderBottom: '1px solid rgba(154,117,50, 0.4)' }}
               />
             </div>
 
             {/* Color */}
             <div>
-              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
                 Color{' '}
-                <span style={{ color: 'rgba(196, 184, 154, 0.4)', textTransform: 'none', letterSpacing: 0 }}>
+                <span style={{ color: 'rgba(154,117,50, 0.4)', textTransform: 'none', letterSpacing: 0 }}>
                   (optional)
                 </span>
               </label>
@@ -964,16 +964,16 @@ function BookPageInner() {
                 value={formColor}
                 onChange={e => setFormColor(e.target.value)}
                 placeholder="e.g. Black"
-                className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(245,240,232,0.25)]"
-                style={{ color: '#f5f0e8', borderBottom: '1px solid rgba(196, 184, 154, 0.4)' }}
+                className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(20,27,69,0.25)]"
+                style={{ color: '#141B45', borderBottom: '1px solid rgba(154,117,50, 0.4)' }}
               />
             </div>
 
             {/* Special instructions */}
             <div>
-              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
                 Special Instructions{' '}
-                <span style={{ color: 'rgba(196, 184, 154, 0.4)', textTransform: 'none', letterSpacing: 0 }}>
+                <span style={{ color: 'rgba(154,117,50, 0.4)', textTransform: 'none', letterSpacing: 0 }}>
                   (optional)
                 </span>
               </label>
@@ -982,16 +982,16 @@ function BookPageInner() {
                 onChange={e => setFormInstructions(e.target.value)}
                 placeholder="Any special care instructions…"
                 rows={3}
-                className="w-full bg-transparent outline-none text-sm font-light resize-none pb-2 placeholder:text-[rgba(245,240,232,0.25)]"
-                style={{ color: '#f5f0e8', borderBottom: '1px solid rgba(196, 184, 154, 0.4)' }}
+                className="w-full bg-transparent outline-none text-sm font-light resize-none pb-2 placeholder:text-[rgba(20,27,69,0.25)]"
+                style={{ color: '#141B45', borderBottom: '1px solid rgba(154,117,50, 0.4)' }}
               />
             </div>
 
             {/* Photos */}
             <div>
-              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
                 Photos{' '}
-                <span style={{ color: 'rgba(196, 184, 154, 0.4)', textTransform: 'none', letterSpacing: 0 }}>
+                <span style={{ color: 'rgba(154,117,50, 0.4)', textTransform: 'none', letterSpacing: 0 }}>
                   (optional)
                 </span>
               </label>
@@ -1006,7 +1006,7 @@ function BookPageInner() {
                           src={url}
                           alt=""
                           className="w-14 h-14 object-cover rounded-sm"
-                          style={{ border: '1px solid rgba(196, 184, 154, 0.2)' }}
+                          style={{ border: '1px solid rgba(154,117,50, 0.2)' }}
                         />
                         <button
                           type="button"
@@ -1030,7 +1030,7 @@ function BookPageInner() {
                       src={src}
                       alt=""
                       className="w-14 h-14 object-cover rounded-sm opacity-70"
-                      style={{ border: '1px solid rgba(196, 184, 154, 0.35)' }}
+                      style={{ border: '1px solid rgba(154,117,50, 0.35)' }}
                     />
                   ))}
                 </div>
@@ -1043,7 +1043,7 @@ function BookPageInner() {
                 multiple
                 onChange={handlePhotoChange}
                 className="text-xs font-light w-full"
-                style={{ color: 'rgba(245, 240, 232, 0.5)' }}
+                style={{ color: 'rgba(20,27,69, 0.5)' }}
               />
             </div>
 
@@ -1053,7 +1053,7 @@ function BookPageInner() {
                 onClick={handleAddItem}
                 disabled={!formCategory || !formSubCategory || saving}
                 className="flex-1 py-3 text-[10px] tracking-[0.35em] uppercase font-medium disabled:opacity-40"
-                style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+                style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
               >
                 {saving ? 'Saving…' : formIsEdit ? 'Confirm' : 'Add to Order'}
               </button>
@@ -1063,7 +1063,7 @@ function BookPageInner() {
                     onClick={handleCancelForm}
                     disabled={saving}
                     className="px-4 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
-                    style={{ border: '1px solid rgba(196, 184, 154, 0.3)', color: 'rgba(196, 184, 154, 0.7)' }}
+                    style={{ border: '1px solid rgba(154,117,50, 0.3)', color: 'rgba(154,117,50, 0.7)' }}
                   >
                     Cancel
                   </button>
@@ -1081,7 +1081,7 @@ function BookPageInner() {
                   onClick={handleCancelForm}
                   disabled={saving}
                   className="px-5 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
-                  style={{ border: '1px solid rgba(196, 184, 154, 0.3)', color: 'rgba(196, 184, 154, 0.7)' }}
+                  style={{ border: '1px solid rgba(154,117,50, 0.3)', color: 'rgba(154,117,50, 0.7)' }}
                 >
                   Cancel
                 </button>
@@ -1095,7 +1095,7 @@ function BookPageInner() {
           onClick={() => setStep(4)}
           disabled={items.length === 0}
           className="w-full py-4 text-[10px] tracking-[0.35em] uppercase font-medium disabled:opacity-40"
-          style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+          style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
         >
           Continue to Review
         </button>
@@ -1106,25 +1106,25 @@ function BookPageInner() {
   // ── STEP 2 — Date & Time (Pick Up only) ──────────────────────
   if (step === 2) {
     return (
-      <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#1c2b1e' }}>
+      <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#F8F0ED' }}>
 
         {/* Top row */}
         <div className="flex items-center gap-4 mb-8">
           <button
             onClick={() => setStep(1)}
             className="text-lg leading-none"
-            style={{ color: '#c4b89a' }}
+            style={{ color: '#9A7532' }}
             aria-label="Back to delivery method"
           >
             ←
           </button>
-          <h1 className="text-xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+          <h1 className="text-xl font-light tracking-wide" style={{ color: '#141B45' }}>
             New Appointment
           </h1>
         </div>
 
         {/* Step indicator */}
-        <p className="text-[10px] tracking-[0.3em] uppercase mb-10" style={{ color: '#c4b89a' }}>
+        <p className="text-[10px] tracking-[0.3em] uppercase mb-10" style={{ color: '#9A7532' }}>
           {getStepLabel(2, deliveryMethod)}
         </p>
 
@@ -1136,7 +1136,7 @@ function BookPageInner() {
               <label
                 htmlFor="preferred-date"
                 className="block text-[10px] tracking-[0.3em] uppercase mb-3"
-                style={{ color: '#c4b89a' }}
+                style={{ color: '#9A7532' }}
               >
                 Preferred Date
               </label>
@@ -1148,8 +1148,8 @@ function BookPageInner() {
                 onChange={e => setDate(e.target.value)}
                 className="w-full bg-transparent outline-none text-sm font-light pb-3 transition-colors"
                 style={{
-                  color: date ? '#f5f0e8' : 'rgba(245, 240, 232, 0.35)',
-                  borderBottom: '1px solid rgba(196, 184, 154, 0.4)',
+                  color: date ? '#141B45' : 'rgba(20,27,69, 0.35)',
+                  borderBottom: '1px solid rgba(154,117,50, 0.4)',
                   colorScheme: 'dark',
                 }}
               />
@@ -1159,7 +1159,7 @@ function BookPageInner() {
             <div>
               <label
                 className="block text-[10px] tracking-[0.3em] uppercase mb-3"
-                style={{ color: '#c4b89a' }}
+                style={{ color: '#9A7532' }}
               >
                 Preferred Time
               </label>
@@ -1171,17 +1171,17 @@ function BookPageInner() {
                     onClick={() => setTime(slot)}
                     className="flex items-center justify-between px-4 py-3 rounded-xl transition-colors"
                     style={{
-                      backgroundColor: time === slot ? 'rgba(196,184,154,0.15)' : 'rgba(255,255,255,0.04)',
-                      border: time === slot ? '1px solid #c4b89a' : '1px solid rgba(196,184,154,0.15)',
-                      color: time === slot ? '#c4b89a' : 'rgba(245,240,232,0.75)',
+                      backgroundColor: time === slot ? 'rgba(154,117,50,0.15)' : 'rgba(255,255,255,0.04)',
+                      border: time === slot ? '1px solid #9A7532' : '1px solid rgba(154,117,50,0.15)',
+                      color: time === slot ? '#9A7532' : 'rgba(20,27,69,0.75)',
                     }}
                   >
                     <span className="text-sm font-light">{slot}</span>
                     <div
                       className="w-1.5 h-1.5 rounded-full"
                       style={{
-                        backgroundColor: time === slot ? '#c4b89a' : 'transparent',
-                        border: time === slot ? '1px solid #c4b89a' : '1px solid rgba(196,184,154,0.3)',
+                        backgroundColor: time === slot ? '#9A7532' : 'transparent',
+                        border: time === slot ? '1px solid #9A7532' : '1px solid rgba(154,117,50,0.3)',
                       }}
                     />
                   </button>
@@ -1201,7 +1201,7 @@ function BookPageInner() {
             type="submit"
             disabled={saving}
             className="w-full py-4 text-[10px] tracking-[0.35em] uppercase font-medium mt-10 disabled:opacity-40"
-            style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+            style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
           >
             {saving ? 'Saving…' : 'Continue'}
           </button>
@@ -1212,25 +1212,25 @@ function BookPageInner() {
 
   // ── STEP 1 — Delivery Method ──────────────────────────────────
   return (
-    <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#1c2b1e' }}>
+    <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#F8F0ED' }}>
 
       {/* Top row */}
       <div className="flex items-center gap-4 mb-8">
         <Link
           href="/orders"
           className="text-lg leading-none"
-          style={{ color: '#c4b89a' }}
+          style={{ color: '#9A7532' }}
           aria-label="Back to orders"
         >
           ←
         </Link>
-        <h1 className="text-xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+        <h1 className="text-xl font-light tracking-wide" style={{ color: '#141B45' }}>
           New Appointment
         </h1>
       </div>
 
       {/* Step indicator */}
-      <p className="text-[10px] tracking-[0.3em] uppercase mb-10" style={{ color: '#c4b89a' }}>
+      <p className="text-[10px] tracking-[0.3em] uppercase mb-10" style={{ color: '#9A7532' }}>
         {getStepLabel(1, deliveryMethod)}
       </p>
 
@@ -1245,19 +1245,19 @@ function BookPageInner() {
               onClick={() => { setDeliveryMethod(option.value); setStep1Error(null) }}
               className="flex flex-col gap-1 px-5 py-4 rounded-xl text-left transition-colors"
               style={{
-                backgroundColor: isSelected ? 'rgba(196,184,154,0.12)' : 'rgba(255,255,255,0.03)',
-                border: isSelected ? '1px solid #c4b89a' : '1px solid rgba(196,184,154,0.18)',
+                backgroundColor: isSelected ? 'rgba(154,117,50,0.12)' : 'rgba(255,255,255,0.03)',
+                border: isSelected ? '1px solid #9A7532' : '1px solid rgba(154,117,50,0.18)',
               }}
             >
               <span
                 className="text-sm font-light tracking-wide"
-                style={{ color: isSelected ? '#c4b89a' : '#f5f0e8' }}
+                style={{ color: isSelected ? '#9A7532' : '#141B45' }}
               >
                 {option.label}
               </span>
               <span
                 className="text-[11px] font-light leading-relaxed"
-                style={{ color: 'rgba(245,240,232,0.45)' }}
+                style={{ color: 'rgba(20,27,69,0.45)' }}
               >
                 {option.description}
               </span>
@@ -1271,17 +1271,17 @@ function BookPageInner() {
         <div
           className="flex flex-col gap-2 px-5 py-4 mb-8"
           style={{
-            backgroundColor: 'rgba(196,184,154,0.06)',
-            border: '1px solid rgba(196,184,154,0.15)',
+            backgroundColor: 'rgba(154,117,50,0.06)',
+            border: '1px solid rgba(154,117,50,0.15)',
           }}
         >
-          <p className="text-[10px] tracking-[0.25em] uppercase mb-1" style={{ color: 'rgba(196,184,154,0.7)' }}>
+          <p className="text-[10px] tracking-[0.25em] uppercase mb-1" style={{ color: 'rgba(154,117,50,0.7)' }}>
             Our Boutique
           </p>
-          <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>
+          <p className="text-sm font-light" style={{ color: '#141B45' }}>
             {BOUTIQUE_ADDRESS}
           </p>
-          <p className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+          <p className="text-xs font-light" style={{ color: 'rgba(20,27,69,0.5)' }}>
             {BOUTIQUE_HOURS}
           </p>
         </div>
@@ -1291,20 +1291,20 @@ function BookPageInner() {
         <div
           className="flex flex-col gap-2 px-5 py-4 mb-8"
           style={{
-            backgroundColor: 'rgba(196,184,154,0.06)',
-            border: '1px solid rgba(196,184,154,0.15)',
+            backgroundColor: 'rgba(154,117,50,0.06)',
+            border: '1px solid rgba(154,117,50,0.15)',
           }}
         >
-          <p className="text-[10px] tracking-[0.25em] uppercase mb-1" style={{ color: 'rgba(196,184,154,0.7)' }}>
+          <p className="text-[10px] tracking-[0.25em] uppercase mb-1" style={{ color: 'rgba(154,117,50,0.7)' }}>
             Ship To
           </p>
-          <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>
+          <p className="text-sm font-light" style={{ color: '#141B45' }}>
             La Sirène
           </p>
-          <p className="text-sm font-light" style={{ color: 'rgba(245,240,232,0.7)' }}>
+          <p className="text-sm font-light" style={{ color: 'rgba(20,27,69,0.7)' }}>
             {BOUTIQUE_ADDRESS}
           </p>
-          <p className="text-xs font-light mt-1" style={{ color: 'rgba(245,240,232,0.4)' }}>
+          <p className="text-xs font-light mt-1" style={{ color: 'rgba(20,27,69,0.4)' }}>
             Please include your name and contact information inside the package.
           </p>
         </div>
@@ -1321,7 +1321,7 @@ function BookPageInner() {
         onClick={handleDeliveryMethodContinue}
         disabled={!deliveryMethod || saving}
         className="w-full py-4 text-[10px] tracking-[0.35em] uppercase font-medium disabled:opacity-40"
-        style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+        style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
       >
         {saving ? 'Saving…' : 'Continue'}
       </button>

@@ -53,23 +53,23 @@ export default function WardrobeCategoryPage() {
   if (!loaded) return null
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#1c2b1e' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#F8F0ED' }}>
       <AppHeader />
       <main className="px-6 pt-4 pb-32">
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <Link href="/wardrobe" className="text-lg leading-none" style={{ color: '#c4b89a' }} aria-label="Back">←</Link>
+          <Link href="/wardrobe" className="text-lg leading-none" style={{ color: '#9A7532' }} aria-label="Back">←</Link>
           <div>
-            <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(196,184,154,0.5)' }}>My Wardrobe</p>
-            <p className="text-lg font-light tracking-wide" style={{ color: '#f5f0e8' }}>{category}</p>
+            <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(154,117,50,0.5)' }}>My Wardrobe</p>
+            <p className="text-lg font-light tracking-wide" style={{ color: '#141B45' }}>{category}</p>
           </div>
         </div>
 
         {/* Subcategory cards grid */}
         {subCategoryCards.length === 0 ? (
           <div className="flex flex-col items-center justify-center pt-16 text-center">
-            <p className="text-sm font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>No items in this category yet</p>
+            <p className="text-sm font-light" style={{ color: 'rgba(20,27,69,0.4)' }}>No items in this category yet</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 content-start">
@@ -78,18 +78,18 @@ export default function WardrobeCategoryPage() {
                 key={subCategory}
                 href={`/wardrobe/${encodeURIComponent(category)}/${encodeURIComponent(subCategory)}`}
                 className="relative flex flex-col justify-end overflow-hidden"
-                style={{ aspectRatio: '3/4', backgroundColor: 'rgba(245,240,232,0.04)', border: '1px solid rgba(196,184,154,0.12)' }}
+                style={{ aspectRatio: '3/4', backgroundColor: 'rgba(20,27,69,0.04)', border: '1px solid rgba(154,117,50,0.12)' }}
               >
                 {firstPhotoUrl ? (
                   <img src={firstPhotoUrl} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ opacity: 0.55 }} />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span style={{ color: 'rgba(196,184,154,0.18)', fontSize: 28 }}>✦</span>
+                    <span style={{ color: 'rgba(154,117,50,0.18)', fontSize: 28 }}>✦</span>
                   </div>
                 )}
                 <div className="relative z-10 p-3" style={{ background: 'linear-gradient(to top, rgba(28,43,30,0.95) 0%, rgba(28,43,30,0) 100%)' }}>
-                  <p className="text-sm font-light tracking-wide" style={{ color: '#f5f0e8' }}>{subCategory}</p>
-                  <p className="text-[10px] font-light mt-0.5" style={{ color: '#c4b89a' }}>{count} {count === 1 ? 'item' : 'items'}</p>
+                  <p className="text-sm font-light tracking-wide" style={{ color: '#141B45' }}>{subCategory}</p>
+                  <p className="text-[10px] font-light mt-0.5" style={{ color: '#9A7532' }}>{count} {count === 1 ? 'item' : 'items'}</p>
                 </div>
               </Link>
             ))}

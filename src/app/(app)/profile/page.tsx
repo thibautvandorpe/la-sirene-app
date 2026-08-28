@@ -102,16 +102,16 @@ export default function ProfilePage() {
 
   if (!loggedIn) {
     return (
-      <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#1c2b1e' }}>
+      <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#F8F0ED' }}>
         <AppHeader />
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
-          <p className="text-sm font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+          <p className="text-sm font-light tracking-wide" style={{ color: '#141B45' }}>
             Please sign in to access your profile
           </p>
           <Link
             href="/login"
             className="mt-5 px-6 py-2 text-[10px] tracking-widest uppercase"
-            style={{ color: '#c4b89a', border: '1px solid rgba(196,184,154,0.3)' }}
+            style={{ color: '#9A7532', border: '1px solid rgba(154,117,50,0.3)' }}
           >
             Sign In
           </Link>
@@ -121,21 +121,21 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#1c2b1e' }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#F8F0ED' }}>
       <AppHeader />
 
       <main className="flex-1 px-6 pt-4 pb-24">
 
         {/* Page title row */}
         <div className="flex items-center justify-between mb-10">
-          <p className="text-[10px] tracking-[0.35em] uppercase" style={{ color: '#c4b89a' }}>
+          <p className="text-[10px] tracking-[0.35em] uppercase" style={{ color: '#9A7532' }}>
             My Profile
           </p>
           {!editing && (
             <button
               onClick={handleStartEdit}
               className="text-[10px] tracking-[0.25em] uppercase font-light"
-              style={{ color: 'rgba(196,184,154,0.6)' }}
+              style={{ color: 'rgba(154,117,50,0.6)' }}
             >
               Edit
             </button>
@@ -147,7 +147,7 @@ export default function ProfilePage() {
 
           {/* Full Name */}
           <div>
-            <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+            <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
               Full Name
             </label>
             {editing ? (
@@ -156,16 +156,16 @@ export default function ProfilePage() {
                 value={editName}
                 onChange={e => setEditName(e.target.value)}
                 placeholder="Your full name"
-                className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(245,240,232,0.25)]"
+                className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(20,27,69,0.25)]"
                 style={{
-                  color: '#f5f0e8',
-                  borderBottom: '1px solid rgba(196,184,154,0.5)',
+                  color: '#141B45',
+                  borderBottom: '1px solid rgba(154,117,50,0.5)',
                 }}
               />
             ) : (
               <p className="text-sm font-light pb-3" style={{
-                color: fullName ? '#f5f0e8' : 'rgba(245,240,232,0.3)',
-                borderBottom: '1px solid rgba(196,184,154,0.15)',
+                color: fullName ? '#141B45' : 'rgba(20,27,69,0.3)',
+                borderBottom: '1px solid rgba(154,117,50,0.15)',
               }}>
                 {fullName || 'Not set'}
               </p>
@@ -174,7 +174,7 @@ export default function ProfilePage() {
 
           {/* Phone */}
           <div>
-            <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+            <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
               Phone Number
             </label>
             {editing ? (
@@ -183,16 +183,16 @@ export default function ProfilePage() {
                 value={editPhone}
                 onChange={e => setEditPhone(e.target.value)}
                 placeholder="e.g. +1 310 555 0100"
-                className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(245,240,232,0.25)]"
+                className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(20,27,69,0.25)]"
                 style={{
-                  color: '#f5f0e8',
-                  borderBottom: '1px solid rgba(196,184,154,0.5)',
+                  color: '#141B45',
+                  borderBottom: '1px solid rgba(154,117,50,0.5)',
                 }}
               />
             ) : (
               <p className="text-sm font-light pb-3" style={{
-                color: phone ? '#f5f0e8' : 'rgba(245,240,232,0.3)',
-                borderBottom: '1px solid rgba(196,184,154,0.15)',
+                color: phone ? '#141B45' : 'rgba(20,27,69,0.3)',
+                borderBottom: '1px solid rgba(154,117,50,0.15)',
               }}>
                 {phone || 'Not set'}
               </p>
@@ -201,17 +201,17 @@ export default function ProfilePage() {
 
           {/* Email — always read-only */}
           <div>
-            <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>
+            <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>
               Email{' '}
-              <span style={{ color: 'rgba(196,184,154,0.4)', textTransform: 'none', letterSpacing: 0 }}>
+              <span style={{ color: 'rgba(154,117,50,0.4)', textTransform: 'none', letterSpacing: 0 }}>
                 (cannot be changed)
               </span>
             </label>
             <p
               className="text-sm font-light pb-3"
               style={{
-                color: 'rgba(245,240,232,0.4)',
-                borderBottom: '1px solid rgba(196,184,154,0.1)',
+                color: 'rgba(20,27,69,0.4)',
+                borderBottom: '1px solid rgba(154,117,50,0.1)',
               }}
             >
               {email}
@@ -221,13 +221,13 @@ export default function ProfilePage() {
           {/* Email notifications toggle */}
           <div
             className="flex items-start justify-between pb-3"
-            style={{ borderBottom: '1px solid rgba(196,184,154,0.1)' }}
+            style={{ borderBottom: '1px solid rgba(154,117,50,0.1)' }}
           >
             <div className="flex-1 pr-6">
-              <p className="text-[10px] tracking-[0.3em] uppercase mb-1.5" style={{ color: '#c4b89a' }}>
+              <p className="text-[10px] tracking-[0.3em] uppercase mb-1.5" style={{ color: '#9A7532' }}>
                 Email Notifications
               </p>
-              <p className="text-xs font-light leading-relaxed" style={{ color: 'rgba(245,240,232,0.4)' }}>
+              <p className="text-xs font-light leading-relaxed" style={{ color: 'rgba(20,27,69,0.4)' }}>
                 Receive an email when your order status changes or you have a new message
               </p>
             </div>
@@ -237,7 +237,7 @@ export default function ProfilePage() {
               style={{
                 width: 40, height: 22,
                 borderRadius: 11,
-                backgroundColor: emailNotificationsEnabled ? '#c4b89a' : 'rgba(245,240,232,0.15)',
+                backgroundColor: emailNotificationsEnabled ? '#DBA69D' : 'rgba(20,27,69,0.15)',
                 transition: 'background-color 0.2s',
               }}
               aria-label={emailNotificationsEnabled ? 'Disable email notifications' : 'Enable email notifications'}
@@ -247,7 +247,7 @@ export default function ProfilePage() {
                 style={{
                   width: 18, height: 18,
                   borderRadius: '50%',
-                  backgroundColor: emailNotificationsEnabled ? '#1c2b1e' : 'rgba(245,240,232,0.4)',
+                  backgroundColor: emailNotificationsEnabled ? '#F8F0ED' : 'rgba(20,27,69,0.4)',
                   left: emailNotificationsEnabled ? 19 : 3,
                   transition: 'left 0.2s, background-color 0.2s',
                 }}
@@ -269,7 +269,7 @@ export default function ProfilePage() {
               onClick={handleSave}
               disabled={saving}
               className="w-full py-4 text-[10px] tracking-[0.35em] uppercase font-medium disabled:opacity-40"
-              style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+              style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
             >
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
@@ -277,7 +277,7 @@ export default function ProfilePage() {
               onClick={handleCancelEdit}
               disabled={saving}
               className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
-              style={{ color: 'rgba(196,184,154,0.45)' }}
+              style={{ color: 'rgba(154,117,50,0.45)' }}
             >
               Cancel
             </button>

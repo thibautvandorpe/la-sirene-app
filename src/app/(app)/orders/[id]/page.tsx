@@ -83,19 +83,19 @@ function AppointmentDetailInner() {
   const time = detail!.notes ?? ''
 
   return (
-    <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#1c2b1e' }}>
+    <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#F8F0ED' }}>
 
       {/* Top row */}
       <div className="flex items-center gap-4 mb-8">
         <button
           onClick={() => router.back()}
           className="text-lg leading-none"
-          style={{ color: '#c4b89a' }}
+          style={{ color: '#9A7532' }}
           aria-label="Back to orders"
         >
           ←
         </button>
-        <h1 className="text-xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+        <h1 className="text-xl font-light tracking-wide" style={{ color: '#141B45' }}>
           Appointment Details
         </h1>
       </div>
@@ -103,28 +103,28 @@ function AppointmentDetailInner() {
       {/* Appointment recap */}
       <div
         className="flex flex-col gap-1 pl-3 mb-8"
-        style={{ borderLeft: '1px solid rgba(196, 184, 154, 0.35)' }}
+        style={{ borderLeft: '1px solid rgba(154,117,50, 0.35)' }}
       >
-        <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.55)' }}>
+        <p className="text-xs font-light" style={{ color: 'rgba(20,27,69, 0.55)' }}>
           {new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {
             weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
           })}
         </p>
         {time && (
-          <p className="text-xs font-light" style={{ color: 'rgba(245, 240, 232, 0.4)' }}>
+          <p className="text-xs font-light" style={{ color: 'rgba(20,27,69, 0.4)' }}>
             {time}
           </p>
         )}
         <span
           className="self-start mt-1 text-[9px] tracking-[0.25em] uppercase px-2 py-0.5 rounded-sm"
-          style={{ backgroundColor: 'rgba(196,184,154,0.2)', color: '#c4b89a' }}
+          style={{ backgroundColor: 'rgba(154,117,50,0.2)', color: '#9A7532' }}
         >
           {detail!.status}
         </span>
       </div>
 
       {/* Section label */}
-      <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'rgba(196, 184, 154, 0.6)' }}>
+      <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'rgba(154,117,50, 0.6)' }}>
         Items
       </p>
 
@@ -135,22 +135,22 @@ function AppointmentDetailInner() {
             key={item.id}
             className="flex items-start justify-between py-4"
             style={{
-              borderTop: idx === 0 ? '1px solid rgba(196, 184, 154, 0.15)' : undefined,
-              borderBottom: '1px solid rgba(196, 184, 154, 0.15)',
+              borderTop: idx === 0 ? '1px solid rgba(154,117,50, 0.15)' : undefined,
+              borderBottom: '1px solid rgba(154,117,50, 0.15)',
             }}
           >
             {/* Left: details */}
             <div className="flex flex-col gap-1 flex-1 min-w-0 pr-4">
-              <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>
+              <p className="text-sm font-light" style={{ color: '#141B45' }}>
                 {item.services?.sub_category ?? '—'}
               </p>
               {(item.garments?.brand || item.garments?.color) && (
-                <p className="text-[11px] font-light" style={{ color: 'rgba(245, 240, 232, 0.45)' }}>
+                <p className="text-[11px] font-light" style={{ color: 'rgba(20,27,69, 0.45)' }}>
                   {[item.garments.brand, item.garments.color].filter(Boolean).join(' · ')}
                 </p>
               )}
               {item.special_instructions && (
-                <p className="text-[11px] font-light italic mt-0.5" style={{ color: 'rgba(245, 240, 232, 0.35)' }}>
+                <p className="text-[11px] font-light italic mt-0.5" style={{ color: 'rgba(20,27,69, 0.35)' }}>
                   {'"'}{item.special_instructions}{'"'}
                 </p>
               )}
@@ -162,7 +162,7 @@ function AppointmentDetailInner() {
                         src={photo.url}
                         alt=""
                         className="w-16 h-16 object-cover rounded-sm"
-                        style={{ border: '1px solid rgba(196,184,154,0.2)' }}
+                        style={{ border: '1px solid rgba(154,117,50,0.2)' }}
                       />
                     </a>
                   ))}
@@ -170,7 +170,7 @@ function AppointmentDetailInner() {
               )}
             </div>
             {/* Right: price */}
-            <p className="text-sm font-light shrink-0" style={{ color: '#c4b89a' }}>
+            <p className="text-sm font-light shrink-0" style={{ color: '#9A7532' }}>
               {item.estimated_price > 0
                 ? `$${item.estimated_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                 : 'TBD'}
@@ -181,10 +181,10 @@ function AppointmentDetailInner() {
 
       {/* Estimated total */}
       <div className="flex items-center justify-between mt-5 mb-8 px-1">
-        <p className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: '#c4b89a' }}>
+        <p className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: '#9A7532' }}>
           Estimated Total
         </p>
-        <p className="text-base font-light" style={{ color: '#c4b89a' }}>
+        <p className="text-base font-light" style={{ color: '#9A7532' }}>
           ${estimatedTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
         </p>
       </div>
@@ -192,7 +192,7 @@ function AppointmentDetailInner() {
       {/* Disclaimer */}
       <p
         className="text-[11px] font-light leading-relaxed"
-        style={{ color: 'rgba(245, 240, 232, 0.35)' }}
+        style={{ color: 'rgba(20,27,69, 0.35)' }}
       >
         Prices shown are estimates based on your selections. The final invoice will be confirmed by our team after inspection of your garments.
       </p>

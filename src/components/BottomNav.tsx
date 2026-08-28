@@ -53,10 +53,10 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 bg-[#1c2b1e] border-t border-[#c4b89a]/20"
+      className="fixed bottom-0 left-0 right-0 bg-[#F8F0ED] border-t border-[#9A7532]/20"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      <div className="flex">
+      <div className="mx-auto w-full flex" style={{ maxWidth: '430px' }}>
         {tabs.map(({ href, label, Icon }) => {
           const active = pathname === href || (href !== '/' && pathname.startsWith(href))
           return (
@@ -65,10 +65,10 @@ export default function BottomNav() {
               href={href}
               className="flex-1 flex flex-col items-center py-3 gap-1"
             >
-              <Icon className={active ? 'text-[#c4b89a]' : 'text-[#f5f0e8]/30'} />
+              <Icon className={active ? 'text-[#9A7532]' : 'text-[#141B45]/30'} />
               <span
                 className={`text-[9px] tracking-widest uppercase ${
-                  active ? 'text-[#c4b89a]' : 'text-[#f5f0e8]/30'
+                  active ? 'text-[#9A7532]' : 'text-[#141B45]/30'
                 }`}
               >
                 {label}

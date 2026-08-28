@@ -53,22 +53,22 @@ export default function WardrobeSubCategoryPage() {
   if (!loaded) return null
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#1c2b1e' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#F8F0ED' }}>
       <AppHeader />
       <main className="px-6 pt-4 pb-32">
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <Link href={`/wardrobe/${encodeURIComponent(category)}`} className="text-lg leading-none" style={{ color: '#c4b89a' }} aria-label="Back">←</Link>
+          <Link href={`/wardrobe/${encodeURIComponent(category)}`} className="text-lg leading-none" style={{ color: '#9A7532' }} aria-label="Back">←</Link>
           <div>
-            <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(196,184,154,0.5)' }}>{category}</p>
-            <p className="text-lg font-light tracking-wide" style={{ color: '#f5f0e8' }}>{subcategory}</p>
+            <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(154,117,50,0.5)' }}>{category}</p>
+            <p className="text-lg font-light tracking-wide" style={{ color: '#141B45' }}>{subcategory}</p>
           </div>
         </div>
 
         {/* Items count */}
         {garments.length > 0 && (
-          <p className="text-xs font-light mb-5" style={{ color: 'rgba(245,240,232,0.35)' }}>
+          <p className="text-xs font-light mb-5" style={{ color: 'rgba(20,27,69,0.35)' }}>
             {garments.length} {garments.length === 1 ? 'item' : 'items'}
           </p>
         )}
@@ -76,7 +76,7 @@ export default function WardrobeSubCategoryPage() {
         {/* Garment grid */}
         {garments.length === 0 ? (
           <div className="flex flex-col items-center justify-center pt-16 text-center">
-            <p className="text-sm font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>No items here yet</p>
+            <p className="text-sm font-light" style={{ color: 'rgba(20,27,69,0.4)' }}>No items here yet</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 content-start">
@@ -85,15 +85,15 @@ export default function WardrobeSubCategoryPage() {
                 key={garment.id}
                 href={`/wardrobe/${encodeURIComponent(category)}/${encodeURIComponent(subcategory)}/${garment.id}`}
                 className="flex flex-col overflow-hidden"
-                style={{ backgroundColor: 'rgba(245,240,232,0.04)', border: '1px solid rgba(196,184,154,0.12)' }}
+                style={{ backgroundColor: 'rgba(20,27,69,0.04)', border: '1px solid rgba(154,117,50,0.12)' }}
               >
                 {/* Photo */}
-                <div className="relative w-full" style={{ aspectRatio: '1/1', backgroundColor: 'rgba(196,184,154,0.06)' }}>
+                <div className="relative w-full" style={{ aspectRatio: '1/1', backgroundColor: 'rgba(154,117,50,0.06)' }}>
                   {garment.firstPhotoUrl ? (
                     <img src={garment.firstPhotoUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span style={{ color: 'rgba(196,184,154,0.2)', fontSize: 24 }}>✦</span>
+                      <span style={{ color: 'rgba(154,117,50,0.2)', fontSize: 24 }}>✦</span>
                     </div>
                   )}
                 </div>
@@ -101,11 +101,11 @@ export default function WardrobeSubCategoryPage() {
                 <div className="p-3">
                   {(garment.brand || garment.color) ? (
                     <>
-                      {garment.brand && <p className="text-xs font-light" style={{ color: '#f5f0e8' }}>{garment.brand}</p>}
-                      {garment.color && <p className="text-[10px] font-light mt-0.5" style={{ color: 'rgba(245,240,232,0.45)' }}>{garment.color}</p>}
+                      {garment.brand && <p className="text-xs font-light" style={{ color: '#141B45' }}>{garment.brand}</p>}
+                      {garment.color && <p className="text-[10px] font-light mt-0.5" style={{ color: 'rgba(20,27,69,0.45)' }}>{garment.color}</p>}
                     </>
                   ) : (
-                    <p className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.35)' }}>{subcategory}</p>
+                    <p className="text-xs font-light" style={{ color: 'rgba(20,27,69,0.35)' }}>{subcategory}</p>
                   )}
                 </div>
               </Link>

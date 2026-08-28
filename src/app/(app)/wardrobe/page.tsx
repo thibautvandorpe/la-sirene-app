@@ -121,11 +121,11 @@ export default function WardrobePage() {
 
   if (!loggedIn) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#1c2b1e' }}>
+      <div className="min-h-screen" style={{ backgroundColor: '#F8F0ED' }}>
         <AppHeader />
         <div className="flex flex-col items-center justify-center px-6 text-center pt-32">
-          <p className="text-sm font-light tracking-wide" style={{ color: '#f5f0e8' }}>Please sign in to access your wardrobe</p>
-          <Link href="/login" className="mt-5 px-6 py-2 text-[10px] tracking-widest uppercase" style={{ color: '#c4b89a', border: '1px solid rgba(196,184,154,0.3)' }}>Sign In</Link>
+          <p className="text-sm font-light tracking-wide" style={{ color: '#141B45' }}>Please sign in to access your wardrobe</p>
+          <Link href="/login" className="mt-5 px-6 py-2 text-[10px] tracking-widest uppercase" style={{ color: '#9A7532', border: '1px solid rgba(154,117,50,0.3)' }}>Sign In</Link>
         </div>
       </div>
     )
@@ -135,16 +135,16 @@ export default function WardrobePage() {
   const addSubCategoryOptions = services.filter(s => s.category === addCategory)
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#1c2b1e' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#F8F0ED' }}>
       <AppHeader />
       <main className="px-6 pt-4 pb-32">
 
         {/* Header row */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <p className="text-[10px] tracking-[0.35em] uppercase mb-1" style={{ color: '#c4b89a' }}>My Wardrobe</p>
+            <p className="text-[10px] tracking-[0.35em] uppercase mb-1" style={{ color: '#9A7532' }}>My Wardrobe</p>
             {totalItems > 0 && (
-              <p className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>
+              <p className="text-xs font-light" style={{ color: 'rgba(20,27,69,0.4)' }}>
                 {totalItems} {totalItems === 1 ? 'item' : 'items'}
               </p>
             )}
@@ -153,7 +153,7 @@ export default function WardrobePage() {
             <button
               onClick={() => { resetAddForm(); setShowAddForm(true) }}
               className="w-8 h-8 flex items-center justify-center text-lg leading-none"
-              style={{ color: '#c4b89a', border: '1px solid rgba(196,184,154,0.35)', borderRadius: '50%' }}
+              style={{ color: '#9A7532', border: '1px solid rgba(154,117,50,0.35)', borderRadius: '50%' }}
             >
               +
             </button>
@@ -162,14 +162,14 @@ export default function WardrobePage() {
 
         {/* ── Add item form ── */}
         {showAddForm && (
-          <div className="flex flex-col gap-6 mb-8 p-5" style={{ border: '1px solid rgba(196,184,154,0.2)', backgroundColor: 'rgba(245,240,232,0.02)' }}>
+          <div className="flex flex-col gap-6 mb-8 p-5" style={{ border: '1px solid rgba(154,117,50,0.2)', backgroundColor: 'rgba(20,27,69,0.02)' }}>
             <div>
-              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>Category</label>
+              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>Category</label>
               <div className="grid grid-cols-2 gap-2">
                 {addCategoryOptions.map(cat => (
                   <button key={cat} type="button" onClick={() => { setAddCategory(cat); setAddSubCategory('') }}
                     className="py-3 px-2 rounded-xl text-xs text-center"
-                    style={{ backgroundColor: addCategory === cat ? 'rgba(196,184,154,0.18)' : 'rgba(255,255,255,0.04)', border: addCategory === cat ? '1px solid #c4b89a' : '1px solid rgba(196,184,154,0.15)', color: addCategory === cat ? '#c4b89a' : 'rgba(245,240,232,0.75)' }}>
+                    style={{ backgroundColor: addCategory === cat ? 'rgba(154,117,50,0.18)' : 'rgba(255,255,255,0.04)', border: addCategory === cat ? '1px solid #9A7532' : '1px solid rgba(154,117,50,0.15)', color: addCategory === cat ? '#9A7532' : 'rgba(20,27,69,0.75)' }}>
                     {cat}
                   </button>
                 ))}
@@ -178,12 +178,12 @@ export default function WardrobePage() {
 
             {addCategory && (
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>{addCategory}</label>
+                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>{addCategory}</label>
                 <div className="grid grid-cols-2 gap-2">
                   {addSubCategoryOptions.map(svc => (
                     <button key={svc.sub_category} type="button" onClick={() => setAddSubCategory(svc.sub_category)}
                       className="py-3 px-2 rounded-xl text-xs text-center"
-                      style={{ backgroundColor: addSubCategory === svc.sub_category ? 'rgba(196,184,154,0.18)' : 'rgba(255,255,255,0.03)', border: addSubCategory === svc.sub_category ? '1px solid #c4b89a' : '1px solid rgba(196,184,154,0.1)', color: addSubCategory === svc.sub_category ? '#c4b89a' : 'rgba(245,240,232,0.7)' }}>
+                      style={{ backgroundColor: addSubCategory === svc.sub_category ? 'rgba(154,117,50,0.18)' : 'rgba(255,255,255,0.03)', border: addSubCategory === svc.sub_category ? '1px solid #9A7532' : '1px solid rgba(154,117,50,0.1)', color: addSubCategory === svc.sub_category ? '#9A7532' : 'rgba(20,27,69,0.7)' }}>
                       {svc.sub_category}
                     </button>
                   ))}
@@ -192,35 +192,35 @@ export default function WardrobePage() {
             )}
 
             <div>
-              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>Brand <span style={{ color: 'rgba(196,184,154,0.4)', textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
-              <input type="text" value={addBrand} onChange={e => setAddBrand(e.target.value)} placeholder="e.g. Louis Vuitton" className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(245,240,232,0.25)]" style={{ color: '#f5f0e8', borderBottom: '1px solid rgba(196,184,154,0.4)' }} />
+              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>Brand <span style={{ color: 'rgba(154,117,50,0.4)', textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
+              <input type="text" value={addBrand} onChange={e => setAddBrand(e.target.value)} placeholder="e.g. Louis Vuitton" className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(20,27,69,0.25)]" style={{ color: '#141B45', borderBottom: '1px solid rgba(154,117,50,0.4)' }} />
             </div>
 
             <div>
-              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>Color <span style={{ color: 'rgba(196,184,154,0.4)', textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
-              <input type="text" value={addColor} onChange={e => setAddColor(e.target.value)} placeholder="e.g. Black" className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(245,240,232,0.25)]" style={{ color: '#f5f0e8', borderBottom: '1px solid rgba(196,184,154,0.4)' }} />
+              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>Color <span style={{ color: 'rgba(154,117,50,0.4)', textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
+              <input type="text" value={addColor} onChange={e => setAddColor(e.target.value)} placeholder="e.g. Black" className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(20,27,69,0.25)]" style={{ color: '#141B45', borderBottom: '1px solid rgba(154,117,50,0.4)' }} />
             </div>
 
             <div>
-              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>Care Notes <span style={{ color: 'rgba(196,184,154,0.4)', textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
-              <textarea value={addNotes} onChange={e => setAddNotes(e.target.value)} placeholder="e.g. Dry clean only, handle with care…" rows={2} className="w-full bg-transparent outline-none text-sm font-light resize-none pb-2 placeholder:text-[rgba(245,240,232,0.25)]" style={{ color: '#f5f0e8', borderBottom: '1px solid rgba(196,184,154,0.4)' }} />
+              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>Care Notes <span style={{ color: 'rgba(154,117,50,0.4)', textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
+              <textarea value={addNotes} onChange={e => setAddNotes(e.target.value)} placeholder="e.g. Dry clean only, handle with care…" rows={2} className="w-full bg-transparent outline-none text-sm font-light resize-none pb-2 placeholder:text-[rgba(20,27,69,0.25)]" style={{ color: '#141B45', borderBottom: '1px solid rgba(154,117,50,0.4)' }} />
             </div>
 
             <div>
-              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>Photos <span style={{ color: 'rgba(196,184,154,0.4)', textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
-              <input ref={addFileInputRef} type="file" accept="image/*" multiple onChange={handlePhotoChange} className="text-xs font-light w-full" style={{ color: 'rgba(245,240,232,0.5)' }} />
+              <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>Photos <span style={{ color: 'rgba(154,117,50,0.4)', textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
+              <input ref={addFileInputRef} type="file" accept="image/*" multiple onChange={handlePhotoChange} className="text-xs font-light w-full" style={{ color: 'rgba(20,27,69,0.5)' }} />
               {addPreviews.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-3">
-                  {addPreviews.map((src, i) => <img key={i} src={src} alt="" className="w-16 h-16 object-cover" style={{ border: '1px solid rgba(196,184,154,0.2)' }} />)}
+                  {addPreviews.map((src, i) => <img key={i} src={src} alt="" className="w-16 h-16 object-cover" style={{ border: '1px solid rgba(154,117,50,0.2)' }} />)}
                 </div>
               )}
             </div>
 
             <div className="flex gap-3">
-              <button onClick={handleAddGarment} disabled={!addCategory || !addSubCategory || addSaving} className="flex-1 py-3 text-[10px] tracking-[0.35em] uppercase font-medium disabled:opacity-40" style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}>
+              <button onClick={handleAddGarment} disabled={!addCategory || !addSubCategory || addSaving} className="flex-1 py-3 text-[10px] tracking-[0.35em] uppercase font-medium disabled:opacity-40" style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}>
                 {addSaving ? 'Saving…' : 'Add to Wardrobe'}
               </button>
-              <button onClick={() => { setShowAddForm(false); resetAddForm() }} disabled={addSaving} className="px-5 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40" style={{ border: '1px solid rgba(196,184,154,0.3)', color: 'rgba(196,184,154,0.7)' }}>
+              <button onClick={() => { setShowAddForm(false); resetAddForm() }} disabled={addSaving} className="px-5 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40" style={{ border: '1px solid rgba(154,117,50,0.3)', color: 'rgba(154,117,50,0.7)' }}>
                 Cancel
               </button>
             </div>
@@ -230,9 +230,9 @@ export default function WardrobePage() {
         {/* Empty state */}
         {categoryCards.length === 0 && !showAddForm && (
           <div className="flex flex-col items-center justify-center pt-16 text-center">
-            <p className="text-sm font-light mb-2" style={{ color: 'rgba(245,240,232,0.5)' }}>Your wardrobe is empty</p>
-            <p className="text-xs font-light mb-8" style={{ color: 'rgba(245,240,232,0.3)' }}>Add items manually or book an appointment to get started</p>
-            <Link href="/book" className="px-6 py-3 text-[10px] tracking-[0.35em] uppercase font-medium" style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}>Book an Appointment</Link>
+            <p className="text-sm font-light mb-2" style={{ color: 'rgba(20,27,69,0.5)' }}>Your wardrobe is empty</p>
+            <p className="text-xs font-light mb-8" style={{ color: 'rgba(20,27,69,0.3)' }}>Add items manually or book an appointment to get started</p>
+            <Link href="/book" className="px-6 py-3 text-[10px] tracking-[0.35em] uppercase font-medium" style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}>Book an Appointment</Link>
           </div>
         )}
 
@@ -244,18 +244,18 @@ export default function WardrobePage() {
                 key={category}
                 href={`/wardrobe/${encodeURIComponent(category)}`}
                 className="relative flex flex-col justify-end overflow-hidden"
-                style={{ aspectRatio: '3/4', backgroundColor: 'rgba(245,240,232,0.04)', border: '1px solid rgba(196,184,154,0.12)' }}
+                style={{ aspectRatio: '3/4', backgroundColor: 'rgba(20,27,69,0.04)', border: '1px solid rgba(154,117,50,0.12)' }}
               >
                 {firstPhotoUrl ? (
                   <img src={firstPhotoUrl} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ opacity: 0.55 }} />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span style={{ color: 'rgba(196,184,154,0.18)', fontSize: 36 }}>✦</span>
+                    <span style={{ color: 'rgba(154,117,50,0.18)', fontSize: 36 }}>✦</span>
                   </div>
                 )}
                 <div className="relative z-10 p-3" style={{ background: 'linear-gradient(to top, rgba(28,43,30,0.95) 0%, rgba(28,43,30,0) 100%)' }}>
-                  <p className="text-sm font-light tracking-wide" style={{ color: '#f5f0e8' }}>{category}</p>
-                  <p className="text-[10px] font-light mt-0.5" style={{ color: '#c4b89a' }}>{count} {count === 1 ? 'item' : 'items'}</p>
+                  <p className="text-sm font-light tracking-wide" style={{ color: '#141B45' }}>{category}</p>
+                  <p className="text-[10px] font-light mt-0.5" style={{ color: '#9A7532' }}>{count} {count === 1 ? 'item' : 'items'}</p>
                 </div>
               </Link>
             ))}

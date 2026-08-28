@@ -141,7 +141,7 @@ function OrderDetailInner() {
     : 'Pick Up'
 
   const STATUS_BADGE: Record<string, { color: string; label: string }> = {
-    under_review:          { color: '#c4b89a',  label: 'Under Review' },
+    under_review:          { color: '#9A7532',  label: 'Under Review' },
     awaiting_confirmation: { color: '#c87a3a',  label: 'Awaiting Confirmation' },
     in_progress:           { color: '#70b8d8',  label: 'In Progress' },
     ready:                 { color: '#5dce7a',  label: 'Ready' },
@@ -151,19 +151,19 @@ function OrderDetailInner() {
   const { color: badgeColor, label: badgeLabel } = STATUS_BADGE[order.status] ?? STATUS_BADGE.under_review
 
   return (
-    <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#1c2b1e' }}>
+    <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#F8F0ED' }}>
 
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <button
           onClick={() => router.back()}
           className="text-lg leading-none"
-          style={{ color: '#c4b89a' }}
+          style={{ color: '#9A7532' }}
           aria-label="Back to orders"
         >
           ←
         </button>
-        <h1 className="text-xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+        <h1 className="text-xl font-light tracking-wide" style={{ color: '#141B45' }}>
           Order Details
         </h1>
       </div>
@@ -171,13 +171,13 @@ function OrderDetailInner() {
       {/* Delivery info */}
       <div
         className="flex flex-col gap-1 pl-3 mb-8"
-        style={{ borderLeft: '1px solid rgba(196,184,154,0.35)' }}
+        style={{ borderLeft: '1px solid rgba(154,117,50,0.35)' }}
       >
-        <p className="text-xs font-light" style={{ color: 'rgba(196,184,154,0.75)' }}>
+        <p className="text-xs font-light" style={{ color: 'rgba(154,117,50,0.75)' }}>
           {deliveryLabel}
         </p>
         {(order.delivery_method === 'pick_up' || order.delivery_method == null) && order.scheduled_at && (
-          <p className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.55)' }}>
+          <p className="text-xs font-light" style={{ color: 'rgba(20,27,69,0.55)' }}>
             {new Date(order.scheduled_at).toLocaleDateString('en-US', {
               weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
             })}
@@ -195,19 +195,19 @@ function OrderDetailInner() {
       {order.admin_message && (
         <div
           className="mb-8 px-4 py-3"
-          style={{ backgroundColor: 'rgba(196,184,154,0.06)', border: '1px solid rgba(196,184,154,0.15)' }}
+          style={{ backgroundColor: 'rgba(154,117,50,0.06)', border: '1px solid rgba(154,117,50,0.15)' }}
         >
-          <p className="text-[9px] tracking-[0.2em] uppercase mb-1.5" style={{ color: 'rgba(196,184,154,0.6)' }}>
+          <p className="text-[9px] tracking-[0.2em] uppercase mb-1.5" style={{ color: 'rgba(154,117,50,0.6)' }}>
             Message from La Sirène
           </p>
-          <p className="text-[12px] font-light leading-relaxed" style={{ color: 'rgba(245,240,232,0.75)' }}>
+          <p className="text-[12px] font-light leading-relaxed" style={{ color: 'rgba(20,27,69,0.75)' }}>
             {order.admin_message}
           </p>
         </div>
       )}
 
       {/* Items label */}
-      <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'rgba(196,184,154,0.6)' }}>
+      <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'rgba(154,117,50,0.6)' }}>
         Items
       </p>
 
@@ -227,17 +227,17 @@ function OrderDetailInner() {
               key={item.id}
               className="flex flex-col py-4"
               style={{
-                borderTop: idx === 0 ? '1px solid rgba(196,184,154,0.15)' : undefined,
-                borderBottom: '1px solid rgba(196,184,154,0.15)',
+                borderTop: idx === 0 ? '1px solid rgba(154,117,50,0.15)' : undefined,
+                borderBottom: '1px solid rgba(154,117,50,0.15)',
               }}
             >
               {/* Original — shown crossed out only if something changed */}
               {hasChange && (
                 <div className="flex items-start justify-between mb-2">
-                  <p className="text-sm font-light" style={{ color: 'rgba(245,240,232,0.3)', textDecoration: 'line-through' }}>
+                  <p className="text-sm font-light" style={{ color: 'rgba(20,27,69,0.3)', textDecoration: 'line-through' }}>
                     {item.services?.sub_category ?? '—'}
                   </p>
-                  <p className="text-sm font-light ml-4 shrink-0" style={{ color: 'rgba(196,184,154,0.3)', textDecoration: 'line-through' }}>
+                  <p className="text-sm font-light ml-4 shrink-0" style={{ color: 'rgba(154,117,50,0.3)', textDecoration: 'line-through' }}>
                     {item.final_price > 0
                       ? `$${item.final_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                       : 'TBD'}
@@ -248,14 +248,14 @@ function OrderDetailInner() {
               {/* Current (revised or original) */}
               <div className="flex items-start justify-between">
                 <div className="flex flex-col gap-1 flex-1 min-w-0 pr-4">
-                  <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>
+                  <p className="text-sm font-light" style={{ color: '#141B45' }}>
                     {displayService?.sub_category ?? '—'}
                   </p>
-                  <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>
+                  <p className="text-[11px] font-light" style={{ color: 'rgba(20,27,69,0.4)' }}>
                     {[item.garments?.brand, item.garments?.color].filter(Boolean).join(' · ') || displayService?.category || ''}
                   </p>
                   {item.special_instructions && (
-                    <p className="text-[11px] font-light italic mt-0.5" style={{ color: 'rgba(245,240,232,0.35)' }}>
+                    <p className="text-[11px] font-light italic mt-0.5" style={{ color: 'rgba(20,27,69,0.35)' }}>
                       {'"'}{item.special_instructions}{'"'}
                     </p>
                   )}
@@ -267,14 +267,14 @@ function OrderDetailInner() {
                             src={photo.url}
                             alt=""
                             className="w-16 h-16 object-cover rounded-sm"
-                            style={{ border: '1px solid rgba(196,184,154,0.2)' }}
+                            style={{ border: '1px solid rgba(154,117,50,0.2)' }}
                           />
                         </a>
                       ))}
                     </div>
                   )}
                 </div>
-                <p className="text-sm font-light shrink-0" style={{ color: '#c4b89a' }}>
+                <p className="text-sm font-light shrink-0" style={{ color: '#9A7532' }}>
                   {displayPrice > 0
                     ? `$${displayPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                     : 'TBD'}
@@ -287,10 +287,10 @@ function OrderDetailInner() {
 
       {/* Total */}
       <div className="flex items-center justify-between mt-5 mb-8 px-1">
-        <p className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: '#c4b89a' }}>
+        <p className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: '#9A7532' }}>
           Total
         </p>
-        <p className="text-base font-light" style={{ color: '#c4b89a' }}>
+        <p className="text-base font-light" style={{ color: '#9A7532' }}>
           {order.total_price != null
             ? order.total_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
             : 'TBD'}
@@ -300,7 +300,7 @@ function OrderDetailInner() {
       {order.status === 'awaiting_confirmation' && (
         <>
           {/* Disclaimer */}
-          <p className="text-[11px] font-light leading-relaxed mb-8" style={{ color: 'rgba(245,240,232,0.35)' }}>
+          <p className="text-[11px] font-light leading-relaxed mb-8" style={{ color: 'rgba(20,27,69,0.35)' }}>
             Please review the services and pricing above. By confirming, you agree to proceed with the order as shown.
           </p>
 
@@ -314,7 +314,7 @@ function OrderDetailInner() {
           {/* Confirm action */}
           {confirming ? (
             <div className="flex flex-col gap-3">
-              <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+              <p className="text-[11px] font-light" style={{ color: 'rgba(20,27,69,0.5)' }}>
                 By confirming, you approve the order and our team will begin working on your garments.
               </p>
               <div className="flex gap-3">
@@ -322,7 +322,7 @@ function OrderDetailInner() {
                   onClick={handleConfirm}
                   disabled={saving}
                   className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
-                  style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+                  style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
                 >
                   {saving ? 'Confirming…' : 'Yes, Confirm'}
                 </button>
@@ -330,7 +330,7 @@ function OrderDetailInner() {
                   onClick={() => setConfirming(false)}
                   disabled={saving}
                   className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
-                  style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+                  style={{ border: '1px solid rgba(154,117,50,0.25)', color: 'rgba(154,117,50,0.6)' }}
                 >
                   Cancel
                 </button>
@@ -340,7 +340,7 @@ function OrderDetailInner() {
             <button
               onClick={() => setConfirming(true)}
               className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
-              style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+              style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
             >
               Confirm Order
             </button>
@@ -349,7 +349,7 @@ function OrderDetailInner() {
           <Link
             href="/profile/chat"
             className="block text-center mt-5 text-[11px] font-light"
-            style={{ color: 'rgba(196,184,154,0.5)' }}
+            style={{ color: 'rgba(154,117,50,0.5)' }}
           >
             Have a question? Chat with our team →
           </Link>
@@ -360,7 +360,7 @@ function OrderDetailInner() {
         <Link
           href="/profile/chat"
           className="block text-center mt-4 text-[11px] font-light"
-          style={{ color: 'rgba(196,184,154,0.5)' }}
+          style={{ color: 'rgba(154,117,50,0.5)' }}
         >
           Chat with our team →
         </Link>
@@ -368,7 +368,7 @@ function OrderDetailInner() {
 
       {statusHistory.length > 0 && (
         <div className="mt-10">
-          <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: 'rgba(196,184,154,0.6)' }}>
+          <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: 'rgba(154,117,50,0.6)' }}>
             Order History
           </p>
           <div className="flex flex-col">
@@ -379,11 +379,11 @@ function OrderDetailInner() {
                 <div key={entry.id} className="flex gap-4">
                   <div className="flex flex-col items-center" style={{ width: 16 }}>
                     <div className="w-2 h-2 rounded-full mt-1 shrink-0" style={{ backgroundColor: color }} />
-                    {!isLast && <div className="flex-1 w-px mt-1" style={{ backgroundColor: 'rgba(196,184,154,0.15)' }} />}
+                    {!isLast && <div className="flex-1 w-px mt-1" style={{ backgroundColor: 'rgba(154,117,50,0.15)' }} />}
                   </div>
                   <div className="pb-5">
                     <p className="text-xs font-light" style={{ color }}>{label}</p>
-                    <p className="text-[10px] font-light mt-0.5" style={{ color: 'rgba(245,240,232,0.35)' }}>
+                    <p className="text-[10px] font-light mt-0.5" style={{ color: 'rgba(20,27,69,0.35)' }}>
                       {new Date(entry.changed_at).toLocaleDateString('en-US', {
                         month: 'long', day: 'numeric', year: 'numeric',
                       })}{' '}

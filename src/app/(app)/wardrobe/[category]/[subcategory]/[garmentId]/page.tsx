@@ -206,7 +206,7 @@ export default function WardrobeItemDetailPage() {
   const activePhoto = visiblePhotos[activePhotoIdx] ?? null
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#1c2b1e' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#F8F0ED' }}>
       <AppHeader />
       <main className="pb-32">
 
@@ -216,20 +216,20 @@ export default function WardrobeItemDetailPage() {
             <Link
               href={`/wardrobe/${encodeURIComponent(category)}/${encodeURIComponent(subcategory)}`}
               className="text-lg leading-none"
-              style={{ color: '#c4b89a' }}
+              style={{ color: '#9A7532' }}
               aria-label="Back"
             >
               ←
             </Link>
             <div>
-              <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(196,184,154,0.5)' }}>{subcategory}</p>
-              <p className="text-base font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+              <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(154,117,50,0.5)' }}>{subcategory}</p>
+              <p className="text-base font-light tracking-wide" style={{ color: '#141B45' }}>
                 {garment.brand ?? garment.sub_category}
               </p>
             </div>
           </div>
           {!editing && !confirmDelete && (
-            <button onClick={handleStartEdit} className="text-[10px] tracking-[0.25em] uppercase font-light" style={{ color: 'rgba(196,184,154,0.6)' }}>
+            <button onClick={handleStartEdit} className="text-[10px] tracking-[0.25em] uppercase font-light" style={{ color: 'rgba(154,117,50,0.6)' }}>
               Edit
             </button>
           )}
@@ -238,19 +238,19 @@ export default function WardrobeItemDetailPage() {
         {/* Main photo */}
         <div
           className="relative w-full"
-          style={{ aspectRatio: '4/5', backgroundColor: 'rgba(196,184,154,0.06)' }}
+          style={{ aspectRatio: '4/5', backgroundColor: 'rgba(154,117,50,0.06)' }}
         >
           {activePhoto ? (
             <img src={activePhoto.url} alt="" className="w-full h-full object-cover" />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
-              <span style={{ color: 'rgba(196,184,154,0.2)', fontSize: 48 }}>✦</span>
+              <span style={{ color: 'rgba(154,117,50,0.2)', fontSize: 48 }}>✦</span>
             </div>
           )}
 
           {/* Photo count indicator */}
           {visiblePhotos.length > 1 && (
-            <div className="absolute bottom-3 right-3 px-2 py-0.5 text-[10px] font-light" style={{ backgroundColor: 'rgba(28,43,30,0.7)', color: 'rgba(245,240,232,0.7)' }}>
+            <div className="absolute bottom-3 right-3 px-2 py-0.5 text-[10px] font-light" style={{ backgroundColor: 'rgba(28,43,30,0.7)', color: 'rgba(20,27,69,0.7)' }}>
               {activePhotoIdx + 1} / {visiblePhotos.length}
             </div>
           )}
@@ -273,7 +273,7 @@ export default function WardrobeItemDetailPage() {
                   src={photo.url}
                   alt=""
                   className="w-12 h-12 object-cover"
-                  style={{ border: i === activePhotoIdx ? '1px solid #c4b89a' : '1px solid rgba(196,184,154,0.15)', opacity: i === activePhotoIdx ? 1 : 0.55 }}
+                  style={{ border: i === activePhotoIdx ? '1px solid #9A7532' : '1px solid rgba(154,117,50,0.15)', opacity: i === activePhotoIdx ? 1 : 0.55 }}
                 />
               </button>
             ))}
@@ -288,31 +288,31 @@ export default function WardrobeItemDetailPage() {
             <>
               <div className="flex flex-col gap-5 mb-8">
                 <div>
-                  <p className="text-[10px] tracking-[0.3em] uppercase mb-1" style={{ color: 'rgba(196,184,154,0.5)' }}>Type</p>
-                  <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>{garment.sub_category}</p>
+                  <p className="text-[10px] tracking-[0.3em] uppercase mb-1" style={{ color: 'rgba(154,117,50,0.5)' }}>Type</p>
+                  <p className="text-sm font-light" style={{ color: '#141B45' }}>{garment.sub_category}</p>
                 </div>
                 {garment.brand && (
                   <div>
-                    <p className="text-[10px] tracking-[0.3em] uppercase mb-1" style={{ color: 'rgba(196,184,154,0.5)' }}>Brand</p>
-                    <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>{garment.brand}</p>
+                    <p className="text-[10px] tracking-[0.3em] uppercase mb-1" style={{ color: 'rgba(154,117,50,0.5)' }}>Brand</p>
+                    <p className="text-sm font-light" style={{ color: '#141B45' }}>{garment.brand}</p>
                   </div>
                 )}
                 {garment.color && (
                   <div>
-                    <p className="text-[10px] tracking-[0.3em] uppercase mb-1" style={{ color: 'rgba(196,184,154,0.5)' }}>Color</p>
-                    <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>{garment.color}</p>
+                    <p className="text-[10px] tracking-[0.3em] uppercase mb-1" style={{ color: 'rgba(154,117,50,0.5)' }}>Color</p>
+                    <p className="text-sm font-light" style={{ color: '#141B45' }}>{garment.color}</p>
                   </div>
                 )}
                 {garment.notes && (
                   <div>
-                    <p className="text-[10px] tracking-[0.3em] uppercase mb-1" style={{ color: 'rgba(196,184,154,0.5)' }}>Care Notes</p>
-                    <p className="text-sm font-light leading-relaxed" style={{ color: '#f5f0e8' }}>{garment.notes}</p>
+                    <p className="text-[10px] tracking-[0.3em] uppercase mb-1" style={{ color: 'rgba(154,117,50,0.5)' }}>Care Notes</p>
+                    <p className="text-sm font-light leading-relaxed" style={{ color: '#141B45' }}>{garment.notes}</p>
                   </div>
                 )}
                 {garment.created_at && (
                   <div>
-                    <p className="text-[10px] tracking-[0.3em] uppercase mb-1" style={{ color: 'rgba(196,184,154,0.5)' }}>Added</p>
-                    <p className="text-sm font-light" style={{ color: 'rgba(245,240,232,0.55)' }}>
+                    <p className="text-[10px] tracking-[0.3em] uppercase mb-1" style={{ color: 'rgba(154,117,50,0.5)' }}>Added</p>
+                    <p className="text-sm font-light" style={{ color: 'rgba(20,27,69,0.55)' }}>
                       {new Date(garment.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                     </p>
                   </div>
@@ -320,25 +320,25 @@ export default function WardrobeItemDetailPage() {
               </div>
 
               {/* Treatment history */}
-              <div className="mb-8" style={{ borderTop: '1px solid rgba(196,184,154,0.1)', paddingTop: 24 }}>
-                <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: '#c4b89a' }}>Treatment History</p>
+              <div className="mb-8" style={{ borderTop: '1px solid rgba(154,117,50,0.1)', paddingTop: 24 }}>
+                <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: '#9A7532' }}>Treatment History</p>
                 {treatments.length === 0 ? (
-                  <p className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.3)' }}>
+                  <p className="text-xs font-light" style={{ color: 'rgba(20,27,69,0.3)' }}>
                     No treatments recorded yet
                   </p>
                 ) : (
                   <ul className="flex flex-col gap-4">
                     {treatments.map(entry => (
-                      <li key={entry.id} className="flex flex-col gap-1 pl-3" style={{ borderLeft: '1px solid rgba(196,184,154,0.25)' }}>
+                      <li key={entry.id} className="flex flex-col gap-1 pl-3" style={{ borderLeft: '1px solid rgba(154,117,50,0.25)' }}>
                         <div className="flex items-center justify-between">
-                          <p className="text-xs font-light" style={{ color: '#f5f0e8' }}>{entry.sub_category}</p>
+                          <p className="text-xs font-light" style={{ color: '#141B45' }}>{entry.sub_category}</p>
                           {entry.date && (
-                            <p className="text-[10px] font-light" style={{ color: 'rgba(245,240,232,0.35)' }}>
+                            <p className="text-[10px] font-light" style={{ color: 'rgba(20,27,69,0.35)' }}>
                               {new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                             </p>
                           )}
                         </div>
-                        <p className="text-[11px] font-light leading-relaxed" style={{ color: 'rgba(245,240,232,0.55)' }}>
+                        <p className="text-[11px] font-light leading-relaxed" style={{ color: 'rgba(20,27,69,0.55)' }}>
                           {entry.treatment_notes}
                         </p>
                       </li>
@@ -361,30 +361,30 @@ export default function WardrobeItemDetailPage() {
           {/* ── Edit mode ── */}
           {editing && (
             <div className="flex flex-col gap-6 mb-8">
-              <p className="text-[10px] tracking-[0.3em] uppercase" style={{ color: '#c4b89a' }}>Edit Item</p>
+              <p className="text-[10px] tracking-[0.3em] uppercase" style={{ color: '#9A7532' }}>Edit Item</p>
 
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>Color</label>
+                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>Color</label>
                 <input type="text" value={editColor} onChange={e => setEditColor(e.target.value)} placeholder="e.g. Black"
-                  className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(245,240,232,0.25)]"
-                  style={{ color: '#f5f0e8', borderBottom: '1px solid rgba(196,184,154,0.4)' }} />
+                  className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder:text-[rgba(20,27,69,0.25)]"
+                  style={{ color: '#141B45', borderBottom: '1px solid rgba(154,117,50,0.4)' }} />
               </div>
 
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>Care Notes</label>
+                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>Care Notes</label>
                 <textarea value={editNotes} onChange={e => setEditNotes(e.target.value)} placeholder="e.g. Dry clean only…" rows={3}
-                  className="w-full bg-transparent outline-none text-sm font-light resize-none pb-2 placeholder:text-[rgba(245,240,232,0.25)]"
-                  style={{ color: '#f5f0e8', borderBottom: '1px solid rgba(196,184,154,0.4)' }} />
+                  className="w-full bg-transparent outline-none text-sm font-light resize-none pb-2 placeholder:text-[rgba(20,27,69,0.25)]"
+                  style={{ color: '#141B45', borderBottom: '1px solid rgba(154,117,50,0.4)' }} />
               </div>
 
               {/* Existing photos */}
               <div>
-                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#c4b89a' }}>Photos</label>
+                <label className="block text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: '#9A7532' }}>Photos</label>
                 {garment.photos.filter(p => !editRemovedUrls.includes(p.url)).length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-3">
                     {garment.photos.filter(p => !editRemovedUrls.includes(p.url)).map((photo, i) => (
                       <div key={i} className="relative">
-                        <img src={photo.url} alt="" className="w-16 h-16 object-cover" style={{ border: '1px solid rgba(196,184,154,0.2)' }} />
+                        <img src={photo.url} alt="" className="w-16 h-16 object-cover" style={{ border: '1px solid rgba(154,117,50,0.2)' }} />
                         <button type="button" onClick={() => setEditRemovedUrls(prev => [...prev, photo.url])}
                           className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center text-[10px] font-medium rounded-full"
                           style={{ backgroundColor: 'rgba(220,80,60,0.85)', color: '#fff' }}
@@ -395,18 +395,18 @@ export default function WardrobeItemDetailPage() {
                 )}
                 {editNewPreviews.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-3">
-                    {editNewPreviews.map((src, i) => <img key={i} src={src} alt="" className="w-16 h-16 object-cover opacity-70" style={{ border: '1px solid rgba(196,184,154,0.35)' }} />)}
+                    {editNewPreviews.map((src, i) => <img key={i} src={src} alt="" className="w-16 h-16 object-cover opacity-70" style={{ border: '1px solid rgba(154,117,50,0.35)' }} />)}
                   </div>
                 )}
                 <input ref={editFileInputRef} type="file" accept="image/*" multiple onChange={handleEditPhotoChange}
-                  className="text-xs font-light w-full" style={{ color: 'rgba(245,240,232,0.5)' }} />
+                  className="text-xs font-light w-full" style={{ color: 'rgba(20,27,69,0.5)' }} />
               </div>
 
               <div className="flex gap-3">
-                <button onClick={handleSaveEdit} disabled={saving} className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40" style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}>
+                <button onClick={handleSaveEdit} disabled={saving} className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40" style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}>
                   {saving ? 'Saving…' : 'Save'}
                 </button>
-                <button onClick={handleCancelEdit} disabled={saving} className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40" style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}>
+                <button onClick={handleCancelEdit} disabled={saving} className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40" style={{ border: '1px solid rgba(154,117,50,0.25)', color: 'rgba(154,117,50,0.6)' }}>
                   Cancel
                 </button>
               </div>
@@ -418,23 +418,23 @@ export default function WardrobeItemDetailPage() {
             <div className="flex flex-col gap-4 mb-8">
               {deleteError ? (
                 <>
-                  <p className="text-xs font-light leading-relaxed" style={{ color: 'rgba(245,240,232,0.55)' }}>{deleteError}</p>
+                  <p className="text-xs font-light leading-relaxed" style={{ color: 'rgba(20,27,69,0.55)' }}>{deleteError}</p>
                   <button onClick={() => { setConfirmDelete(false); setDeleteError(null) }}
                     className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-light"
-                    style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}>
+                    style={{ border: '1px solid rgba(154,117,50,0.25)', color: 'rgba(154,117,50,0.6)' }}>
                     Close
                   </button>
                 </>
               ) : (
                 <>
-                  <p className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.6)' }}>
-                    Remove <span style={{ color: '#f5f0e8' }}>{garment.brand ?? garment.sub_category}</span> from your wardrobe?
+                  <p className="text-xs font-light" style={{ color: 'rgba(20,27,69,0.6)' }}>
+                    Remove <span style={{ color: '#141B45' }}>{garment.brand ?? garment.sub_category}</span> from your wardrobe?
                   </p>
                   <div className="flex gap-3">
-                    <button onClick={handleDelete} disabled={deleting} className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40" style={{ backgroundColor: 'rgba(220,80,60,0.75)', color: '#f5f0e8' }}>
+                    <button onClick={handleDelete} disabled={deleting} className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40" style={{ backgroundColor: 'rgba(220,80,60,0.75)', color: '#141B45' }}>
                       {deleting ? 'Removing…' : 'Yes, Remove'}
                     </button>
-                    <button onClick={() => setConfirmDelete(false)} disabled={deleting} className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40" style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}>
+                    <button onClick={() => setConfirmDelete(false)} disabled={deleting} className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40" style={{ border: '1px solid rgba(154,117,50,0.25)', color: 'rgba(154,117,50,0.6)' }}>
                       Cancel
                     </button>
                   </div>
