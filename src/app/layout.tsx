@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#c4b89a",
+  themeColor: "#F8F0ED",
 };
 
 export const metadata: Metadata = {

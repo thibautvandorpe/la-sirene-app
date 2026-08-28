@@ -54,12 +54,12 @@ type ItemEdit = {
 }
 
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
-  under_review:          { bg: 'rgba(196,184,154,0.12)', color: '#c4b89a',  label: 'Under Review' },
-  awaiting_confirmation: { bg: 'rgba(200,122,58,0.18)',  color: '#c87a3a',  label: 'Awaiting Confirmation' },
-  in_progress:           { bg: 'rgba(30,70,100,0.45)',   color: '#70b8d8',  label: 'In Progress' },
-  ready:                 { bg: 'rgba(20,75,35,0.65)',    color: '#5dce7a',  label: 'Ready' },
-  completed:             { bg: 'rgba(50,60,55,0.5)',     color: '#8fa8a0',  label: 'Completed' },
-  cancelled:             { bg: 'rgba(58,28,28,0.6)',     color: '#c08080',  label: 'Cancelled' },
+  under_review:          { bg: 'rgba(154,117,50,0.16)', color: '#7D5E1F',             label: 'Under Review' },
+  awaiting_confirmation: { bg: 'rgba(219,166,157,0.45)',color: '#8A4239',             label: 'Awaiting Confirmation' },
+  in_progress:           { bg: 'rgba(20,27,69,0.07)',   color: '#2C3F9E',             label: 'In Progress' },
+  ready:                 { bg: '#DBA69D',               color: '#141B45',             label: 'Ready' },
+  completed:             { bg: 'rgba(20,27,69,0.06)',   color: 'rgba(20,27,69,0.40)', label: 'Completed' },
+  cancelled:             { bg: 'rgba(20,27,69,0.06)',   color: 'rgba(20,27,69,0.40)', label: 'Cancelled' },
 }
 
 function badge(status: string) {
@@ -307,23 +307,23 @@ export default function AdminOrderDetail() {
   const isEditable = order.status === 'under_review' || order.status === 'awaiting_confirmation'
 
   return (
-    <main className="min-h-screen px-6 py-10" style={{ backgroundColor: '#1c2b1e' }}>
+    <main className="min-h-screen px-6 py-10" style={{ backgroundColor: '#F8F0ED' }}>
 
       {/* Header */}
       <div className="flex items-center gap-4 mb-10">
         <Link
           href="/admin/orders"
           className="text-lg leading-none"
-          style={{ color: '#c4b89a' }}
+          style={{ color: '#9A7532' }}
           aria-label="Back to orders"
         >
           ←
         </Link>
         <div>
-          <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(196,184,154,0.5)' }}>
+          <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(154,117,50,0.5)' }}>
             Orders
           </p>
-          <h1 className="text-xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+          <h1 className="text-xl font-light tracking-wide" style={{ color: '#141B45' }}>
             {order.clients?.full_name ?? '—'}
           </h1>
         </div>
@@ -332,16 +332,16 @@ export default function AdminOrderDetail() {
       {/* Client + delivery info */}
       <div
         className="flex flex-col gap-1 pl-3 mb-8"
-        style={{ borderLeft: '1px solid rgba(196,184,154,0.35)' }}
+        style={{ borderLeft: '1px solid rgba(154,117,50,0.35)' }}
       >
-        <p className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>
+        <p className="text-xs font-light" style={{ color: 'rgba(20,27,69,0.4)' }}>
           {order.clients?.email ?? ''}
         </p>
-        <p className="text-xs font-light" style={{ color: 'rgba(196,184,154,0.75)' }}>
+        <p className="text-xs font-light" style={{ color: 'rgba(154,117,50,0.75)' }}>
           {deliveryLabel}
         </p>
         {(order.delivery_method === 'pick_up' || order.delivery_method == null) && order.scheduled_at && (
-          <p className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.55)' }}>
+          <p className="text-xs font-light" style={{ color: 'rgba(20,27,69,0.55)' }}>
             {new Date(order.scheduled_at).toLocaleDateString('en-US', {
               weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
             })}
@@ -357,7 +357,7 @@ export default function AdminOrderDetail() {
       </div>
 
       {/* Section label */}
-      <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'rgba(196,184,154,0.6)' }}>
+      <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'rgba(154,117,50,0.6)' }}>
         Items
       </p>
 
@@ -376,21 +376,21 @@ export default function AdminOrderDetail() {
               key={item.id}
               className="flex flex-col py-5"
               style={{
-                borderTop: idx === 0 ? '1px solid rgba(196,184,154,0.15)' : undefined,
-                borderBottom: '1px solid rgba(196,184,154,0.15)',
+                borderTop: idx === 0 ? '1px solid rgba(154,117,50,0.15)' : undefined,
+                borderBottom: '1px solid rgba(154,117,50,0.15)',
               }}
             >
               {/* Original values row */}
               <div className="flex items-start justify-between">
                 <div className="flex flex-col gap-1 flex-1 min-w-0 pr-6">
-                  <p className="text-sm font-light" style={{ color: hasChange ? 'rgba(245,240,232,0.35)' : '#f5f0e8', textDecoration: hasChange ? 'line-through' : 'none' }}>
+                  <p className="text-sm font-light" style={{ color: hasChange ? 'rgba(20,27,69,0.35)' : '#141B45', textDecoration: hasChange ? 'line-through' : 'none' }}>
                     {item.services?.sub_category ?? '—'}
                   </p>
-                  <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>
+                  <p className="text-[11px] font-light" style={{ color: 'rgba(20,27,69,0.4)' }}>
                     {[item.garments?.brand, item.garments?.color].filter(Boolean).join(' · ') || item.services?.category || ''}
                   </p>
                   {item.special_instructions && (
-                    <p className="text-[11px] font-light italic mt-0.5" style={{ color: 'rgba(245,240,232,0.3)' }}>
+                    <p className="text-[11px] font-light italic mt-0.5" style={{ color: 'rgba(20,27,69,0.3)' }}>
                       {'"'}{item.special_instructions}{'"'}
                     </p>
                   )}
@@ -402,7 +402,7 @@ export default function AdminOrderDetail() {
                             src={photo.url}
                             alt=""
                             className="w-16 h-16 object-cover rounded-sm"
-                            style={{ border: '1px solid rgba(196,184,154,0.2)' }}
+                            style={{ border: '1px solid rgba(154,117,50,0.2)' }}
                           />
                         </a>
                       ))}
@@ -411,7 +411,7 @@ export default function AdminOrderDetail() {
                 </div>
                 <p
                   className="text-sm font-light shrink-0"
-                  style={{ color: hasChange ? 'rgba(196,184,154,0.35)' : '#c4b89a', textDecoration: hasChange ? 'line-through' : 'none' }}
+                  style={{ color: hasChange ? 'rgba(154,117,50,0.35)' : '#9A7532', textDecoration: hasChange ? 'line-through' : 'none' }}
                 >
                   {item.final_price > 0
                     ? `$${item.final_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
@@ -422,13 +422,13 @@ export default function AdminOrderDetail() {
               {/* Reviewed values (shown if set) */}
               {hasChange && (
                 <div className="flex items-center justify-between mt-2">
-                  <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>
+                  <p className="text-sm font-light" style={{ color: '#141B45' }}>
                     {edit.reviewedServiceId
                       ? (services.find(s => s.id === edit.reviewedServiceId)?.sub_category ?? '—')
                       : item.services?.sub_category ?? '—'}
                   </p>
                   {edit.reviewedPrice !== '' && (
-                    <p className="text-sm font-light" style={{ color: '#c4b89a' }}>
+                    <p className="text-sm font-light" style={{ color: '#9A7532' }}>
                       ${parseFloat(edit.reviewedPrice).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                     </p>
                   )}
@@ -438,7 +438,7 @@ export default function AdminOrderDetail() {
               {/* Treatment notes — editable when in_progress, read-only otherwise */}
               {order.status?.toLowerCase() === 'in_progress' && (
                 <div className="mt-4">
-                  <p className="text-[9px] tracking-[0.2em] uppercase mb-2" style={{ color: 'rgba(196,184,154,0.5)' }}>
+                  <p className="text-[9px] tracking-[0.2em] uppercase mb-2" style={{ color: 'rgba(154,117,50,0.5)' }}>
                     Treatment Notes
                   </p>
                   <textarea
@@ -448,9 +448,9 @@ export default function AdminOrderDetail() {
                     onChange={e => setEdit(item.id, 'treatmentNotes', e.target.value)}
                     className="w-full text-[11px] font-light px-3 py-2 resize-none leading-relaxed"
                     style={{
-                      backgroundColor: 'rgba(245,240,232,0.04)',
-                      border: '1px solid rgba(196,184,154,0.2)',
-                      color: '#f5f0e8',
+                      backgroundColor: 'rgba(20,27,69,0.04)',
+                      border: '1px solid rgba(154,117,50,0.2)',
+                      color: '#141B45',
                       borderRadius: 0,
                       outline: 'none',
                     }}
@@ -458,11 +458,11 @@ export default function AdminOrderDetail() {
                 </div>
               )}
               {order.status !== 'in_progress' && item.treatment_notes && (
-                <div className="mt-3 pl-3" style={{ borderLeft: '1px solid rgba(196,184,154,0.2)' }}>
-                  <p className="text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: 'rgba(196,184,154,0.5)' }}>
+                <div className="mt-3 pl-3" style={{ borderLeft: '1px solid rgba(154,117,50,0.2)' }}>
+                  <p className="text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: 'rgba(154,117,50,0.5)' }}>
                     Treatment Notes
                   </p>
-                  <p className="text-[11px] font-light leading-relaxed" style={{ color: 'rgba(245,240,232,0.6)' }}>
+                  <p className="text-[11px] font-light leading-relaxed" style={{ color: 'rgba(20,27,69,0.6)' }}>
                     {item.treatment_notes}
                   </p>
                 </div>
@@ -471,7 +471,7 @@ export default function AdminOrderDetail() {
               {/* Admin adjustment controls */}
               {isEditable && (
                 <div className="flex flex-col gap-2 mt-4">
-                  <p className="text-[9px] tracking-[0.2em] uppercase" style={{ color: 'rgba(196,184,154,0.5)' }}>
+                  <p className="text-[9px] tracking-[0.2em] uppercase" style={{ color: 'rgba(154,117,50,0.5)' }}>
                     Adjust Service
                   </p>
                   <div className="flex gap-2">
@@ -491,9 +491,9 @@ export default function AdminOrderDetail() {
                       }}
                       className="flex-1 text-[11px] font-light px-2 py-1.5 appearance-none"
                       style={{
-                        backgroundColor: 'rgba(245,240,232,0.05)',
-                        border: '1px solid rgba(196,184,154,0.2)',
-                        color: selectedCat ? '#f5f0e8' : 'rgba(245,240,232,0.35)',
+                        backgroundColor: 'rgba(20,27,69,0.05)',
+                        border: '1px solid rgba(154,117,50,0.2)',
+                        color: selectedCat ? '#141B45' : 'rgba(20,27,69,0.35)',
                         borderRadius: 0,
                       }}
                     >
@@ -510,9 +510,9 @@ export default function AdminOrderDetail() {
                       disabled={!selectedCat}
                       className="flex-1 text-[11px] font-light px-2 py-1.5 appearance-none"
                       style={{
-                        backgroundColor: 'rgba(245,240,232,0.05)',
-                        border: '1px solid rgba(196,184,154,0.2)',
-                        color: edit.reviewedServiceId ? '#f5f0e8' : 'rgba(245,240,232,0.35)',
+                        backgroundColor: 'rgba(20,27,69,0.05)',
+                        border: '1px solid rgba(154,117,50,0.2)',
+                        color: edit.reviewedServiceId ? '#141B45' : 'rgba(20,27,69,0.35)',
                         borderRadius: 0,
                         opacity: selectedCat ? 1 : 0.4,
                       }}
@@ -526,7 +526,7 @@ export default function AdminOrderDetail() {
 
                   {/* Price override */}
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-light" style={{ color: 'rgba(196,184,154,0.5)' }}>$</span>
+                    <span className="text-[11px] font-light" style={{ color: 'rgba(154,117,50,0.5)' }}>$</span>
                     <input
                       type="number"
                       min="0"
@@ -536,9 +536,9 @@ export default function AdminOrderDetail() {
                       onChange={e => setEdit(item.id, 'reviewedPrice', e.target.value)}
                       className="w-28 text-[11px] font-light px-2 py-1.5"
                       style={{
-                        backgroundColor: 'rgba(245,240,232,0.05)',
-                        border: '1px solid rgba(196,184,154,0.2)',
-                        color: '#f5f0e8',
+                        backgroundColor: 'rgba(20,27,69,0.05)',
+                        border: '1px solid rgba(154,117,50,0.2)',
+                        color: '#141B45',
                         borderRadius: 0,
                         outline: 'none',
                       }}
@@ -550,7 +550,7 @@ export default function AdminOrderDetail() {
                           [item.id]: { ...prev[item.id], reviewedServiceId: '', reviewedPrice: '' },
                         }))}
                         className="text-[9px] tracking-[0.15em] uppercase"
-                        style={{ color: 'rgba(196,184,154,0.4)' }}
+                        style={{ color: 'rgba(154,117,50,0.4)' }}
                       >
                         Reset
                       </button>
@@ -565,10 +565,10 @@ export default function AdminOrderDetail() {
 
       {/* Total */}
       <div className="flex items-center justify-between mt-5 mb-8 px-1 max-w-2xl">
-        <p className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: '#c4b89a' }}>
+        <p className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: '#9A7532' }}>
           {isEditable ? 'Revised Total' : 'Total'}
         </p>
-        <p className="text-base font-light" style={{ color: '#c4b89a' }}>
+        <p className="text-base font-light" style={{ color: '#9A7532' }}>
           {(() => {
             const total = items.reduce((sum, item) => {
               const edit = itemEdits[item.id]
@@ -583,7 +583,7 @@ export default function AdminOrderDetail() {
       {/* Admin message */}
       {isEditable && (
         <div className="max-w-2xl mb-8">
-          <p className="text-[9px] tracking-[0.2em] uppercase mb-2" style={{ color: 'rgba(196,184,154,0.5)' }}>
+          <p className="text-[9px] tracking-[0.2em] uppercase mb-2" style={{ color: 'rgba(154,117,50,0.5)' }}>
             Message to Client
           </p>
           <textarea
@@ -593,9 +593,9 @@ export default function AdminOrderDetail() {
             onChange={e => setAdminMessage(e.target.value)}
             className="w-full text-[12px] font-light px-3 py-2.5 resize-none leading-relaxed"
             style={{
-              backgroundColor: 'rgba(245,240,232,0.04)',
-              border: '1px solid rgba(196,184,154,0.2)',
-              color: '#f5f0e8',
+              backgroundColor: 'rgba(20,27,69,0.04)',
+              border: '1px solid rgba(154,117,50,0.2)',
+              color: '#141B45',
               borderRadius: 0,
               outline: 'none',
             }}
@@ -607,12 +607,12 @@ export default function AdminOrderDetail() {
       {!isEditable && order.admin_message && (
         <div
           className="max-w-2xl mb-8 pl-3"
-          style={{ borderLeft: '1px solid rgba(196,184,154,0.25)' }}
+          style={{ borderLeft: '1px solid rgba(154,117,50,0.25)' }}
         >
-          <p className="text-[9px] tracking-[0.2em] uppercase mb-1.5" style={{ color: 'rgba(196,184,154,0.5)' }}>
+          <p className="text-[9px] tracking-[0.2em] uppercase mb-1.5" style={{ color: 'rgba(154,117,50,0.5)' }}>
             Message to Client
           </p>
-          <p className="text-[12px] font-light leading-relaxed" style={{ color: 'rgba(245,240,232,0.6)' }}>
+          <p className="text-[12px] font-light leading-relaxed" style={{ color: 'rgba(20,27,69,0.6)' }}>
             {order.admin_message}
           </p>
         </div>
@@ -642,7 +642,7 @@ export default function AdminOrderDetail() {
             }}
             disabled={saving}
             className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
-            style={{ border: '1px solid #c4b89a', color: '#c4b89a', backgroundColor: 'transparent' }}
+            style={{ border: '1px solid #9A7532', color: '#9A7532', backgroundColor: 'transparent' }}
           >
             {saving ? 'Saving…' : 'Save Treatment Notes'}
           </button>
@@ -655,7 +655,7 @@ export default function AdminOrderDetail() {
           <button
             onClick={() => setConfirmAction('ready')}
             className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
-            style={{ backgroundColor: 'rgba(28,58,30,0.8)', color: '#7aab80', border: '1px solid rgba(122,171,128,0.3)' }}
+            style={{ border: '1px solid rgba(154,117,50,0.4)', color: '#9A7532', backgroundColor: 'transparent' }}
           >
             Mark as Ready
           </button>
@@ -663,7 +663,7 @@ export default function AdminOrderDetail() {
       )}
       {confirmAction === 'ready' && (
         <div className="max-w-2xl mb-6 flex flex-col gap-3">
-          <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+          <p className="text-[11px] font-light" style={{ color: 'rgba(20,27,69,0.5)' }}>
             This will save treatment notes and mark the order as Ready to Pick Up. The client will be notified. Continue?
           </p>
           <div className="flex gap-3">
@@ -671,7 +671,7 @@ export default function AdminOrderDetail() {
               onClick={() => handleSaveAndAdvance('ready')}
               disabled={saving}
               className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
-              style={{ backgroundColor: 'rgba(28,58,30,0.8)', color: '#7aab80' }}
+              style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
             >
               {saving ? 'Saving…' : 'Yes, Mark Ready'}
             </button>
@@ -679,7 +679,7 @@ export default function AdminOrderDetail() {
               onClick={() => setConfirmAction(null)}
               disabled={saving}
               className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
-              style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+              style={{ border: '1px solid rgba(154,117,50,0.25)', color: 'rgba(154,117,50,0.6)' }}
             >
               Cancel
             </button>
@@ -693,7 +693,7 @@ export default function AdminOrderDetail() {
           <button
             onClick={() => setConfirmAction('completed')}
             className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
-            style={{ backgroundColor: 'rgba(28,58,30,0.8)', color: '#7aab80', border: '1px solid rgba(122,171,128,0.3)' }}
+            style={{ border: '1px solid rgba(154,117,50,0.4)', color: '#9A7532', backgroundColor: 'transparent' }}
           >
             Mark as Completed
           </button>
@@ -701,7 +701,7 @@ export default function AdminOrderDetail() {
       )}
       {confirmAction === 'completed' && (
         <div className="max-w-2xl mb-6 flex flex-col gap-3">
-          <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+          <p className="text-[11px] font-light" style={{ color: 'rgba(20,27,69,0.5)' }}>
             This will mark the order as Completed. This cannot be undone. Continue?
           </p>
           <div className="flex gap-3">
@@ -709,7 +709,7 @@ export default function AdminOrderDetail() {
               onClick={() => handleSaveAndAdvance('completed')}
               disabled={saving}
               className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
-              style={{ backgroundColor: 'rgba(28,58,30,0.8)', color: '#7aab80' }}
+              style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
             >
               {saving ? 'Saving…' : 'Yes, Complete'}
             </button>
@@ -717,7 +717,7 @@ export default function AdminOrderDetail() {
               onClick={() => setConfirmAction(null)}
               disabled={saving}
               className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
-              style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+              style={{ border: '1px solid rgba(154,117,50,0.25)', color: 'rgba(154,117,50,0.6)' }}
             >
               Cancel
             </button>
@@ -734,7 +734,7 @@ export default function AdminOrderDetail() {
             <button
               onClick={() => setConfirmAction('update')}
               className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
-              style={{ border: '1px solid #c4b89a', color: '#c4b89a', backgroundColor: 'transparent' }}
+              style={{ border: '1px solid #9A7532', color: '#9A7532', backgroundColor: 'transparent' }}
             >
               Update Changes
             </button>
@@ -746,14 +746,14 @@ export default function AdminOrderDetail() {
               <button
                 onClick={() => setConfirmAction('approval')}
                 className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
-                style={{ border: '1px solid #c4b89a', color: '#c4b89a', backgroundColor: 'transparent' }}
+                style={{ border: '1px solid #9A7532', color: '#9A7532', backgroundColor: 'transparent' }}
               >
                 Send for Approval
               </button>
               <button
                 onClick={() => setConfirmAction('in_progress')}
                 className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
-                style={{ border: '1px solid rgba(46,74,50,0.8)', color: '#a8c5a0', backgroundColor: 'transparent' }}
+                style={{ border: '1px solid rgba(154,117,50,0.4)', color: '#9A7532', backgroundColor: 'transparent' }}
               >
                 Move to In Progress
               </button>
@@ -763,7 +763,7 @@ export default function AdminOrderDetail() {
           {/* Confirm: update changes (stays awaiting_confirmation) */}
           {confirmAction === 'update' && (
             <div className="flex flex-col gap-3">
-              <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+              <p className="text-[11px] font-light" style={{ color: 'rgba(20,27,69,0.5)' }}>
                 This will update the order details sent to the client. The status will remain Awaiting Confirmation. Continue?
               </p>
               <div className="flex gap-3">
@@ -771,7 +771,7 @@ export default function AdminOrderDetail() {
                   onClick={handleSaveOnly}
                   disabled={saving}
                   className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
-                  style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+                  style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
                 >
                   {saving ? 'Saving…' : 'Yes, Update'}
                 </button>
@@ -779,7 +779,7 @@ export default function AdminOrderDetail() {
                   onClick={() => setConfirmAction(null)}
                   disabled={saving}
                   className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
-                  style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+                  style={{ border: '1px solid rgba(154,117,50,0.25)', color: 'rgba(154,117,50,0.6)' }}
                 >
                   Cancel
                 </button>
@@ -790,7 +790,7 @@ export default function AdminOrderDetail() {
           {/* Confirm: send for approval */}
           {confirmAction === 'approval' && (
             <div className="flex flex-col gap-3">
-              <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+              <p className="text-[11px] font-light" style={{ color: 'rgba(20,27,69,0.5)' }}>
                 This will save your changes and send the order to the client for approval. Continue?
               </p>
               <div className="flex gap-3">
@@ -798,7 +798,7 @@ export default function AdminOrderDetail() {
                   onClick={() => handleSaveAndAdvance('awaiting_confirmation')}
                   disabled={saving}
                   className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
-                  style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+                  style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
                 >
                   {saving ? 'Saving…' : 'Yes, Send'}
                 </button>
@@ -806,7 +806,7 @@ export default function AdminOrderDetail() {
                   onClick={() => setConfirmAction(null)}
                   disabled={saving}
                   className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
-                  style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+                  style={{ border: '1px solid rgba(154,117,50,0.25)', color: 'rgba(154,117,50,0.6)' }}
                 >
                   Cancel
                 </button>
@@ -817,7 +817,7 @@ export default function AdminOrderDetail() {
           {/* Confirm: move to in progress / confirm changes */}
           {confirmAction === 'in_progress' && (
             <div className="flex flex-col gap-3">
-              <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+              <p className="text-[11px] font-light" style={{ color: 'rgba(20,27,69,0.5)' }}>
                 {order.status === 'awaiting_confirmation'
                   ? 'This will save your changes and move the order to In Progress. Continue?'
                   : 'This will move the order to In Progress. Continue?'}
@@ -827,7 +827,7 @@ export default function AdminOrderDetail() {
                   onClick={() => handleSaveAndAdvance('in_progress')}
                   disabled={saving}
                   className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
-                  style={{ backgroundColor: 'rgba(46,74,50,0.8)', color: '#a8c5a0' }}
+                  style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
                 >
                   {saving ? 'Saving…' : order.status === 'awaiting_confirmation' ? 'Yes, Confirm' : 'Yes, Move'}
                 </button>
@@ -835,7 +835,7 @@ export default function AdminOrderDetail() {
                   onClick={() => setConfirmAction(null)}
                   disabled={saving}
                   className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
-                  style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+                  style={{ border: '1px solid rgba(154,117,50,0.25)', color: 'rgba(154,117,50,0.6)' }}
                 >
                   Cancel
                 </button>
@@ -850,7 +850,7 @@ export default function AdminOrderDetail() {
       {/* Status history timeline */}
       {statusHistory.length > 0 && (
         <div className="max-w-2xl mt-10">
-          <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: 'rgba(196,184,154,0.6)' }}>
+          <p className="text-[10px] tracking-[0.3em] uppercase mb-4" style={{ color: 'rgba(154,117,50,0.6)' }}>
             Order History
           </p>
           <div className="flex flex-col">
@@ -862,12 +862,12 @@ export default function AdminOrderDetail() {
                   {/* Timeline spine */}
                   <div className="flex flex-col items-center" style={{ width: 16 }}>
                     <div className="w-2 h-2 rounded-full mt-1 shrink-0" style={{ backgroundColor: color }} />
-                    {!isLast && <div className="flex-1 w-px mt-1" style={{ backgroundColor: 'rgba(196,184,154,0.15)' }} />}
+                    {!isLast && <div className="flex-1 w-px mt-1" style={{ backgroundColor: 'rgba(154,117,50,0.15)' }} />}
                   </div>
                   {/* Content */}
                   <div className="pb-5">
                     <p className="text-xs font-light" style={{ color }}>{label}</p>
-                    <p className="text-[10px] font-light mt-0.5" style={{ color: 'rgba(245,240,232,0.35)' }}>
+                    <p className="text-[10px] font-light mt-0.5" style={{ color: 'rgba(20,27,69,0.35)' }}>
                       {new Date(entry.changed_at).toLocaleDateString('en-US', {
                         month: 'long', day: 'numeric', year: 'numeric',
                       })}{' '}

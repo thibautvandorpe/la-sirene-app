@@ -91,23 +91,23 @@ export default function ConversationsPage() {
   if (!loaded) return null
 
   return (
-    <main className="min-h-screen px-6 py-10" style={{ backgroundColor: '#1c2b1e' }}>
+    <main className="min-h-screen px-6 py-10" style={{ backgroundColor: '#F8F0ED' }}>
 
       {/* Header */}
       <div className="flex items-center gap-4 mb-10">
-        <Link href="/admin" className="text-lg" style={{ color: '#c4b89a' }}>←</Link>
+        <Link href="/admin" className="text-lg" style={{ color: '#9A7532' }}>←</Link>
         <div>
-          <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(196,184,154,0.5)' }}>
+          <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(154,117,50,0.5)' }}>
             La Sirène
           </p>
-          <h1 className="text-2xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+          <h1 className="text-2xl font-light tracking-wide" style={{ color: '#141B45' }}>
             Conversations
           </h1>
         </div>
       </div>
 
       {conversations.length === 0 ? (
-        <p className="text-sm font-light" style={{ color: 'rgba(245,240,232,0.3)' }}>
+        <p className="text-sm font-light" style={{ color: 'rgba(20,27,69,0.3)' }}>
           No conversations yet.
         </p>
       ) : (() => {
@@ -120,15 +120,15 @@ export default function ConversationsPage() {
             key={row.clientId}
             href={`/admin/conversations/${row.clientId}`}
             className="flex items-center justify-between py-5 transition-opacity hover:opacity-70"
-            style={{ borderBottom: '1px solid rgba(196,184,154,0.1)' }}
+            style={{ borderBottom: '1px solid rgba(154,117,50,0.1)' }}
           >
             <div className="flex flex-col gap-1 flex-1 min-w-0 mr-4">
               <div className="flex items-center gap-3">
-                <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>{row.clientName}</p>
+                <p className="text-sm font-light" style={{ color: '#141B45' }}>{row.clientName}</p>
                 {row.unreadCount > 0 && (
                   <span
                     className="text-[9px] font-medium px-1.5 py-0.5 rounded-full"
-                    style={{ backgroundColor: '#c87a3a', color: '#f5f0e8', minWidth: '18px', textAlign: 'center' }}
+                    style={{ backgroundColor: '#c87a3a', color: '#141B45', minWidth: '18px', textAlign: 'center' }}
                   >
                     {row.unreadCount}
                   </span>
@@ -136,12 +136,12 @@ export default function ConversationsPage() {
               </div>
               <p
                 className="text-xs font-light truncate"
-                style={{ color: 'rgba(245,240,232,0.4)' }}
+                style={{ color: 'rgba(20,27,69,0.4)' }}
               >
                 {row.lastMessage.sender === 'team' ? 'You: ' : ''}{row.lastMessage.content}
               </p>
             </div>
-            <span className="text-sm shrink-0" style={{ color: 'rgba(196,184,154,0.4)' }}>→</span>
+            <span className="text-sm shrink-0" style={{ color: 'rgba(154,117,50,0.4)' }}>→</span>
           </Link>
         ))
 
@@ -149,10 +149,10 @@ export default function ConversationsPage() {
           <div className="flex flex-col max-w-2xl">
             {unread.length > 0 && (
               <div>
-                <p className="text-[10px] tracking-[0.35em] uppercase pb-2 pt-1" style={{ color: 'rgba(196,184,154,0.5)' }}>
+                <p className="text-[10px] tracking-[0.35em] uppercase pb-2 pt-1" style={{ color: 'rgba(154,117,50,0.5)' }}>
                   Unread
                 </p>
-                <div style={{ borderTop: '1px solid rgba(196,184,154,0.1)' }}>
+                <div style={{ borderTop: '1px solid rgba(154,117,50,0.1)' }}>
                   {renderRows(unread)}
                 </div>
               </div>
@@ -161,11 +161,11 @@ export default function ConversationsPage() {
             {read.length > 0 && (
               <div>
                 {hasBoth && (
-                  <p className="text-[10px] tracking-[0.35em] uppercase pb-2 pt-1" style={{ color: 'rgba(196,184,154,0.5)' }}>
+                  <p className="text-[10px] tracking-[0.35em] uppercase pb-2 pt-1" style={{ color: 'rgba(154,117,50,0.5)' }}>
                     All Conversations
                   </p>
                 )}
-                <div style={{ borderTop: '1px solid rgba(196,184,154,0.1)' }}>
+                <div style={{ borderTop: '1px solid rgba(154,117,50,0.1)' }}>
                   {renderRows(read)}
                 </div>
               </div>

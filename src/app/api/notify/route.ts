@@ -12,27 +12,27 @@ function baseLayout(content: string, ctaLabel: string, ctaUrl: string): string {
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#1c2b1e;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#1c2b1e;padding:40px 20px;">
+<body style="margin:0;padding:0;background:#F8F0ED;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8F0ED;padding:40px 20px;">
     <tr><td align="center">
-      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#1c2b1e;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#F8F0ED;">
 
         <!-- Header -->
-        <tr><td style="padding-bottom:32px;border-bottom:1px solid rgba(196,184,154,0.15);">
-          <p style="margin:0;font-family:Georgia,serif;font-size:22px;color:#c4b89a;letter-spacing:0.05em;">
+        <tr><td style="padding-bottom:32px;border-bottom:1px solid rgba(154,117,50,0.15);">
+          <p style="margin:0;font-family:Georgia,serif;font-size:22px;color:#9A7532;letter-spacing:0.05em;">
             La Sirène
           </p>
         </td></tr>
 
         <!-- Body -->
-        <tr><td style="padding:32px 0;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:14px;font-weight:300;color:#f5f0e8;line-height:1.7;">
+        <tr><td style="padding:32px 0;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:14px;font-weight:300;color:#141B45;line-height:1.7;">
           ${content}
         </td></tr>
 
         <!-- CTA -->
         <tr><td style="padding-bottom:40px;">
           <a href="${ctaUrl}"
-             style="display:inline-block;background:#c4b89a;color:#1c2b1e;padding:12px 32px;
+             style="display:inline-block;background:#DBA69D;color:#141B45;padding:12px 32px;
                     font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;
                     font-size:11px;font-weight:500;text-transform:uppercase;
                     letter-spacing:0.15em;text-decoration:none;">
@@ -41,9 +41,9 @@ function baseLayout(content: string, ctaLabel: string, ctaUrl: string): string {
         </td></tr>
 
         <!-- Footer -->
-        <tr><td style="border-top:1px solid rgba(196,184,154,0.1);padding-top:24px;">
+        <tr><td style="border-top:1px solid rgba(154,117,50,0.1);padding-top:24px;">
           <p style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;
-                    font-size:11px;font-weight:300;color:rgba(245,240,232,0.3);">
+                    font-size:11px;font-weight:300;color:rgba(20,27,69,0.3);">
             © La Sirène Beverly Hills
           </p>
         </td></tr>
@@ -67,9 +67,9 @@ function buildChatMessageEmail(firstName: string, preview: string): string {
   const content = `
     <p style="margin:0 0 16px;">Dear ${firstName},</p>
     <p style="margin:0 0 24px;">You have a new message from the La Sirène team.</p>
-    <p style="margin:0;padding:16px;background:rgba(196,184,154,0.06);
-              border-left:2px solid rgba(196,184,154,0.3);
-              font-style:italic;color:rgba(245,240,232,0.7);">
+    <p style="margin:0;padding:16px;background:rgba(154,117,50,0.06);
+              border-left:2px solid rgba(154,117,50,0.3);
+              font-style:italic;color:rgba(20,27,69,0.7);">
       ${preview.slice(0, 120)}${preview.length > 120 ? '…' : ''}
     </p>
   `

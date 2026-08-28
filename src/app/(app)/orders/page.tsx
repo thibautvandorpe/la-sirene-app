@@ -25,19 +25,19 @@ type Order = {
 }
 
 const APPT_BADGE: Record<string, string> = {
-  draft:     'bg-[#9A7532]/15 text-[#9A7532]',
-  pending:   'bg-[#c87a3a]/20 text-[#c87a3a]',
-  confirmed: 'bg-[#2e4a32]/60 text-[#a8c5a0]',
-  cancelled: 'bg-[#3a1c1c]/60 text-[#c08080]',
+  draft:     'bg-[rgba(20,27,69,0.07)] text-[rgba(20,27,69,0.60)]',
+  pending:   'bg-[rgba(219,166,157,0.45)] text-[#8A4239]',
+  confirmed: 'bg-[rgba(20,27,69,0.07)] text-[#2C3F9E]',
+  cancelled: 'bg-[rgba(20,27,69,0.06)] text-[rgba(20,27,69,0.40)]',
 }
 
 const ORDER_BADGE: Record<string, string> = {
-  under_review:           'bg-[#9A7532]/15 text-[#9A7532]',
-  awaiting_confirmation:  'bg-[#c87a3a]/20 text-[#c87a3a]',
-  in_progress:            'bg-[rgba(30,70,100,0.45)] text-[#70b8d8]',
-  ready:                  'bg-[rgba(20,75,35,0.65)] text-[#5dce7a]',
-  completed:              'bg-[rgba(50,60,55,0.5)] text-[#8fa8a0]',
-  cancelled:              'bg-[#3a1c1c]/60 text-[#c08080]',
+  under_review:           'bg-[rgba(154,117,50,0.16)] text-[#7D5E1F]',
+  awaiting_confirmation:  'bg-[rgba(219,166,157,0.45)] text-[#8A4239]',
+  in_progress:            'bg-[rgba(20,27,69,0.07)] text-[#2C3F9E]',
+  ready:                  'bg-[#DBA69D] text-[#141B45]',
+  completed:              'bg-[rgba(20,27,69,0.06)] text-[rgba(20,27,69,0.40)]',
+  cancelled:              'bg-[rgba(20,27,69,0.06)] text-[rgba(20,27,69,0.40)]',
 }
 
 const ORDER_LABEL: Record<string, string> = {
@@ -54,7 +54,7 @@ function orderStatusLabel(status: string) {
 }
 
 function badgeClass(map: Record<string, string>, status: string) {
-  return map[status.toLowerCase()] ?? 'bg-[#9A7532]/20 text-[#9A7532]'
+  return map[status.toLowerCase()] ?? 'bg-[rgba(20,27,69,0.06)] text-[rgba(20,27,69,0.40)]'
 }
 
 function formatApptDate(iso: string) {
@@ -65,8 +65,7 @@ function formatApptDate(iso: string) {
 
 
 const CARD = {
-  backgroundColor: 'rgba(20,27,69, 0.04)',
-  borderBottom: '1px solid rgba(154,117,50, 0.12)',
+  borderBottom: '1px solid rgba(154,117,50,0.12)',
 } as const
 
 const MUTED = { color: 'rgba(20,27,69, 0.35)' } as const
@@ -211,7 +210,7 @@ export default function OrdersPage() {
                             <button
                               onClick={() => { handleDeleteDraft(appt); setConfirmDeleteId(null) }}
                               className="px-3 py-1.5 text-[9px] tracking-[0.2em] uppercase font-medium"
-                              style={{ backgroundColor: 'rgba(220,80,60,0.75)', color: '#141B45' }}
+                              style={{ backgroundColor: '#B45F52', color: '#F8F0ED' }}
                             >
                               Yes, Delete
                             </button>
@@ -233,7 +232,7 @@ export default function OrdersPage() {
                             <button
                               onClick={() => { handleCancelAppointment(appt); setConfirmCancelId(null) }}
                               className="px-3 py-1.5 text-[9px] tracking-[0.2em] uppercase font-medium"
-                              style={{ backgroundColor: 'rgba(220,80,60,0.75)', color: '#141B45' }}
+                              style={{ backgroundColor: '#B45F52', color: '#F8F0ED' }}
                             >
                               Yes, Cancel
                             </button>

@@ -140,15 +140,16 @@ function OrderDetailInner() {
     : order.delivery_method === 'fedex' ? 'FedEx'
     : 'Pick Up'
 
-  const STATUS_BADGE: Record<string, { color: string; label: string }> = {
-    under_review:          { color: '#9A7532',  label: 'Under Review' },
-    awaiting_confirmation: { color: '#c87a3a',  label: 'Awaiting Confirmation' },
-    in_progress:           { color: '#70b8d8',  label: 'In Progress' },
-    ready:                 { color: '#5dce7a',  label: 'Ready' },
-    completed:             { color: '#8fa8a0',  label: 'Completed' },
-    cancelled:             { color: '#c08080',  label: 'Cancelled' },
+  const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
+    under_review:          { bg: 'rgba(154,117,50,0.16)',  color: '#7D5E1F',              label: 'Under Review' },
+    awaiting_confirmation: { bg: 'rgba(219,166,157,0.45)', color: '#8A4239',              label: 'Awaiting Confirmation' },
+    in_progress:           { bg: 'rgba(20,27,69,0.07)',    color: '#2C3F9E',              label: 'In Progress' },
+    ready:                 { bg: '#DBA69D',                color: '#141B45',              label: 'Ready' },
+    completed:             { bg: 'rgba(20,27,69,0.06)',    color: 'rgba(20,27,69,0.40)', label: 'Completed' },
+    cancelled:             { bg: 'rgba(20,27,69,0.06)',    color: 'rgba(20,27,69,0.40)', label: 'Cancelled' },
   }
-  const { color: badgeColor, label: badgeLabel } = STATUS_BADGE[order.status] ?? STATUS_BADGE.under_review
+  const FALLBACK_BADGE = { bg: 'rgba(20,27,69,0.06)', color: 'rgba(20,27,69,0.40)', label: order.status }
+  const { bg: badgeBg, color: badgeColor, label: badgeLabel } = STATUS_BADGE[order.status] ?? FALLBACK_BADGE
 
   return (
     <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#F8F0ED' }}>
@@ -185,7 +186,7 @@ function OrderDetailInner() {
         )}
         <span
           className="self-start mt-1 text-[9px] tracking-[0.25em] uppercase px-2 py-0.5 rounded-sm"
-          style={{ backgroundColor: `${badgeColor}18`, color: badgeColor }}
+          style={{ backgroundColor: badgeBg, color: badgeColor }}
         >
           {badgeLabel}
         </span>
@@ -373,12 +374,12 @@ function OrderDetailInner() {
           </p>
           <div className="flex flex-col">
             {statusHistory.map((entry, idx) => {
-              const { color, label } = STATUS_BADGE[entry.status] ?? STATUS_BADGE.under_review
+              const { bg, color, label } = STATUS_BADGE[entry.status] ?? FALLBACK_BADGE
               const isLast = idx === statusHistory.length - 1
               return (
                 <div key={entry.id} className="flex gap-4">
                   <div className="flex flex-col items-center" style={{ width: 16 }}>
-                    <div className="w-2 h-2 rounded-full mt-1 shrink-0" style={{ backgroundColor: color }} />
+                    <div className="w-2 h-2 rounded-full mt-1 shrink-0" style={{ backgroundColor: bg }} />
                     {!isLast && <div className="flex-1 w-px mt-1" style={{ backgroundColor: 'rgba(154,117,50,0.15)' }} />}
                   </div>
                   <div className="pb-5">

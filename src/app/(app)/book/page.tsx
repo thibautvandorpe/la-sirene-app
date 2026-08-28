@@ -1012,7 +1012,7 @@ function BookPageInner() {
                           type="button"
                           onClick={() => setEditRemovedPhotoUrls(prev => [...prev, url])}
                           className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center text-[10px] font-medium rounded-full"
-                          style={{ backgroundColor: 'rgba(220,80,60,0.85)', color: '#fff' }}
+                          style={{ backgroundColor: '#B45F52', color: '#F8F0ED' }}
                           aria-label="Remove photo"
                         >
                           ×

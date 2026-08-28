@@ -152,25 +152,25 @@ export default function AdminConversationPage() {
   if (!loaded) return null
 
   return (
-    <div className="flex flex-col" style={{ backgroundColor: '#1c2b1e', height: '100dvh' }}>
+    <div className="flex flex-col" style={{ backgroundColor: '#F8F0ED', height: '100dvh' }}>
 
       {/* Header */}
       <div
         className="flex items-center gap-4 px-6 py-5 shrink-0"
-        style={{ borderBottom: '1px solid rgba(196,184,154,0.1)' }}
+        style={{ borderBottom: '1px solid rgba(154,117,50,0.1)' }}
       >
-        <Link href="/admin/conversations" style={{ color: '#c4b89a', fontSize: '1.125rem' }}>←</Link>
+        <Link href="/admin/conversations" style={{ color: '#9A7532', fontSize: '1.125rem' }}>←</Link>
         <div>
-          <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(196,184,154,0.5)' }}>
+          <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(154,117,50,0.5)' }}>
             Conversation
           </p>
-          <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>{clientName}</p>
+          <p className="text-sm font-light" style={{ color: '#141B45' }}>{clientName}</p>
         </div>
         <button
           onClick={handleMarkAsUnread}
           disabled={markingUnread}
           className="ml-auto text-[10px] tracking-[0.25em] uppercase font-light disabled:opacity-30"
-          style={{ color: 'rgba(196,184,154,0.5)' }}
+          style={{ color: 'rgba(154,117,50,0.5)' }}
         >
           Mark as Unread
         </button>
@@ -179,7 +179,7 @@ export default function AdminConversationPage() {
       {/* Message list */}
       <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-4">
         {messages.length === 0 && (
-          <p className="text-sm font-light text-center mt-10" style={{ color: 'rgba(245,240,232,0.3)' }}>
+          <p className="text-sm font-light text-center mt-10" style={{ color: 'rgba(20,27,69,0.3)' }}>
             No messages yet.
           </p>
         )}
@@ -188,18 +188,18 @@ export default function AdminConversationPage() {
             <div
               className="max-w-[75%] px-4 py-3 text-sm font-light"
               style={msg.sender === 'team'
-                ? { backgroundColor: '#c4b89a', color: '#1c2b1e', borderRadius: '12px 12px 2px 12px' }
-                : { backgroundColor: 'rgba(245,240,232,0.06)', color: '#f5f0e8', border: '1px solid rgba(196,184,154,0.12)', borderRadius: '12px 12px 12px 2px' }
+                ? { backgroundColor: '#DBA69D', color: '#F8F0ED', borderRadius: '12px 12px 2px 12px' }
+                : { backgroundColor: 'rgba(20,27,69,0.06)', color: '#141B45', border: '1px solid rgba(154,117,50,0.12)', borderRadius: '12px 12px 12px 2px' }
               }
             >
               {msg.sender === 'client' && (
-                <p className="text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: '#c4b89a' }}>{clientName}</p>
+                <p className="text-[9px] tracking-[0.2em] uppercase mb-1" style={{ color: '#9A7532' }}>{clientName}</p>
               )}
               <p>{msg.content}</p>
               <p
                 className="text-[10px] mt-1.5"
                 style={{
-                  color: msg.sender === 'team' ? 'rgba(28,43,30,0.45)' : 'rgba(245,240,232,0.35)',
+                  color: msg.sender === 'team' ? 'rgba(20,27,69,0.45)' : 'rgba(20,27,69,0.35)',
                   textAlign: msg.sender === 'team' ? 'right' : 'left',
                 }}
               >
@@ -214,7 +214,7 @@ export default function AdminConversationPage() {
       {/* Input bar */}
       <div
         className="px-6 py-4 flex items-center gap-3 shrink-0"
-        style={{ borderTop: '1px solid rgba(196,184,154,0.1)', backgroundColor: '#1c2b1e' }}
+        style={{ borderTop: '1px solid rgba(154,117,50,0.1)', backgroundColor: '#F8F0ED' }}
       >
         <input
           type="text"
@@ -222,14 +222,14 @@ export default function AdminConversationPage() {
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') handleSend() }}
           placeholder="Reply…"
-          className="flex-1 bg-transparent outline-none text-sm font-light placeholder:text-[rgba(245,240,232,0.2)]"
-          style={{ color: '#f5f0e8' }}
+          className="flex-1 bg-transparent outline-none text-sm font-light placeholder:text-[rgba(20,27,69,0.2)]"
+          style={{ color: '#141B45' }}
         />
         <button
           onClick={handleSend}
           disabled={!input.trim() || sending}
           className="text-[10px] tracking-[0.25em] uppercase font-light px-4 py-2 disabled:opacity-30 shrink-0"
-          style={{ color: '#c4b89a', border: '1px solid rgba(196,184,154,0.3)' }}
+          style={{ color: '#9A7532', border: '1px solid rgba(154,117,50,0.3)' }}
         >
           Send
         </button>

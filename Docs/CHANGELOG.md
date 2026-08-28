@@ -5,6 +5,17 @@ For full code-level detail, see the [Git commit history](https://github.com/thib
 
 ---
 
+## 2026-08-28 — Light Blush design palette
+
+- Replaced the dark forest-green theme with the Light Blush palette across the entire app (client and admin)
+- **Palette:** background `#F8F0ED` (blush), ink `#141B45` (navy), brass `#9A7532`, button fill `#DBA69D` (rose), destructive `#B45F52` (brick)
+- Client pages (`(app)/`, signup, AppHeader, BottomNav): all backgrounds, text, borders, and badges updated
+- Home page: arched photo hero replaces the old logo/text block; `/wordmark.png` overlaid in white at the base of the arch
+- App constrained to 430 px max-width on desktop; BottomNav inner tabs centred to match
+- Admin pages (dashboard, appointments, orders, conversations): full palette sweep — all dark-green rgba tokens, old champagne `#c4b89a`, and off-white `#f5f0e8` replaced; badge dictionaries updated to new blush-palette values; card backgrounds removed (brass hairline border only); green action buttons (Mark as Ready / In Progress) replaced with brass/rose
+
+---
+
 ## 2026-06-05 — Chat timestamps
 
 - Message bubbles in client chat and admin thread view now show a timestamp below each message (e.g. "Jun 4, 2:35 PM")

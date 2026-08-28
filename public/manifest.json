@@ -4,8 +4,8 @@
   "description": "Trusted care for your most cherished garments.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1c2b1e",
-  "theme_color": "#c4b89a",
+  "background_color": "#F8F0ED",
+  "theme_color": "#F8F0ED",
   "icons": [
     {
       "src": "/icon-192.png",

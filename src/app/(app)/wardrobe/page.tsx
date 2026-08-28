@@ -247,16 +247,24 @@ export default function WardrobePage() {
                 style={{ aspectRatio: '3/4', backgroundColor: 'rgba(20,27,69,0.04)', border: '1px solid rgba(154,117,50,0.12)' }}
               >
                 {firstPhotoUrl ? (
-                  <img src={firstPhotoUrl} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ opacity: 0.55 }} />
+                  <>
+                    <img src={firstPhotoUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                    <div className="relative z-10 p-3" style={{ background: 'linear-gradient(to top, rgba(20,27,69,0.85) 0%, rgba(20,27,69,0) 100%)' }}>
+                      <p className="text-sm font-light tracking-wide" style={{ color: '#F8F0ED' }}>{category}</p>
+                      <p className="text-[10px] font-light mt-0.5" style={{ color: 'rgba(255,255,255,0.75)' }}>{count} {count === 1 ? 'item' : 'items'}</p>
+                    </div>
+                  </>
                 ) : (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span style={{ color: 'rgba(154,117,50,0.18)', fontSize: 36 }}>✦</span>
-                  </div>
+                  <>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span style={{ color: 'rgba(154,117,50,0.18)', fontSize: 36 }}>✦</span>
+                    </div>
+                    <div className="relative z-10 p-3">
+                      <p className="text-sm font-light tracking-wide" style={{ color: '#141B45' }}>{category}</p>
+                      <p className="text-[10px] font-light mt-0.5" style={{ color: 'rgba(20,27,69,0.45)' }}>{count} {count === 1 ? 'item' : 'items'}</p>
+                    </div>
+                  </>
                 )}
-                <div className="relative z-10 p-3" style={{ background: 'linear-gradient(to top, rgba(28,43,30,0.95) 0%, rgba(28,43,30,0) 100%)' }}>
-                  <p className="text-sm font-light tracking-wide" style={{ color: '#141B45' }}>{category}</p>
-                  <p className="text-[10px] font-light mt-0.5" style={{ color: '#9A7532' }}>{count} {count === 1 ? 'item' : 'items'}</p>
-                </div>
               </Link>
             ))}
           </div>

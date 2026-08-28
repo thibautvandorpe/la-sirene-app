@@ -135,7 +135,7 @@ export default function ChatPage() {
               <p
                 className="text-[10px] mt-1.5"
                 style={{
-                  color: msg.sender === 'client' ? 'rgba(28,43,30,0.45)' : 'rgba(20,27,69,0.35)',
+                  color: msg.sender === 'client' ? 'rgba(20,27,69,0.45)' : 'rgba(20,27,69,0.35)',
                   textAlign: msg.sender === 'client' ? 'right' : 'left',
                 }}
               >

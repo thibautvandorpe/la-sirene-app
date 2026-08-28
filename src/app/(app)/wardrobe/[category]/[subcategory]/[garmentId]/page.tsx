@@ -250,7 +250,7 @@ export default function WardrobeItemDetailPage() {
 
           {/* Photo count indicator */}
           {visiblePhotos.length > 1 && (
-            <div className="absolute bottom-3 right-3 px-2 py-0.5 text-[10px] font-light" style={{ backgroundColor: 'rgba(28,43,30,0.7)', color: 'rgba(20,27,69,0.7)' }}>
+            <div className="absolute bottom-3 right-3 px-2 py-0.5 text-[10px] font-light" style={{ backgroundColor: 'rgba(20,27,69,0.7)', color: 'rgba(20,27,69,0.7)' }}>
               {activePhotoIdx + 1} / {visiblePhotos.length}
             </div>
           )}
@@ -387,7 +387,7 @@ export default function WardrobeItemDetailPage() {
                         <img src={photo.url} alt="" className="w-16 h-16 object-cover" style={{ border: '1px solid rgba(154,117,50,0.2)' }} />
                         <button type="button" onClick={() => setEditRemovedUrls(prev => [...prev, photo.url])}
                           className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center text-[10px] font-medium rounded-full"
-                          style={{ backgroundColor: 'rgba(220,80,60,0.85)', color: '#fff' }}
+                          style={{ backgroundColor: '#B45F52', color: '#F8F0ED' }}
                           aria-label="Remove photo">×</button>
                       </div>
                     ))}
@@ -431,7 +431,7 @@ export default function WardrobeItemDetailPage() {
                     Remove <span style={{ color: '#141B45' }}>{garment.brand ?? garment.sub_category}</span> from your wardrobe?
                   </p>
                   <div className="flex gap-3">
-                    <button onClick={handleDelete} disabled={deleting} className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40" style={{ backgroundColor: 'rgba(220,80,60,0.75)', color: '#141B45' }}>
+                    <button onClick={handleDelete} disabled={deleting} className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40" style={{ backgroundColor: '#B45F52', color: '#F8F0ED' }}>
                       {deleting ? 'Removing…' : 'Yes, Remove'}
                     </button>
                     <button onClick={() => setConfirmDelete(false)} disabled={deleting} className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40" style={{ border: '1px solid rgba(154,117,50,0.25)', color: 'rgba(154,117,50,0.6)' }}>

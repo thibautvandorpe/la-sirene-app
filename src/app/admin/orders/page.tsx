@@ -16,12 +16,12 @@ type Order = {
 }
 
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
-  under_review:          { bg: 'rgba(196,184,154,0.12)', color: '#c4b89a',  label: 'Under Review' },
-  awaiting_confirmation: { bg: 'rgba(200,122,58,0.18)',  color: '#c87a3a',  label: 'Awaiting Confirmation' },
-  in_progress:           { bg: 'rgba(30,70,100,0.45)',   color: '#70b8d8',  label: 'In Progress' },
-  ready:                 { bg: 'rgba(20,75,35,0.65)',    color: '#5dce7a',  label: 'Ready' },
-  completed:             { bg: 'rgba(50,60,55,0.5)',     color: '#8fa8a0',  label: 'Completed' },
-  cancelled:             { bg: 'rgba(58,28,28,0.6)',     color: '#c08080',  label: 'Cancelled' },
+  under_review:          { bg: 'rgba(154,117,50,0.16)', color: '#7D5E1F',             label: 'Under Review' },
+  awaiting_confirmation: { bg: 'rgba(219,166,157,0.45)',color: '#8A4239',             label: 'Awaiting Confirmation' },
+  in_progress:           { bg: 'rgba(20,27,69,0.07)',   color: '#2C3F9E',             label: 'In Progress' },
+  ready:                 { bg: '#DBA69D',               color: '#141B45',             label: 'Ready' },
+  completed:             { bg: 'rgba(20,27,69,0.06)',   color: 'rgba(20,27,69,0.40)', label: 'Completed' },
+  cancelled:             { bg: 'rgba(20,27,69,0.06)',   color: 'rgba(20,27,69,0.40)', label: 'Cancelled' },
 }
 
 function badge(status: string) {
@@ -91,12 +91,12 @@ export default function AdminOrders() {
           href={`/admin/orders/${order.id}`}
           className="flex items-center justify-between py-4 px-4 transition-opacity hover:opacity-75"
           style={{
-            borderTop: idx === 0 ? '1px solid rgba(196,184,154,0.1)' : undefined,
-            borderBottom: '1px solid rgba(196,184,154,0.1)',
+            borderTop: idx === 0 ? '1px solid rgba(154,117,50,0.1)' : undefined,
+            borderBottom: '1px solid rgba(154,117,50,0.1)',
           }}
         >
           <div className="flex flex-col gap-1.5 min-w-0 flex-1 pr-4">
-            <p className="text-sm font-light truncate" style={{ color: '#f5f0e8' }}>
+            <p className="text-sm font-light truncate" style={{ color: '#141B45' }}>
               {order.clients?.full_name ?? '—'}
             </p>
             <div className="flex items-center gap-2 flex-wrap">
@@ -108,24 +108,24 @@ export default function AdminOrders() {
                   {label}
                 </span>
               )}
-              <span className="text-[10px] font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>
+              <span className="text-[10px] font-light" style={{ color: 'rgba(20,27,69,0.4)' }}>
                 {deliveryLabel}
                 {(order.delivery_method === 'pick_up' || order.delivery_method == null) && order.scheduled_at
                   ? ` · ${new Date(order.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
                   : ''}
               </span>
             </div>
-          <p className="text-[10px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+          <p className="text-[10px] font-light" style={{ color: 'rgba(20,27,69,0.5)' }}>
               Order created on {new Date(order.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <p className="text-sm font-light" style={{ color: order.total_price ? '#c4b89a' : 'rgba(245,240,232,0.25)' }}>
+            <p className="text-sm font-light" style={{ color: order.total_price ? '#9A7532' : 'rgba(20,27,69,0.25)' }}>
               {order.total_price
                 ? `$${order.total_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                 : 'TBD'}
             </p>
-            <span style={{ color: 'rgba(196,184,154,0.35)' }}>›</span>
+            <span style={{ color: 'rgba(154,117,50,0.35)' }}>›</span>
           </div>
         </Link>
       </li>
@@ -133,23 +133,23 @@ export default function AdminOrders() {
   }
 
   return (
-    <main className="min-h-screen px-6 py-10" style={{ backgroundColor: '#1c2b1e' }}>
+    <main className="min-h-screen px-6 py-10" style={{ backgroundColor: '#F8F0ED' }}>
 
       {/* Header */}
       <div className="flex items-center gap-4 mb-10">
         <Link
           href="/admin"
           className="text-lg leading-none"
-          style={{ color: '#c4b89a' }}
+          style={{ color: '#9A7532' }}
           aria-label="Back to dashboard"
         >
           ←
         </Link>
         <div>
-          <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(196,184,154,0.5)' }}>
+          <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(154,117,50,0.5)' }}>
             Team Dashboard
           </p>
-          <h1 className="text-xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+          <h1 className="text-xl font-light tracking-wide" style={{ color: '#141B45' }}>
             Orders
           </h1>
         </div>
@@ -165,9 +165,9 @@ export default function AdminOrders() {
               onClick={() => setFilter(key)}
               className="px-4 py-1.5 text-[9px] tracking-[0.2em] uppercase transition-colors"
               style={{
-                backgroundColor: isActive ? 'rgba(196,184,154,0.15)' : 'transparent',
-                color: isActive ? '#c4b89a' : 'rgba(245,240,232,0.35)',
-                border: isActive ? '1px solid rgba(196,184,154,0.4)' : '1px solid rgba(196,184,154,0.1)',
+                backgroundColor: isActive ? 'rgba(154,117,50,0.15)' : 'transparent',
+                color: isActive ? '#9A7532' : 'rgba(20,27,69,0.35)',
+                border: isActive ? '1px solid rgba(154,117,50,0.4)' : '1px solid rgba(154,117,50,0.1)',
               }}
             >
               {label}
@@ -177,14 +177,14 @@ export default function AdminOrders() {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-sm font-light text-center mt-16" style={{ color: 'rgba(245,240,232,0.3)' }}>
+        <p className="text-sm font-light text-center mt-16" style={{ color: 'rgba(20,27,69,0.3)' }}>
           No {filter === 'all' ? '' : filter.replace(/_/g, ' ')} orders
         </p>
       ) : filter === 'all' ? (
         <div className="flex flex-col gap-8 max-w-2xl">
           {grouped.map(({ status, items }) => (
             <div key={status}>
-              <p className="text-[9px] tracking-[0.28em] uppercase mb-3" style={{ color: 'rgba(196,184,154,0.45)' }}>
+              <p className="text-[9px] tracking-[0.28em] uppercase mb-3" style={{ color: 'rgba(154,117,50,0.45)' }}>
                 {badge(status).label}
               </p>
               <ul className="flex flex-col">

@@ -224,11 +224,11 @@ export default function AdminAppointmentDetail() {
 
   if (!appt) {
     return (
-      <main className="min-h-screen px-6 py-10" style={{ backgroundColor: '#1c2b1e' }}>
-        <Link href="/admin/appointments" className="text-sm font-light" style={{ color: '#c4b89a' }}>
+      <main className="min-h-screen px-6 py-10" style={{ backgroundColor: '#F8F0ED' }}>
+        <Link href="/admin/appointments" className="text-sm font-light" style={{ color: '#9A7532' }}>
           ← Back
         </Link>
-        <p className="mt-10 text-sm font-light text-center" style={{ color: 'rgba(245,240,232,0.35)' }}>
+        <p className="mt-10 text-sm font-light text-center" style={{ color: 'rgba(20,27,69,0.35)' }}>
           Appointment not found.
         </p>
       </main>
@@ -245,23 +245,23 @@ export default function AdminAppointmentDetail() {
   const isCancelled = appt.status === 'cancelled'
 
   return (
-    <main className="min-h-screen px-6 py-10" style={{ backgroundColor: '#1c2b1e' }}>
+    <main className="min-h-screen px-6 py-10" style={{ backgroundColor: '#F8F0ED' }}>
 
       {/* Header */}
       <div className="flex items-center gap-4 mb-10">
         <Link
           href="/admin/appointments"
           className="text-lg leading-none"
-          style={{ color: '#c4b89a' }}
+          style={{ color: '#9A7532' }}
           aria-label="Back to appointments"
         >
           ←
         </Link>
         <div>
-          <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(196,184,154,0.5)' }}>
+          <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(154,117,50,0.5)' }}>
             Appointments
           </p>
-          <h1 className="text-xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+          <h1 className="text-xl font-light tracking-wide" style={{ color: '#141B45' }}>
             {appt.clients?.full_name ?? '—'}
           </h1>
         </div>
@@ -270,23 +270,23 @@ export default function AdminAppointmentDetail() {
       {/* Client + delivery info */}
       <div
         className="flex flex-col gap-1 pl-3 mb-8"
-        style={{ borderLeft: '1px solid rgba(196,184,154,0.35)' }}
+        style={{ borderLeft: '1px solid rgba(154,117,50,0.35)' }}
       >
-        <p className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>
+        <p className="text-xs font-light" style={{ color: 'rgba(20,27,69,0.4)' }}>
           {appt.clients?.email ?? ''}
         </p>
-        <p className="text-xs font-light" style={{ color: 'rgba(196,184,154,0.75)' }}>
+        <p className="text-xs font-light" style={{ color: 'rgba(154,117,50,0.75)' }}>
           {deliveryLabel}
         </p>
         {(appt.delivery_method === 'pick_up' || appt.delivery_method == null) && appt.scheduled_at && (
           <>
-            <p className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.55)' }}>
+            <p className="text-xs font-light" style={{ color: 'rgba(20,27,69,0.55)' }}>
               {new Date(appt.scheduled_at).toLocaleDateString('en-US', {
                 weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
               })}
             </p>
             {appt.notes && (
-              <p className="text-xs font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>
+              <p className="text-xs font-light" style={{ color: 'rgba(20,27,69,0.4)' }}>
                 {appt.notes}
               </p>
             )}
@@ -295,7 +295,7 @@ export default function AdminAppointmentDetail() {
       </div>
 
       {/* Section label */}
-      <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'rgba(196,184,154,0.6)' }}>
+      <p className="text-[10px] tracking-[0.3em] uppercase mb-3" style={{ color: 'rgba(154,117,50,0.6)' }}>
         Items
       </p>
 
@@ -306,19 +306,19 @@ export default function AdminAppointmentDetail() {
             key={item.id}
             className="flex items-start justify-between py-4"
             style={{
-              borderTop: idx === 0 ? '1px solid rgba(196,184,154,0.15)' : undefined,
-              borderBottom: '1px solid rgba(196,184,154,0.15)',
+              borderTop: idx === 0 ? '1px solid rgba(154,117,50,0.15)' : undefined,
+              borderBottom: '1px solid rgba(154,117,50,0.15)',
             }}
           >
             <div className="flex flex-col gap-1 flex-1 min-w-0 pr-6">
-              <p className="text-sm font-light" style={{ color: '#f5f0e8' }}>
+              <p className="text-sm font-light" style={{ color: '#141B45' }}>
                 {item.services?.sub_category ?? '—'}
               </p>
-              <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>
+              <p className="text-[11px] font-light" style={{ color: 'rgba(20,27,69,0.4)' }}>
                 {[item.garments?.brand, item.garments?.color].filter(Boolean).join(' · ') || item.services?.category || ''}
               </p>
               {item.special_instructions && (
-                <p className="text-[11px] font-light italic mt-0.5" style={{ color: 'rgba(245,240,232,0.3)' }}>
+                <p className="text-[11px] font-light italic mt-0.5" style={{ color: 'rgba(20,27,69,0.3)' }}>
                   {'"'}{item.special_instructions}{'"'}
                 </p>
               )}
@@ -330,14 +330,14 @@ export default function AdminAppointmentDetail() {
                         src={photo.url}
                         alt=""
                         className="w-16 h-16 object-cover rounded-sm"
-                        style={{ border: '1px solid rgba(196,184,154,0.2)' }}
+                        style={{ border: '1px solid rgba(154,117,50,0.2)' }}
                       />
                     </a>
                   ))}
                 </div>
               )}
             </div>
-            <p className="text-sm font-light shrink-0" style={{ color: '#c4b89a' }}>
+            <p className="text-sm font-light shrink-0" style={{ color: '#9A7532' }}>
               {item.estimated_price > 0
                 ? `$${item.estimated_price.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                 : 'TBD'}
@@ -348,10 +348,10 @@ export default function AdminAppointmentDetail() {
 
       {/* Total */}
       <div className="flex items-center justify-between mt-5 mb-10 px-1 max-w-2xl">
-        <p className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: '#c4b89a' }}>
+        <p className="text-[10px] tracking-[0.3em] uppercase font-medium" style={{ color: '#9A7532' }}>
           Estimated Total
         </p>
-        <p className="text-base font-light" style={{ color: '#c4b89a' }}>
+        <p className="text-base font-light" style={{ color: '#9A7532' }}>
           ${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}
         </p>
       </div>
@@ -366,7 +366,7 @@ export default function AdminAppointmentDetail() {
           )}
           {confirmingDelete ? (
             <div className="flex flex-col gap-3">
-              <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+              <p className="text-[11px] font-light" style={{ color: 'rgba(20,27,69,0.5)' }}>
                 This will permanently delete the appointment, all its items and photos. Continue?
               </p>
               <div className="flex gap-3">
@@ -374,7 +374,7 @@ export default function AdminAppointmentDetail() {
                   onClick={handleDelete}
                   disabled={deleting}
                   className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
-                  style={{ backgroundColor: 'rgba(220,80,60,0.75)', color: '#f5f0e8' }}
+                  style={{ backgroundColor: '#B45F52', color: '#F8F0ED' }}
                 >
                   {deleting ? 'Deleting…' : 'Yes, Delete'}
                 </button>
@@ -382,7 +382,7 @@ export default function AdminAppointmentDetail() {
                   onClick={() => { setConfirmingDelete(false); setError(null) }}
                   disabled={deleting}
                   className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
-                  style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+                  style={{ border: '1px solid rgba(154,117,50,0.25)', color: 'rgba(154,117,50,0.6)' }}
                 >
                   Cancel
                 </button>
@@ -392,7 +392,7 @@ export default function AdminAppointmentDetail() {
             <button
               onClick={() => { setConfirmingDelete(true); setError(null) }}
               className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
-              style={{ border: '1px solid rgba(220,80,60,0.4)', color: 'rgba(220,80,60,0.7)', backgroundColor: 'transparent' }}
+              style={{ border: '1px solid rgba(180,95,82,0.4)', color: 'rgba(180,95,82,0.7)', backgroundColor: 'transparent' }}
             >
               Delete Appointment
             </button>
@@ -409,7 +409,7 @@ export default function AdminAppointmentDetail() {
           )}
           {confirming ? (
             <div className="flex flex-col gap-3">
-              <p className="text-[11px] font-light" style={{ color: 'rgba(245,240,232,0.5)' }}>
+              <p className="text-[11px] font-light" style={{ color: 'rgba(20,27,69,0.5)' }}>
                 This will create an order and remove the appointment. Continue?
               </p>
               <div className="flex gap-3">
@@ -417,7 +417,7 @@ export default function AdminAppointmentDetail() {
                   onClick={handleConvert}
                   disabled={converting}
                   className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-medium disabled:opacity-40"
-                  style={{ backgroundColor: '#c4b89a', color: '#1c2b1e' }}
+                  style={{ backgroundColor: '#DBA69D', color: '#F8F0ED' }}
                 >
                   {converting ? 'Converting…' : 'Yes, Convert'}
                 </button>
@@ -425,7 +425,7 @@ export default function AdminAppointmentDetail() {
                   onClick={() => setConfirming(false)}
                   disabled={converting}
                   className="flex-1 py-3 text-[10px] tracking-[0.3em] uppercase font-light disabled:opacity-40"
-                  style={{ border: '1px solid rgba(196,184,154,0.25)', color: 'rgba(196,184,154,0.6)' }}
+                  style={{ border: '1px solid rgba(154,117,50,0.25)', color: 'rgba(154,117,50,0.6)' }}
                 >
                   Cancel
                 </button>
@@ -435,7 +435,7 @@ export default function AdminAppointmentDetail() {
             <button
               onClick={() => setConfirming(true)}
               className="w-full py-3 text-[10px] tracking-[0.3em] uppercase font-medium"
-              style={{ border: '1px solid #c4b89a', color: '#c4b89a', backgroundColor: 'transparent' }}
+              style={{ border: '1px solid #9A7532', color: '#9A7532', backgroundColor: 'transparent' }}
             >
               Convert to Order
             </button>

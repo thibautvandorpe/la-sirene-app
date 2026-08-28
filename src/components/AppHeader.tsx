@@ -104,7 +104,6 @@ export default function AppHeader() {
         <div
           role="img"
           aria-label="La Sirène"
-          className="mb-4"
           style={{
             width: '36px',
             height: '36px',
@@ -117,7 +116,7 @@ export default function AppHeader() {
     }
     if (loggedIn) {
       return (
-        <div className="pb-4">
+        <div>
           <p className="text-[10px] tracking-wide uppercase text-[#9A7532]/60">
             Welcome back
           </p>
@@ -128,20 +127,30 @@ export default function AppHeader() {
       )
     }
     return (
-      <div className="pb-4">
-        <p className="font-serif text-xl text-[#141B45]">La Sirène</p>
-      </div>
+      <>
+        <span className="sr-only">La Sirène</span>
+        <div
+          aria-hidden="true"
+          style={{
+            width: '36px',
+            height: '36px',
+            backgroundColor: '#9A7532',
+            WebkitMask: 'url(/logo.png) center / contain no-repeat',
+            mask: 'url(/logo.png) center / contain no-repeat',
+          }}
+        />
+      </>
     )
   }
 
   return (
     <header
-      className="w-full bg-transparent px-6 flex items-end justify-between"
+      className="w-full bg-transparent px-6 pb-4 flex items-center justify-between"
       style={{ paddingTop: 'max(env(safe-area-inset-top), 20px)' }}
     >
       {renderLeft()}
 
-      <div className="pb-4 flex items-center gap-4">
+      <div className="flex items-center gap-4">
         {loggedIn && (
           <Link href="/profile/chat" className="relative" aria-label="Messages">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9A7532" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">

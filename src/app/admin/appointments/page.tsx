@@ -17,10 +17,10 @@ type Appointment = {
 }
 
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
-  draft:     { bg: 'rgba(196,184,154,0.12)', color: '#c4b89a',  label: 'Draft' },
-  pending:   { bg: 'rgba(200,122,58,0.18)',  color: '#c87a3a',  label: 'Pending' },
-  confirmed: { bg: 'rgba(46,74,50,0.6)',     color: '#a8c5a0',  label: 'Confirmed' },
-  cancelled: { bg: 'rgba(58,28,28,0.6)',     color: '#c08080',  label: 'Cancelled' },
+  draft:     { bg: 'rgba(20,27,69,0.07)',    color: 'rgba(20,27,69,0.60)', label: 'Draft' },
+  pending:   { bg: 'rgba(219,166,157,0.45)', color: '#8A4239',             label: 'Pending' },
+  confirmed: { bg: 'rgba(20,27,69,0.07)',    color: '#2C3F9E',             label: 'Confirmed' },
+  cancelled: { bg: 'rgba(20,27,69,0.06)',    color: 'rgba(20,27,69,0.40)', label: 'Cancelled' },
 }
 
 function badge(status: string) {
@@ -60,23 +60,23 @@ export default function AdminAppointments() {
   if (!loaded) return null
 
   return (
-    <main className="min-h-screen px-6 py-10" style={{ backgroundColor: '#1c2b1e' }}>
+    <main className="min-h-screen px-6 py-10" style={{ backgroundColor: '#F8F0ED' }}>
 
       {/* Header */}
       <div className="flex items-center gap-4 mb-10">
         <Link
           href="/admin"
           className="text-lg leading-none"
-          style={{ color: '#c4b89a' }}
+          style={{ color: '#9A7532' }}
           aria-label="Back to dashboard"
         >
           ←
         </Link>
         <div>
-          <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(196,184,154,0.5)' }}>
+          <p className="text-[10px] tracking-[0.35em] uppercase mb-0.5" style={{ color: 'rgba(154,117,50,0.5)' }}>
             Team Dashboard
           </p>
-          <h1 className="text-xl font-light tracking-wide" style={{ color: '#f5f0e8' }}>
+          <h1 className="text-xl font-light tracking-wide" style={{ color: '#141B45' }}>
             Appointments
           </h1>
         </div>
@@ -93,9 +93,9 @@ export default function AdminAppointments() {
               onClick={() => setFilter(f)}
               className="px-4 py-1.5 text-[9px] tracking-[0.2em] uppercase transition-colors"
               style={{
-                backgroundColor: isActive ? 'rgba(196,184,154,0.15)' : 'transparent',
-                color: isActive ? '#c4b89a' : 'rgba(245,240,232,0.35)',
-                border: isActive ? '1px solid rgba(196,184,154,0.4)' : '1px solid rgba(196,184,154,0.1)',
+                backgroundColor: isActive ? 'rgba(154,117,50,0.15)' : 'transparent',
+                color: isActive ? '#9A7532' : 'rgba(20,27,69,0.35)',
+                border: isActive ? '1px solid rgba(154,117,50,0.4)' : '1px solid rgba(154,117,50,0.1)',
               }}
             >
               {labels[f]}
@@ -109,7 +109,7 @@ export default function AdminAppointments() {
           ? appointments
           : appointments.filter(a => a.status === filter)
         return filtered.length === 0 ? (
-        <p className="text-sm font-light text-center mt-16" style={{ color: 'rgba(245,240,232,0.3)' }}>
+        <p className="text-sm font-light text-center mt-16" style={{ color: 'rgba(20,27,69,0.3)' }}>
           No {filter === 'all' ? '' : filter} appointments
         </p>
       ) : (
@@ -128,13 +128,13 @@ export default function AdminAppointments() {
                   href={`/admin/appointments/${appt.id}`}
                   className="flex items-center justify-between py-4 px-4 transition-opacity hover:opacity-75"
                   style={{
-                    borderTop: idx === 0 ? '1px solid rgba(196,184,154,0.1)' : undefined,
-                    borderBottom: '1px solid rgba(196,184,154,0.1)',
+                    borderTop: idx === 0 ? '1px solid rgba(154,117,50,0.1)' : undefined,
+                    borderBottom: '1px solid rgba(154,117,50,0.1)',
                   }}
                 >
                   {/* Left: client + delivery */}
                   <div className="flex flex-col gap-1.5 min-w-0 flex-1 pr-4">
-                    <p className="text-sm font-light truncate" style={{ color: '#f5f0e8' }}>
+                    <p className="text-sm font-light truncate" style={{ color: '#141B45' }}>
                       {appt.clients?.full_name ?? '—'}
                     </p>
                     <div className="flex items-center gap-2 flex-wrap">
@@ -144,7 +144,7 @@ export default function AdminAppointments() {
                       >
                         {label}
                       </span>
-                      <span className="text-[10px] font-light" style={{ color: 'rgba(245,240,232,0.4)' }}>
+                      <span className="text-[10px] font-light" style={{ color: 'rgba(20,27,69,0.4)' }}>
                         {deliveryLabel}
                         {(appt.delivery_method === 'pick_up' || appt.delivery_method == null) && appt.scheduled_at
                           ? ` · ${new Date(appt.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
@@ -155,12 +155,12 @@ export default function AdminAppointments() {
 
                   {/* Right: total */}
                   <div className="flex items-center gap-2 shrink-0">
-                    <p className="text-sm font-light" style={{ color: total > 0 ? '#c4b89a' : 'rgba(245,240,232,0.25)' }}>
+                    <p className="text-sm font-light" style={{ color: total > 0 ? '#9A7532' : 'rgba(20,27,69,0.25)' }}>
                       {total > 0
                         ? `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                         : 'TBD'}
                     </p>
-                    <span style={{ color: 'rgba(196,184,154,0.35)' }}>›</span>
+                    <span style={{ color: 'rgba(154,117,50,0.35)' }}>›</span>
                   </div>
                 </Link>
               </li>
