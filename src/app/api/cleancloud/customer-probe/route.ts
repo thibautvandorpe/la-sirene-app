@@ -84,7 +84,7 @@ function buildSummary(response: unknown) {
     topLevelKeys,
     arrayKeyFound: arrayKey,
     count: records.length,
-    idFieldsUsed: idFieldsSeen.size > 0 ? [...idFieldsSeen] : null,
+    idFieldsUsed: idFieldsSeen.size > 0 ? Array.from(idFieldsSeen) : null,
     idExtractionFailedAt: failedAt.length > 0 ? failedAt : null,
     customerIds,
   }

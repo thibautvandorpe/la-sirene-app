@@ -44,6 +44,11 @@ contents.
   Mac due to permissions.
 - **Comment every terminal command** with a plain-language `#` note, and
   say what the expected result looks like.
+- **Run `npx tsc --noEmit` before every push.** `npm run dev` type-checks
+  lazily, file by file, as routes are visited — so a type error can sit in
+  a file that was never reloaded in the browser and only surface as a
+  failed Vercel build. `npx tsc --noEmit` runs the same full check that
+  `next build` does, in a few seconds.
 
 ---
 

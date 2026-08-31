@@ -5,6 +5,14 @@ For full code-level detail, see the [Git commit history](https://github.com/thib
 
 ---
 
+## 2026-08-31 — TypeScript build fix: Set spread in customer-probe route
+
+- `[...idFieldsSeen]` (a `Set<string>`) used spread syntax which TypeScript rejects at the default ES5 target; changed to `Array.from(idFieldsSeen)` which works at any target
+- `npx tsc --noEmit` confirms the whole project is clean
+- Added "run `npx tsc --noEmit` before every push" rule to CLAUDE.md so this class of error is caught locally before Vercel sees it
+
+---
+
 ## 2026-08-31 — Next.js caching fix for dev-only diagnostic routes
 
 - `match-preview`, `backfill`, and `test` routes each had `export async function GET()` with no request parameter — Next.js treats parameterless handlers as having no dynamic input and caches them; the Supabase client (which runs over fetch) is also intercepted by the Data Cache, so subsequent calls returned the first response forever regardless of database changes
