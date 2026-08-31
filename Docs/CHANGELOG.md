@@ -5,6 +5,74 @@ For full code-level detail, see the [Git commit history](https://github.com/thib
 
 ---
 
+## 2026-08-31 — Next.js caching fix for dev-only diagnostic routes
+
+- `match-preview`, `backfill`, and `test` routes each had `export async function GET()` with no request parameter — Next.js treats parameterless handlers as having no dynamic input and caches them; the Supabase client (which runs over fetch) is also intercepted by the Data Cache, so subsequent calls returned the first response forever regardless of database changes
+- Added `export const dynamic = 'force-dynamic'` and `export const fetchCache = 'force-no-store'` to all three; `normalize-test` was confirmed safe to leave alone (pure computation over fixed in-memory data, no external calls)
+- Added the rule to CLAUDE.md so future diagnostic routes get the directives from the start
+
+---
+
+## 2026-08-31 — Customer matching Step 4a: matching logic
+
+- Rewrote `src/lib/cleancloudCustomer.ts` with a full index-based matching strategy replacing the old create-only flow
+- New result union: `existing` · `linked` (with `via: 'phone_and_email' | 'email_only'`) · `created` · `skipped` (with reason) · `needs_review` (with reason + details) · `would_create` (dry-run only)
+- Decision order: no client → existing link → staff account (admin role, checked before any CleanCloud call) → no email → no phone → normalise keys → Branch A (phone lookup) → Branch B (email-only lookup) → create
+- Branch A (phone resolves): queries `cleancloud_customers` where `phone_e164 = phoneKey AND is_active = true`; links on a single match with email confirmation (null-safe — `null === null` is never treated as agreement); flags `phone_match_email_mismatch`, `ambiguous_phone`, or falls through to create
+- Branch B (phone does not resolve): never runs a phone lookup on a null key (the "Retail" walk-in account is an active row with null `phone_e164`); queries by email instead; links on a single match (`email_only`); flags `ambiguous_email`; or flags `unresolvable_phone` when email is also null
+- Both link branches carry a `.is('cleancloud_customer_id', null)` race guard; if a concurrent request wins, re-reads the row and returns `existing` with the winner's ID — same as the create path
+- `addCustomer` sends the raw phone string (not the normalised E.164) — proven round-trip; rejection is caught and returned as `needs_review:addcustomer_rejected` rather than thrown
+- `dryRun` option: performs all reads, returns identical result objects, but makes zero Supabase writes and zero CleanCloud calls; enforced by a comment at the top of the function
+- `cleancloud_link_status` and `cleancloud_link_checked_at` written on every terminal outcome except: `no_client` (no row), `existing` early return (runs on every page load — writing there would be one UPDATE per mount), and any dry-run call
+- Two new nullable columns required before this runs: `cleancloud_link_status text` and `cleancloud_link_checked_at timestamptz` on `public.clients` (SQL in step 4a of the customer-matching plan)
+- Added `src/app/api/cleancloud/match-preview/route.ts` (dev-only GET): runs `ensureCleanCloudCustomer` in dry-run mode over every client row and returns per-client keys, normalised phone/email, and the decision — incapable of writing anything
+- Fixed `src/app/api/cleancloud/backfill/route.ts`: added `linked`, `needs_review`, `would_create` to the summary object so new statuses don't produce NaN
+
+---
+
+## 2026-08-31 — Customer matching Step 2b: historical sweep
+
+- Added `src/app/api/cleancloud/sweep/route.ts` (dev-only GET, 404 in production): walks the full CleanCloud customer history in consecutive 31-day windows and upserts every customer into the `cleancloud_customers` index table
+- Accepts optional `dateFrom` (default `2026-08-01`), `dateTo` (default today), `maxWindows` (default 12), and `reset=1` query parameters; re-running continues from where the previous run stopped via the `cleancloud_sweep_state` bookmark table
+- Resume overlap: restarts from `swept_through` rather than the day after, so records near a window boundary can never fall through a timezone gap; idempotent upserts make the re-read harmless
+- CleanCloud returns `"No Customer With That ID"` (HTTP 200 + Error field) for an empty date window; the sweep treats this as success and advances the bookmark rather than stopping
+- Response shape is read explicitly (`response.Customers`, `record.ID`) — no heuristics; a missing or wrong shape stops the sweep and returns the actual top-level keys so the mismatch is visible
+- Records with a missing or empty `ID` are skipped and listed in `skippedRecords` rather than passed to the upsert (a null primary key would throw mid-window)
+- Upserts are batched once per window, not once per record; `phone_e164` and `email` store SQL `null` when normalisation cannot resolve the value — never an empty string
+- Extended `src/app/api/cleancloud/normalize-test/route.ts` to also test `normalizeEmail`; response now separates `phone` and `email` blocks each with their own summary
+
+---
+
+## 2026-08-31 — Customer matching Step 2a: getCustomer probe route
+
+- Added dev-only GET route at `/api/cleancloud/customer-probe` (returns 404 in production)
+- Calls CleanCloud's `getCustomer` endpoint twice with an identical date window: once plain (call A) and once with `excludeDeactivated: 1` (call B), then diffs the results
+- Accepts optional `dateFrom` / `dateTo` query params (yyyy-mm-dd); defaults to the last 30 days; returns 400 if the window exceeds 31 days (CleanCloud's hard limit)
+- Response includes: top-level keys, heuristic-derived record count and customer IDs, and explicit failure flags (`arrayKeyFound: null`, `idExtractionFailedAt`) when the heuristic cannot parse the shape — so an empty result from a parse failure is distinguishable from a genuinely empty dataset
+- `firstCustomerRecord` — first complete, unredacted record from call A showing every field name and value type
+- `inAButNotInB` — IDs present in call A but absent from call B (expected to be the deactivated set)
+- `rawA` / `rawB` — complete, unmodified response bodies; if the record array exceeds 25 entries only the first 3 are included and `_truncated: true` / `_totalCount` are added alongside
+
+---
+
+## 2026-08-31 — Customer matching Step 1: schema and phone normalisation
+
+- Two new Supabase tables for the CleanCloud customer index (SQL run manually in the Supabase editor):
+  - `cleancloud_customers` — local mirror of CleanCloud's customer list, with `phone_e164` (normalised matching key), `phone_raw` (as returned by CleanCloud), `email` (lowercased), `full_name`, `is_active`, and sync timestamps. Non-unique indexes on `phone_e164` and `email`. RLS enabled with **no policies** — both tables are written server-side only via the service role key; a `using (true)` policy would expose POS customer data (names, phones, emails) to anyone holding the anon key.
+  - `cleancloud_sweep_state` — single-row bookmark table (enforced by a check constraint) that lets the historical customer sweep resume after an interruption. Seeded with `id = 1` so Step 2 needs no "no row yet" branch.
+- `src/lib/phone.ts` — new file exporting `normalizePhone(input)` and `normalizeEmail(input)`. `normalizePhone` converts to E.164 or returns `null`; it never guesses, because a wrong match silently links the wrong CleanCloud customer to the wrong Supabase account. Handles US 10-digit, US 11-digit with country code, and international `+` prefixed formats. French national format and any other ambiguous input returns `null`.
+- `src/app/api/cleancloud/normalize-test/route.ts` — dev-only test harness (returns 404 in production); open in the browser to run 17 fixed test cases and see pass/fail per case plus a summary count.
+
+---
+
+## 2026-08-31 — Project briefing brought up to date
+
+- `CLAUDE.md` at the repo root has been fully rewritten to reflect the current state of the codebase and Supabase schema as of 2026-08-31
+- Added: Light Blush palette documentation with the retired-colours warning and design rules; the Tailwind CSS-variable opacity trap; CleanCloud integration section with the mirror model, API contract, and all known traps; Booking Flow section preserved from the old briefing; complete App Structure tree; verified database schema (including `clients.role`, `cleancloud_customer_id`, `order_status_history`, correct `chat_messages` column names); updated roadmap starting at customer matching; and an expanded Key Decisions list
+- Removed: outdated forest-green brand identity, old roadmap items that are now complete, port 3001 reference
+
+---
+
 ## 2026-08-31 — CleanCloud customer linking
 
 - Added a `cleancloud_customer_id` column (text, nullable, with a partial unique index) to the `clients` table — this is the bridge between a La Sirène Supabase account and the corresponding customer record in CleanCloud POS

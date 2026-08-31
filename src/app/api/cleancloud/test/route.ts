@@ -53,6 +53,12 @@ function report(res: Awaited<ReturnType<typeof tryCall>>) {
   return { ok: true, result: summarise(res.data) }
 }
 
+// This route calls live CleanCloud endpoints, so it must never be cached.
+// Without this, Next caches the handler (it has no dynamic input) and
+// the Data Cache also caches the fetch calls underneath it.
+export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+
 export async function GET() {
   if (process.env.NODE_ENV !== 'development') {
     return new NextResponse(null, { status: 404 })
