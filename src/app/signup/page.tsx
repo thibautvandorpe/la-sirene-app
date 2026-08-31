@@ -133,6 +133,7 @@ export default function SignupPage() {
                   name="phone"
                   value={form.phone}
                   onChange={handleChange}
+                  required
                   autoComplete="tel"
                   placeholder="+33 6 00 00 00 00"
                   className="w-full bg-transparent outline-none text-sm font-light pb-3 placeholder-[#141B45]/20 transition-colors"

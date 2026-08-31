@@ -1,4 +1,5 @@
 import BottomNav from '@/components/BottomNav'
+import CleanCloudSync from '@/components/CleanCloudSync'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -7,6 +8,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <main className="pb-24">{children}</main>
       </div>
       <BottomNav />
+      <CleanCloudSync />
     </div>
   )
 }

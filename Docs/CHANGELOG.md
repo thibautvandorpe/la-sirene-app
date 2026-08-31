@@ -5,6 +5,17 @@ For full code-level detail, see the [Git commit history](https://github.com/thib
 
 ---
 
+## 2026-08-31 — CleanCloud customer linking
+
+- Added a `cleancloud_customer_id` column (text, nullable, with a partial unique index) to the `clients` table — this is the bridge between a La Sirène Supabase account and the corresponding customer record in CleanCloud POS
+- Built `ensureCleanCloudCustomer()` in `src/lib/cleancloudCustomer.ts`: an idempotent server-side helper that reads the client row, calls CleanCloud's `addCustomer` API if no ID exists yet, and writes the returned ID back; safe to call repeatedly — it exits early if the client is already linked and handles race conditions with a conditional database update
+- Built a protected POST route at `/api/cleancloud/customer`: the browser calls this to trigger a sync; the client's identity comes from their Supabase session token (never from the request body), so it cannot be spoofed
+- Linking now happens automatically at two points: immediately when a new user clicks their email confirmation link (auth callback), and silently on every app load for anyone the first attempt missed (via the `CleanCloudSync` client component mounted in the app layout)
+- Phone number is now required at signup — CleanCloud's `addCustomer` API requires a phone number, so accounts without one cannot be linked
+- Built a dev-only backfill route at `/api/cleancloud/backfill` to link all pre-existing clients who signed up before this feature was added; returns a full summary (created / existing / skipped / failed) and a per-client details array
+
+---
+
 ## 2026-08-28 — Light Blush design palette
 
 - Replaced the dark forest-green theme with the Light Blush palette across the entire app (client and admin)
