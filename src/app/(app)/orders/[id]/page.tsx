@@ -14,7 +14,8 @@ type AppointmentItem = {
 }
 
 type AppointmentDetail = {
-  scheduled_at: string
+  scheduled_at: string | null
+  delivery_method: string | null
   notes: string | null   // stores the time slot label
   status: string
   appointment_items: AppointmentItem[]
@@ -36,6 +37,7 @@ function AppointmentDetailInner() {
         .from('appointments')
         .select(`
           scheduled_at,
+          delivery_method,
           notes,
           status,
           appointment_items (
@@ -57,6 +59,7 @@ function AppointmentDetailInner() {
       const raw = data as any
       const detail: AppointmentDetail = {
         scheduled_at: raw.scheduled_at,
+        delivery_method: raw.delivery_method,
         notes: raw.notes,
         status: raw.status,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -79,8 +82,12 @@ function AppointmentDetailInner() {
 
   const items = detail!.appointment_items
   const estimatedTotal = items.reduce((sum, i) => sum + i.estimated_price, 0)
-  const date = detail!.scheduled_at.split('T')[0]
+  const date = detail!.scheduled_at ? detail!.scheduled_at.split('T')[0] : null
   const time = detail!.notes ?? ''
+  const deliveryLabel =
+    detail!.delivery_method === 'drop_off' ? 'Drop Off'
+    : detail!.delivery_method === 'fedex' ? 'FedEx'
+    : 'Pick Up'
 
   return (
     <main className="min-h-screen flex flex-col px-6 py-8" style={{ backgroundColor: '#F8F0ED' }}>
@@ -105,12 +112,17 @@ function AppointmentDetailInner() {
         className="flex flex-col gap-1 pl-3 mb-8"
         style={{ borderLeft: '1px solid rgba(154,117,50, 0.35)' }}
       >
-        <p className="text-xs font-light" style={{ color: 'rgba(20,27,69, 0.55)' }}>
-          {new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {
-            weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
-          })}
+        <p className="text-xs font-light" style={{ color: 'rgba(154,117,50,0.75)' }}>
+          {deliveryLabel}
         </p>
-        {time && (
+        {(detail!.delivery_method === 'pick_up' || detail!.delivery_method == null) && date && (
+          <p className="text-xs font-light" style={{ color: 'rgba(20,27,69, 0.55)' }}>
+            {new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {
+              weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
+            })}
+          </p>
+        )}
+        {(detail!.delivery_method === 'pick_up' || detail!.delivery_method == null) && date && time && (
           <p className="text-xs font-light" style={{ color: 'rgba(20,27,69, 0.4)' }}>
             {time}
           </p>
