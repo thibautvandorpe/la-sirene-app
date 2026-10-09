@@ -1146,6 +1146,10 @@ function BookPageInner() {
                 value={date}
                 min={getTomorrow()}
                 onChange={e => setDate(e.target.value)}
+                onClick={e => {
+                  // Chrome/Edge only open the calendar from the icon; open it on any click
+                  try { e.currentTarget.showPicker() } catch { /* unsupported: native behaviour */ }
+                }}
                 className="w-full bg-transparent outline-none text-sm font-light pb-3 transition-colors"
                 style={{
                   color: date ? '#141B45' : 'rgba(20,27,69, 0.35)',

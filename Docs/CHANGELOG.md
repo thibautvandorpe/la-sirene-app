@@ -5,6 +5,14 @@ For full code-level detail, see the [Git commit history](https://github.com/thib
 
 ---
 
+## 2026-10-09 — Booking: "Preferred Date" opens the calendar on any click
+
+- In Chrome and Edge, clicking the date field only selected the day/month/year text; the calendar opened only from the small icon. Safari already opened it anywhere.
+- Added a click handler on the field that asks the browser to open its calendar (`showPicker()`), so every browser behaves like Safari. Wrapped in `try/catch`, so browsers without support keep their native behaviour.
+- The "tomorrow or later" minimum date rule is unchanged. No new component, dependency or restyling; this step is still POC and will be replaced in the booking rework.
+
+---
+
 ## 2026-10-09 — Refreshed CLAUDE.md: customer-matching progress, September architecture decisions, new traps
 
 - Refreshed CLAUDE.md: customer-matching progress, September architecture decisions, new traps
