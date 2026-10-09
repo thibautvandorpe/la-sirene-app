@@ -120,6 +120,11 @@ function OrderDetailInner() {
     setSaving(true)
     setError(null)
     try {
+      // Log first: if this fails nothing has changed and the client can retry
+      const { error: histErr } = await supabase
+        .from('order_status_history')
+        .insert({ order_id: order.id, status: 'client_confirmed' })
+      if (histErr) throw histErr
       const { error: err } = await supabase
         .from('orders')
         .update({ status: 'under_review' })
@@ -143,6 +148,7 @@ function OrderDetailInner() {
   const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
     under_review:          { bg: 'rgba(154,117,50,0.16)',  color: '#7D5E1F',              label: 'Under Review' },
     awaiting_confirmation: { bg: 'rgba(219,166,157,0.45)', color: '#8A4239',              label: 'Awaiting Confirmation' },
+    client_confirmed:      { bg: 'rgba(219,166,157,0.45)', color: '#8A4239',              label: 'Confirmed by client' },
     in_progress:           { bg: 'rgba(20,27,69,0.07)',    color: '#2C3F9E',              label: 'In Progress' },
     ready:                 { bg: '#DBA69D',                color: '#141B45',              label: 'Ready' },
     completed:             { bg: 'rgba(20,27,69,0.06)',    color: 'rgba(20,27,69,0.40)', label: 'Completed' },

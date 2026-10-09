@@ -5,6 +5,15 @@ For full code-level detail, see the [Git commit history](https://github.com/thib
 
 ---
 
+## 2026-10-09 — Order approval: client confirmation now leaves a trace (demo stopgap)
+
+- When a client presses "Yes, Confirm" on an order awaiting approval, a "Confirmed by client" line (with timestamp) is now added to the order history. It shows on both the client and admin order pages.
+- The order status itself is unchanged: it still returns to Under Review, and the team moves it to In Progress with the existing button.
+- The history line is written first; if that fails the client sees the usual error and nothing changes, so they can retry.
+- No database changes, no new order statuses. The full approval loop (decline, notifications) is planned after the demo.
+
+---
+
 ## 2026-10-09 — Booking: "Preferred Date" opens the calendar on any click
 
 - In Chrome and Edge, clicking the date field only selected the day/month/year text; the calendar opened only from the small icon. Safari already opened it anywhere.
