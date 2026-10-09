@@ -5,6 +5,24 @@ For full code-level detail, see the [Git commit history](https://github.com/thib
 
 ---
 
+## 2026-10-09 — Refreshed CLAUDE.md: customer-matching progress, September architecture decisions, new traps
+
+- Refreshed CLAUDE.md: customer-matching progress, September architecture decisions, new traps
+
+---
+
+## 2026-10-09 — Fixed crash when viewing a Drop Off / FedEx appointment
+
+- Fixed crash when viewing a Drop Off / FedEx appointment; Appointment Details now shows the delivery method
+
+---
+
+## 2026-09-24 — Customer matching Step 4b-i: admin matching queue
+
+- Customer matching Step 4b-i: admin matching-queue API (/api/admin/matching-queue — Bearer token + server-side role check, production route) and a temporary JSON view at /admin/matching. Verified live on localhost.
+
+---
+
 ## 2026-08-31 — TypeScript build fix: Set spread in customer-probe route
 
 - `[...idFieldsSeen]` (a `Set<string>`) used spread syntax which TypeScript rejects at the default ES5 target; changed to `Array.from(idFieldsSeen)` which works at any target

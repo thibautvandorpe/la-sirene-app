@@ -1,7 +1,7 @@
 # La Sirène App — Claude Code Briefing
 
 > Read automatically at the start of every Claude Code session.
-> Last verified against the codebase and the live Supabase schema: 2026-08-31.
+> Last verified against the codebase and the live Supabase schema: 2026-10-09.
 
 ---
 
@@ -49,6 +49,9 @@ contents.
   a file that was never reloaded in the browser and only surface as a
   failed Vercel build. `npx tsc --noEmit` runs the same full check that
   `next build` does, in a few seconds.
+- **Planning-side prompts are bug reports or specs.** They describe the
+  problem, where it is, and the constraints — Claude owns the
+  investigation and the fix design, and always proposes before editing.
 
 ---
 
@@ -124,18 +127,42 @@ not masked.
 
 ---
 
-## ⚠️ Known Trap — Tailwind cannot apply opacity to a CSS variable
+## Known Traps
 
-`text-[#9A7532]/60` compiles correctly. `text-[var(--brass)]/60` compiles
-to **nothing at all** — no error, no warning, the class is silently
-dropped. Tailwind needs raw colour channels to compute the alpha and cannot
-decompose a `var()`.
-
-**Therefore this codebase uses plain hex literals, not CSS variables, for
-colour.** Do not "improve" it by converting to tokens. If tokens ever
-become necessary, store space-separated channels (`--ink-rgb: 20 27 69`)
-and register them in `tailwind.config.ts` with `<alpha-value>`, then use
-named classes only.
+1. **Tailwind cannot apply opacity to a CSS variable.** `text-[#9A7532]/60`
+   compiles correctly. `text-[var(--brass)]/60` compiles to **nothing at
+   all** — no error, no warning, the class is silently dropped. Tailwind
+   needs raw colour channels to compute the alpha and cannot decompose a
+   `var()`. **Therefore this codebase uses plain hex literals, not CSS
+   variables, for colour.** Do not "improve" it by converting to tokens.
+   If tokens ever become necessary, store space-separated channels
+   (`--ink-rgb: 20 27 69`) and register them in `tailwind.config.ts` with
+   `<alpha-value>`, then use named classes only.
+2. **An absence is not always an absence.** `null === null` is `true` in
+   JS, so a null key must never match another null, both in lookups and
+   when joining results (use keyed Maps filled only from non-null keys).
+   Distinguish "returned nothing" from "failed": destructure `{ error }`
+   as well as `{ data }`, and on failure stop and flag, never proceed to
+   create. Some CleanCloud endpoints report zero results as an `Error`
+   field (`getCustomer`: "No Customer With That ID").
+3. **Dates: `new Date('yyyy-mm-dd')` is UTC midnight**, but `getDate()`
+   and the other local getters read local time, which shifts the date by
+   one day in New York and LA. Keep calendar-date arithmetic and
+   formatting in UTC (`toISOString().slice(0,10)`, `setUTCDate`). Test
+   date logic under `TZ=America/New_York` and `TZ=America/Los_Angeles`.
+4. **Drop Off and FedEx appointments have `scheduled_at = null`** (no
+   slot). Any screen reading `scheduled_at` must check it first. Fixed in
+   `orders/[id]` on 2026-10-09; every other screen already checks.
+5. **RLS: `cleancloud_customers` and `cleancloud_sweep_state` have RLS
+   ENABLED WITH NO POLICIES on purpose** (a full copy of the POS customer
+   list must not be readable with the anon key). A browser read returns
+   an empty array, not an error. Read them only from server routes using
+   the service role key. Do not "fix" them to match the `dev_open_access`
+   tables.
+6. **PWA:** if the app suddenly renders as unstyled text on localhost, a
+   stale service worker from an old `npm run build && npm start` is
+   serving cached HTML. Check in Incognito first. Fix: DevTools →
+   Application → Service Workers → Unregister, then Clear site data.
 
 ---
 
@@ -167,10 +194,16 @@ src/
       appointments/page.tsx + [id]/page.tsx
       orders/page.tsx + [id]/page.tsx
       conversations/page.tsx + [clientId]/page.tsx
+      matching/page.tsx     # Raw JSON probe for the matching queue, not yet a designed UI
     api/
       cleancloud/customer/route.ts   # POST — links a client to a CleanCloud customer
       cleancloud/backfill/route.ts   # dev-only, sequential backfill
       cleancloud/test/route.ts       # dev-only diagnostics
+      cleancloud/customer-probe/route.ts  # dev-only, getCustomer diagnostics
+      cleancloud/match-preview/route.ts   # dev-only dry-run of matching for every client
+      cleancloud/normalize-test/route.ts  # dev-only, tests lib/phone.ts
+      cleancloud/sweep/route.ts           # dev-only, builds the cleancloud_customers index
+      admin/matching-queue/route.ts       # Bearer + role==='admin', production — serves /admin/matching
       notify/route.ts                # Resend email dispatch
     login/  signup/  auth/callback/  # Outside (app) — no tab bar
   components/
@@ -182,9 +215,17 @@ src/
   lib/
     supabase.ts             # Supabase client singleton
     cleancloud.ts           # CleanCloud API helper (rate-limited to 3/sec)
-    cleancloudCustomer.ts   # ensureCleanCloudCustomer(clientId), idempotent
+    cleancloudCustomer.ts   # ensureCleanCloudCustomer(clientId) — 5-branch
+                            #   match/create logic, dry-run mode
+    phone.ts                # normalizePhone / normalizeEmail — ambiguous
+                            #   input always returns null, never guessed
     sendEmail.ts            # Resend wrapper
 ```
+
+Routes under `api/admin/` serve admin screens: Bearer token +
+`role === 'admin'` check, server-side, always production — not dev-only
+like the diagnostic routes under `api/cleancloud/` (`customer/` and
+`notify/` excepted), which are guarded by `NODE_ENV`.
 
 `src/app/dashboard/page.tsx` is leftover early-tutorial code, unstyled and
 unreachable from the app. Ignore it; do not extend it.
@@ -204,6 +245,13 @@ Four steps:
 4. **Review & Quote** — itemised list, estimated total, price disclaimer,
    Confirm button.
 
+**POC, not final.** Step 2's 5 hardcoded slots and Step 4's estimated
+prices are invented locally — this whole flow is placeholder behaviour.
+The MVP rework (real CleanCloud slots, a ZIP-allowlist serviceability
+check, no client-facing prices) is scoped under Roadmap item 2, because
+`addOrder` is where the pickup slot is actually sent. See Product & Scope
+Decisions below for why prices are leaving Step 4 entirely.
+
 Key helpers: `slotToISO()` and `isoToSlot()` convert between time-slot
 labels and ISO datetimes.
 
@@ -218,7 +266,7 @@ tab works.
 
 | Table | Columns |
 |---|---|
-| `clients` | id (uuid, FK → auth.users), full_name, email, phone (nullable), **role** (text, NOT NULL), email_notifications_enabled, cleancloud_customer_id, created_at |
+| `clients` | id (uuid, FK → auth.users), full_name, email, phone (nullable), **role** (text, NOT NULL), email_notifications_enabled, cleancloud_customer_id, cleancloud_link_status, cleancloud_link_checked_at, created_at |
 | `appointments` | id, client_id, scheduled_at, status, delivery_method, notes, created_at |
 | `appointment_items` | id, appointment_id, garment_id, service_id, special_instructions, estimated_price, created_at |
 | `appointment_item_photos` | id, appointment_item_id, url, label, created_at |
@@ -231,6 +279,8 @@ tab works.
 | `services` | id, category, sub_category, price |
 | `chat_messages` | id, client_id, sender ('client' \| 'team'), **content**, read_at, created_at |
 | `notifications` | id, client_id, type, title, body, order_id, read_at, created_at |
+| `cleancloud_customers` | cleancloud_customer_id (text, PK), full_name, phone_raw, phone_e164, email, is_active (bool, NOT NULL), last_synced_at (NOT NULL), created_at (NOT NULL) |
+| `cleancloud_sweep_state` | id (int), swept_from, swept_through (date bookmark), last_run_at, notes |
 
 **Storage buckets:** `appointment-photos`, `garment-photos`
 
@@ -238,15 +288,20 @@ tab works.
 and redirects unless it is `'admin'`; `login/page.tsx` uses it to route
 admins to `/admin`. It is also the correct flag for excluding staff
 accounts from any CleanCloud sync — **no separate `is_staff` column is
-needed or should be added.**
+needed or should be added.** Always target the admin row by role, never
+by email or phone.
 
 **Note the column names** — chat messages use `content` (not `body`) while
 notifications use `body`. Order line items carry both `final_price` and
-`reviewed_price`.
+`reviewed_price`. `clients.cleancloud_link_status` is free text, not an
+enum (e.g. `linked:phone_and_email`, `needs_review:ambiguous_phone`,
+`created`) — see Customer Matching below.
 
 **RLS:** enabled on all tables with `dev_open_access` policies.
 These are permissive development policies and must be replaced with real
 per-user policies before launch. Treat this as an open launch item.
+**Exception:** `cleancloud_customers` and `cleancloud_sweep_state` have
+RLS enabled with no policies at all — see Known Traps.
 
 **Delivery methods:** `'pick_up' | 'drop_off' | 'fedex'`
 
@@ -258,7 +313,7 @@ ready | completed | cancelled`
 `clients.cleancloud_customer_id` is text, nullable, with a partial unique
 index where not null. It is the single link between Supabase and the POS.
 `services` has no CleanCloud product mapping yet — that arrives with the
-catalogue sync.
+catalogue sync (for `addOrder` line items, not client-facing quotes).
 
 ---
 
@@ -267,7 +322,8 @@ catalogue sync.
 CleanCloud is the **source of truth** for customers, catalogue, prices,
 orders and payments. Supabase is a **synced mirror** plus the home of
 everything CleanCloud cannot hold (auth, wardrobe photos, chat,
-notifications).
+notifications, and now a local phone/email index for customer matching —
+see below).
 
 API contract, identical for every endpoint: POST to
 `https://cleancloudapp.com/api/<endpoint>`, `Content-Type: application/json`,
@@ -277,7 +333,9 @@ body containing `api_token` plus endpoint fields. Docs are at
 Traps, all found the hard way:
 
 1. **Errors arrive with HTTP 200** and an `Error` field in the body. The
-   helper in `cleancloud.ts` treats an `Error` field as a failure.
+   helper in `cleancloud.ts` treats an `Error` field as a failure. Some
+   lookups report zero results the same way instead of an empty array
+   (`getCustomer`: "No Customer With That ID").
 2. **Every value is a string**, including numeric IDs and prices
    (`"price":"360.00"`). Parse before arithmetic.
 3. **IDs can be `0`.** The Default price list is `id: 0`, so a truthiness
@@ -289,9 +347,13 @@ Traps, all found the hard way:
 5. **3 requests/second** is enforced. The helper spaces requests.
 6. **Email is unique in CleanCloud, including across deactivated
    customers.** `addCustomer` rejects duplicates. Phone is unique only
-   among *active* customers.
+   among *active* customers. Never use a real email address for a test
+   signup — it is consumed permanently.
 7. **Products are read-only via the API.** The catalogue was loaded via an
    undocumented CSV import at `https://cleancloudapp.com/import`.
+8. **`addCustomer` is sent the raw phone, not the normalized E.164 form.**
+   Normalization is only for our own matching index — CleanCloud keeps
+   whatever formatting the client typed.
 
 **Route handlers that read live state must opt out of caching.** A GET
 handler with no `request` parameter has no dynamic input, so Next caches
@@ -309,6 +371,49 @@ routes (e.g. normalize-test) do not need it.
 Catalogue: 42 products across 4 sections. Section IDs are **not
 alphabetical**: `1 = Full Body`, `2 = Lower Body`, `3 = Upper Body`,
 `4 = Handbags and Shoes`, `5 = Alterations and Repairs` (empty).
+
+### Customer Matching
+
+Phone (not email) is the identity key; email only confirms a match. Both
+normalize through `src/lib/phone.ts`: a number with a leading `+` and
+8–15 digits is accepted as international; an 11-digit number starting
+with `1`, or a 10-digit number whose first digit is 2–9, is treated as
+US; anything else becomes `null` and is reviewed, never guessed, because
+a wrong E.164 guess would silently mislink a customer.
+
+`ensureCleanCloudCustomer` (`src/lib/cleancloudCustomer.ts`) resolves one
+of `existing` / `linked` / `created` / `skipped` / `needs_review`, by
+looking up the `cleancloud_customers` mirror by phone, then by email if
+phone doesn't resolve. A lookup error always becomes `needs_review`,
+never a fallback to create; a phone match whose email differs also
+becomes `needs_review`, never an auto-create. `dryRun` (used by
+`match-preview`) never writes anywhere. `role === 'admin'` clients are
+always skipped — staff never reach the POS.
+
+Matcher lookups only consider active customers (`is_active = true`) — it
+must never link to a deactivated one. The review queue's suggestions
+ignoring `is_active` is the deliberate opposite; do not "align" the two.
+
+The mirror (`cleancloud_customers` + `cleancloud_sweep_state`) is built by
+**sweeping** `getCustomer` on a date bookmark (`sweep/route.ts`), not by a
+webhook — a webhook needs a public URL the app doesn't have yet.
+**Interim rule: until that webhook exists, re-run the sweep after adding
+any customer directly in CleanCloud**, or the matcher can't see them and
+may create a duplicate.
+
+The admin review queue (`/api/admin/matching-queue`, rendered for now as a
+raw JSON dump at `/admin/matching`) splits clients into two sections:
+"needs action" and "informational". Informational rows must never offer a
+link action — suggestions there are context only — and suggestions
+deliberately do not filter `is_active`, so staff can see a match against
+a deactivated customer too.
+
+**Status:** index + sweep done (Step 1/2a/2b), matching logic + dry-run
+preview done (4a, verified), admin matching-queue API done and verified
+live (4b-i; the UI at `/admin/matching` is still a temporary JSON dump).
+Next, in order: 4b-ii a real queue UI → 4b-iii link / re-check actions →
+4c a proper US-default phone input (remove the French placeholder) →
+Step 3, the customer webhook, last (it needs a public URL).
 
 ---
 
@@ -335,30 +440,93 @@ alphabetical**: `1 = Full Body`, `2 = Lower Body`, `3 = Upper Body`,
 - ✅ CleanCloud connected; 42-product catalogue live in the sandbox
 - ✅ CleanCloud customer linking — `cleancloud_customer_id` populated for
   all existing clients
+- ✅ CleanCloud customer matching — phone/email index + sweep, 5-branch
+  matching logic with dry-run preview, and an admin matching-queue API
+  (role-gated; the review UI is still a JSON probe)
+
+---
+
+## Product & Scope Decisions (Sept–Oct 2026 planning)
+
+- **MVP filter:** a feature is MUST HAVE only if (a) it removes a major
+  operational burden for the team, or (b) its absence stops the client
+  from using the service. Everything else is nice-to-have.
+- **~80% of volume is expected from Pick Up & delivery.** That is the
+  spine of the app; Drop Off is the variant.
+- **POC vs MVP:** what exists today is a POC. Its slots, prices and
+  statuses are invented locally. The MVP is the same app wired to
+  CleanCloud. Two existing features need REWORK, not extension: the
+  booking Date & Time step and the Step 4 quote screen (Roadmap item 2).
+- **NO PRICES IN THE CLIENT JOURNEY.** The workshop prices after seeing
+  the garment. The brief's "pre-intake and instant quotation" is now
+  "pre-intake only". The current Step 4 "Review & Quote" with estimated
+  prices is POC behaviour to be removed, not extended. The client never
+  chooses a service level. The pricing mechanism is otherwise PARKED.
+- **Pre-intake is OPTIONAL:** one free-text field plus an optional photo,
+  never a structured form. Capture only what the workshop cannot see
+  (the cause or age of a stain, what was already tried) — item type,
+  count and the stain's existence are already captured at intake anyway.
+- **CleanCloud owns logistics:** routes, zones, slots, capacity, and the
+  driver's day (CleanCloud Driver app). Never build our own slot picker;
+  slots come from `getDates` / `getSlots`. Serviceability for MVP = a
+  hardcoded ZIP allowlist (no geocoder yet). Out of zone → invite
+  boutique drop-off and capture the address on a waitlist.
+- **Addresses and access instructions must live in CleanCloud**, because
+  the driver only sees CleanCloud. Whether `addOrder` can carry a
+  per-order address is UNVERIFIED (open question to CleanCloud) — do not
+  design anything that depends on it.
+- **Never design a step that assumes the client is present at pickup**
+  (housekeeper, doorman, or nobody).
+- **Repeat bookings:** prefill from the last order is MUST HAVE; a
+  separate express flow is nice-to-have.
+- **Mail-in is NOT MVP.**
+
+---
+
+## Open Questions Blocking Work
+
+For CleanCloud (Ric):
+- Can our app capture a card via CleanCloud Pay?
+- Can webhooks be signed?
+- Is there a customer lookup by phone or email?
+- Can an order carry its own pickup/delivery address, and does the
+  Driver app show it?
+- Can access instructions be set per order?
+- Does a heat-seal ID persist across orders? (It would solve permanent
+  garment identity for the wardrobe.)
+
+Other:
+- The approval threshold for expert-set prices is not set.
+- Which CleanCloud price list is authoritative: Default (`id 0`) or
+  "La Sirene Test" (`id 21448`)?
 
 ---
 
 ## Roadmap — work through these one at a time
 
-**NEXT: customer matching.** Phone (not email) is the identity key. Needs a
-webhook-fed Supabase index of CleanCloud customers, canonical E.164 phone
-normalisation, and `ensureCleanCloudCustomer` skipping `role = 'admin'` so
-staff accounts stop reaching the POS. Phase 3 depends on a reliable
-customerID, so this comes first.
+**0. Finish customer matching.** See Customer Matching above for the
+exact next steps (4b-ii queue UI → 4b-iii link/re-check actions → 4c
+phone input → Step 3 webhook, last). A reliable customer ID is a
+dependency for orders and payments, so this stays first.
 
 1. **Catalogue sync** — pull `getProducts` / `getPriceLists` into the
-   `services` table so booking quotes use real POS prices.
-2. **Orders + webhooks** — booking confirm → `addOrder` → store
-   `cleancloud_order_id`. Webhook receiver at `/api/cleancloud/webhook` for
-   order.created / order.status_changed / order.deleted. The existing
-   notification and Resend code fires off webhook events instead of admin
-   actions. Reconciliation sweep via `getOrders` with
-   `updatedSecondsAgoFrom`.
+   `services` table for `addOrder` line items, not client quotes (prices
+   are never shown to the client — see Product & Scope Decisions).
+2. **Orders + webhooks, including the booking rework** — booking confirm
+   → `addOrder` → store `cleancloud_order_id`. This is also where the
+   Step 2 / Step 4 POC behaviour gets replaced, because `addOrder` is
+   where the pickup slot is actually sent: real slots from `getDates` /
+   `getSlots` instead of the hardcoded 5, a ZIP-allowlist serviceability
+   check (out of zone → boutique drop-off + waitlist), and the Step 4
+   price screen removed entirely. Webhook receiver at
+   `/api/cleancloud/webhook` for order.created / order.status_changed /
+   order.deleted. The existing notification and Resend code fires off
+   webhook events instead of admin actions. Reconciliation sweep via
+   `getOrders` with `updatedSecondsAgoFrom`.
 3. **Payments — CleanCloud Pay via the API.** Stripe was evaluated and
    dropped. Card saved in Profile via `addCard`; charge on completion via
    `cardCharge`. A `payment_type` field (`'online' | 'in_boutique'`)
-   prevents double-charging. **Currently blocked** on a question to
-   CleanCloud about whether our own app can capture a new card.
+   prevents double-charging. **Currently blocked** — see Open Questions.
 4. **RLS hardening** — replace the `dev_open_access` policies with real
    per-user policies. Required before launch.
 5. **Push notifications (PWA Web Push)** — post-MVP.
@@ -388,5 +556,7 @@ as a heading, short bullets. Do this before pushing to GitHub.
 - CleanCloud Pay for payments; **Stripe is dropped**
 - **Phone, not email, is the CleanCloud customer matching key**
 - `clients.role` is the staff/admin flag — do not add `is_staff`
-- Plain hex colours, **not** CSS variables (see the Tailwind trap above)
+- Plain hex colours, **not** CSS variables (see Known Traps above)
 - **Geist** typography — the Bodoni Moda / Archivo swap was rejected
+- MVP scope rules (no client-facing prices, CleanCloud owns slots/zones,
+  mail-in out) — see Product & Scope Decisions above
